@@ -1,0 +1,56 @@
+# Plataforma VDG
+
+## Objetivo
+
+Frontend web do [CourseCore](https://github.com/Leo-Slv/CourseCore) — a
+aplicação que os alunos e o administrador usam para se registrar, navegar pelo
+catálogo de áreas/cursos e consumir o conteúdo liberado para eles. Consome a
+API do CourseCore via HTTP/JSON.
+
+## Stack
+
+- Next.js 16 (App Router)
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- shadcn/ui
+- TanStack Query
+- React Hook Form + Zod
+
+## Estrutura
+
+```text
+src/app/         # Rotas (App Router) — ficam finas, delegam para src/features
+src/components/  # ui/ (shadcn) + composables compartilhados entre features
+src/features/    # Uma pasta por funcionalidade de negócio (ver src/features/README.md)
+src/lib/         # HTTP client, auth, React Query, rotas, env
+public/
+```
+
+## Módulos ativos
+
+Nenhum ainda — este repositório está no estado de scaffold básico. Cada
+funcionalidade é adicionada seguindo o workflow descrito em `CLAUDE.md`.
+
+## Como rodar localmente
+
+1. Copie `.env.example` para `.env.local` e ajuste `NEXT_PUBLIC_API_URL` se
+   necessário.
+2. Rode o backend do CourseCore localmente (`dotnet run`, ambiente
+   Development) — veja `CLAUDE.md` para detalhes do contrato da API.
+3. `npm install`
+4. `npm run dev`
+
+## Scripts
+
+- `npm run dev` — desenvolvimento local com Turbopack.
+- `npm run build` — build de produção.
+- `npm run lint` — ESLint.
+- `npm run format` — Prettier.
+- `npm run typecheck` — checagem de tipos sem emitir arquivos.
+- `npm run test` — testes unitários (`*.spec.ts` colocados junto do código).
+
+## Observações
+
+- Este frontend não é autoridade de autorização: o backend (CourseCore)
+  continua sendo a fonte de verdade para autenticação e permissões.
