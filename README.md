@@ -32,6 +32,9 @@ public/
 - **Landing page** (`/`) — página pública de entrada, com conteúdo estático
   (sem chamada à API do CourseCore ainda). Spec em
   `Docs/specs/landing/landing-page.md`.
+- **Cadastro** (`/register`) — formulário público de registro (nome, e-mail,
+  senha, CAPTCHA Cloudflare Turnstile), chama `POST /api/auth/register`.
+  Spec em `Docs/specs/auth/register.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
@@ -39,7 +42,8 @@ Demais funcionalidades são adicionadas seguindo o workflow descrito em
 ## Como rodar localmente
 
 1. Copie `.env.example` para `.env.local` e ajuste `NEXT_PUBLIC_API_URL` se
-   necessário.
+   necessário. `NEXT_PUBLIC_TURNSTILE_SITE_KEY` pode ficar vazia em
+   desenvolvimento — veja `Docs/specs/auth/register.md`, "Known gap".
 2. Rode o backend do CourseCore localmente (`dotnet run`, ambiente
    Development) — veja `CLAUDE.md` para detalhes do contrato da API.
 3. `npm install`
