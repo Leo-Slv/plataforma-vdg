@@ -154,6 +154,17 @@ The user writes in Portuguese in conversation; specs, plans, commit messages,
 and code comments stay in English, matching the CourseCore backend's
 convention.
 
+## Pending decisions
+
+- **Design mockups**: the user is designing screens in Claude Design under the
+  project "Igreja Viver da Graça - UI Mockups" (not yet linked here). Decided
+  approach, pending the actual link: export each artboard as PNG and commit it
+  under `Docs/design/mockups/<screen-name>.png`, referenced from the relevant
+  feature's spec — durable, works offline, versioned with the code, instead of
+  depending on a live fetch of the Claude Design canvas on every session. Ask
+  the user for the artifact link (or exported files) before speccing the first
+  UI-heavy feature, and follow this convention once received.
+
 ## Deliberate deviations from the reference project
 
 - **HTTP client / error shape**: adapted to CourseCore's actual API contract
