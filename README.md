@@ -35,6 +35,9 @@ public/
 - **Cadastro** (`/register`) — formulário público de registro (nome, e-mail,
   senha, CAPTCHA Cloudflare Turnstile), chama `POST /api/auth/register`.
   Spec em `Docs/specs/auth/register.md`.
+- **Login** (`/login`) — formulário de acesso (e-mail, senha), chama
+  `POST /api/auth/login` e redireciona para `/catalog` (rota stub) no
+  sucesso. Spec em `Docs/specs/auth/login.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
