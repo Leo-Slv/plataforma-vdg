@@ -15,13 +15,12 @@ import {
 	type RegisterFormValues,
 } from '@/features/auth/schemas/register-form.schema';
 import { useRegisterMutation } from '@/features/auth/hooks/auth.queries';
+import { RATE_LIMIT_MESSAGE } from '@/features/auth/lib/auth-messages';
 import { FormField } from '@/features/auth/components/form-field';
 import { PasswordField } from '@/features/auth/components/password-field';
 
 const GENERIC_ERROR_MESSAGE =
 	'Não foi possível criar sua conta agora. Tente novamente.';
-const RATE_LIMIT_MESSAGE =
-	'Muitas tentativas seguidas bloqueiam o acesso por alguns minutos, por segurança.';
 const CAPTCHA_ERROR_MESSAGE =
 	'Não foi possível confirmar a verificação de segurança. Tente novamente.';
 
