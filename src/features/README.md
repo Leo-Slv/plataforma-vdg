@@ -17,6 +17,11 @@ src/features/<feature>/
 of implementing business logic inline. `src/components/**` only holds
 cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
 
-No feature folder exists yet — each one is added following the workflow in
-the root `CLAUDE.md` (spec → resolve open decisions → implementation plan →
-implement → tests → docs → commit).
+- `landing/` — the public `/` page. Static content only (no `api/`, `hooks/`,
+  or `schemas/` — it makes no CourseCore calls); see
+  `Docs/specs/landing/landing-page.md`.
+
+Each new feature is added following the workflow in the root `CLAUDE.md`
+(spec → resolve open decisions → implementation plan → implement → tests →
+docs → commit). A feature only gets the subfolders it actually needs —
+skip `api/`/`hooks/`/`schemas/` if it makes no HTTP calls.

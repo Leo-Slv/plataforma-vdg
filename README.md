@@ -29,8 +29,12 @@ public/
 
 ## Módulos ativos
 
-Nenhum ainda — este repositório está no estado de scaffold básico. Cada
-funcionalidade é adicionada seguindo o workflow descrito em `CLAUDE.md`.
+- **Landing page** (`/`) — página pública de entrada, com conteúdo estático
+  (sem chamada à API do CourseCore ainda). Spec em
+  `Docs/specs/landing/landing-page.md`.
+
+Demais funcionalidades são adicionadas seguindo o workflow descrito em
+`CLAUDE.md`.
 
 ## Como rodar localmente
 
