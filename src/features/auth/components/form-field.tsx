@@ -31,7 +31,7 @@ function FormField({
 				id={fieldId}
 				className={cn(
 					'w-full border-0 border-b border-white/18 bg-transparent py-3 font-sans text-[15px] font-light text-[#f2f2f0] outline-none placeholder:text-white/30 focus:border-[oklch(0.62_0.1_248)]',
-					'autofill:[-webkit-text-fill-color:#f2f2f0] autofill:[transition:background-color_9999s_ease-in-out_0s] autofill:shadow-[0_0_0px_1000px_#0a0a0b_inset]',
+					'autofill:shadow-[0_0_0px_1000px_#0a0a0b_inset] autofill:[-webkit-text-fill-color:#f2f2f0] autofill:[transition:background-color_9999s_ease-in-out_0s]',
 					className,
 				)}
 				aria-invalid={Boolean(error)}
