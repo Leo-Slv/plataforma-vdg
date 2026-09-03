@@ -43,6 +43,7 @@ function PasswordField({
 					value={value}
 					className={cn(
 						'w-full border-0 bg-transparent font-sans text-[15px] font-light tracking-[0.2em] text-[#f2f2f0] outline-none',
+						'autofill:[-webkit-text-fill-color:#f2f2f0] autofill:[transition:background-color_9999s_ease-in-out_0s] autofill:shadow-[0_0_0px_1000px_#0a0a0b_inset]',
 						className,
 					)}
 					aria-invalid={Boolean(error)}
