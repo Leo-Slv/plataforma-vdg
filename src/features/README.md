@@ -25,8 +25,15 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
   later); see `Docs/specs/auth/register.md`, `Docs/specs/auth/login.md`,
   and `Docs/specs/auth/confirm-email.md`.
 - `catalog/` — maps to the backend's Courses module. Currently `/catalog`
-  (the first feature with a real `useQuery`, not just mutations); see
-  `Docs/specs/catalog/course-catalog.md`.
+  (the first feature with a real `useQuery`, not just mutations) and
+  `/courses/[slug]` (the first dynamic route); see
+  `Docs/specs/catalog/course-catalog.md` and
+  `Docs/specs/catalog/course-detail.md`.
+
+`src/components/app-nav.tsx` is the shared top nav for every
+authenticated (non-auth-flow) page — first used by `catalog/`, reused
+as-is by `catalog/`'s own course-detail page rather than each feature
+growing its own copy.
 
 Each new feature is added following the workflow in the root `CLAUDE.md`
 (spec → resolve open decisions → implementation plan → implement → tests →

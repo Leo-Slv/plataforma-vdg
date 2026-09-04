@@ -47,6 +47,12 @@ public/
   client-side). Só usa o que a API realmente retorna — sem preço,
   duração, progresso ou certificado, que o backend ainda não expõe. Spec
   em `Docs/specs/catalog/course-catalog.md`.
+- **Página do curso** (`/courses/[slug]`) — a primeira rota dinâmica do
+  projeto. Sem acesso ao curso, `GET /api/courses/{id}` nem chega a ser
+  chamado (retornaria 403 pra requisição inteira) — a tela usa só o que
+  o catálogo já sabe. Com acesso, mostra descrição, contagem real de
+  módulos/aulas e a lista de módulos. Spec em
+  `Docs/specs/catalog/course-detail.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
