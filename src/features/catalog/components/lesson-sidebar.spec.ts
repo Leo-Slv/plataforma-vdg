@@ -51,7 +51,9 @@ const details: CourseDetails = {
 
 const progress: CourseProgress = {
 	progressPercent: 33.33,
-	lessons: [{ lessonId: 'l1', completed: true }],
+	lessons: [
+		{ lessonId: 'l1', completed: true, lastWatchedAt: '2026-09-04T10:00:00Z' },
+	],
 };
 
 test('renders every module and lesson title', () => {

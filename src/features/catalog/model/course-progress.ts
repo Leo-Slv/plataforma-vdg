@@ -1,6 +1,7 @@
 type LessonProgress = {
 	lessonId: string;
 	completed: boolean;
+	lastWatchedAt: string;
 };
 
 type CourseProgress = {
