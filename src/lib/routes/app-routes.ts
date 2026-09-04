@@ -7,6 +7,7 @@ const appRoutes = {
 		register: '/register',
 		confirmEmail: '/confirm-email',
 		forgotPassword: '/forgot-password',
+		changeEmail: '/change-email',
 	},
 	catalog: {
 		index: '/catalog',
