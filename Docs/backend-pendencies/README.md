@@ -30,6 +30,20 @@ require, the workaround shipped instead, and a rough severity:
 | Lesson player (`/courses/[slug]/lessons/[lessonId]`) | [catalog/lesson-player.md](catalog/lesson-player.md) | **Blocking** |
 | My courses (`/my-courses`) | [catalog/my-courses.md](catalog/my-courses.md) | Feature gap |
 
+## Skipped screens
+
+Two mockup screens were evaluated and deliberately not built — the
+backend gap was severe enough that shipping them would have meant
+either fabricating data across the board or a workflow that silently
+loses admin work. No spec exists for either; each is documented as a
+pendency only, to revisit once its blocking gap closes on the
+CourseCore side.
+
+| Screen | File | Why skipped |
+|---|---|---|
+| Checkout — Pix/cartão (`1i`) | [catalog/course-detail.md](catalog/course-detail.md) (pendency 6 update) | No payment/checkout endpoint at all — explicit backend non-goal, not just a missing field. |
+| Painel admin — Cursos (`1k`) | [admin/courses-panel.md](admin/courses-panel.md) | No endpoint lists draft courses (a draft would become unreachable after leaving the screen) and no audit-log read endpoint. |
+
 New screens get their own file here as part of the standard spec workflow
 (see `CLAUDE.md`, "Implementation Workflow") — add a row above when one is
 created.
