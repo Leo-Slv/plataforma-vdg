@@ -7,6 +7,7 @@
 const queryKeys = {
 	catalog: {
 		list: ['catalog', 'list'] as const,
+		detail: (courseId: string) => ['catalog', 'detail', courseId] as const,
 	},
 } as const;
 
