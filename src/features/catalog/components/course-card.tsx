@@ -13,7 +13,9 @@ type CourseCardProps = {
 	area: AreaSummary;
 };
 
-function accessBadge(course: CourseCatalogItem) {
+function accessBadge(
+	course: Pick<CourseCatalogItem, 'hasAccess' | 'pricingModel'>,
+) {
 	if (course.hasAccess) {
 		return null;
 	}
@@ -80,4 +82,4 @@ function CourseCard({ course, area }: CourseCardProps) {
 	);
 }
 
-export { CourseCard };
+export { CourseCard, accessBadge };
