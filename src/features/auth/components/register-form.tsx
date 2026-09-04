@@ -9,7 +9,7 @@ import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { env } from '@/lib/env';
 import { appRoutes } from '@/lib/routes/app-routes';
 import { isApiError } from '@/lib/http/api-error';
-import { setAccessToken } from '@/lib/auth/access-token';
+import { setAccessToken, setUserEmail } from '@/lib/auth/access-token';
 import {
 	registerFormSchema,
 	type RegisterFormValues,
@@ -47,6 +47,7 @@ function RegisterForm() {
 		mutation.mutate(values, {
 			onSuccess: (data) => {
 				setAccessToken(data.token.accessToken);
+				setUserEmail(data.email);
 				router.push(appRoutes.auth.confirmEmail);
 			},
 			onError: (error) => {
