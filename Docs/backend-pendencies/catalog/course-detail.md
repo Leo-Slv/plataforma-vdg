@@ -79,6 +79,22 @@ Spec: [`Docs/specs/catalog/course-detail.md`](../../specs/catalog/course-detail.
   visually broken vs. the mockup) but is inert — starts no flow.
 - **Severity**: Feature gap — likely the largest, most deliberate scope
   boundary in the whole backend (payments were never in scope there).
+- **Update, 2026-09-04**: evaluated building the mockup's own checkout
+  screen (artboard `1i`, "Checkout — Pix / cartão") as its own page and
+  confirmed the same finding applies to all of it, not just this button:
+  `Docs/specs/catalog/self-registration-and-free-courses.md` §10 ("Fora
+  de escopo") states outright that payment/checkout/subscription/billing
+  is out of scope, that the catalog's lock is "só visual/informativo,
+  sem nenhum caminho de 'clicar para comprar'", and that `PricingModel`
+  records only `Free`/`Paid`, never an amount or currency. Free courses
+  never reach this path at all (access is automatic once confirmed);
+  Paid courses have zero self-service grant path — only an admin can
+  grant `UserAreaAccess`/`RoleAreaAccess` manually. **Decision: skip
+  building `1i` as a screen for now** rather than ship a fully inert
+  shell with fabricated prices/discounts/a fake Pix QR code — no spec or
+  implementation plan written. Revisit only once a real payments module
+  gets its own spec on the CourseCore side first, same condition already
+  attached to the `/auth/me` and forgot-password gaps.
 
 ## 7. No course "kind" field
 
