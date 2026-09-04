@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { appRoutes } from '@/lib/routes/app-routes';
-import { getAccessToken, getUserName } from '@/lib/auth/access-token';
+import { getUserName } from '@/lib/auth/access-token';
+import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { isApiError } from '@/lib/http/api-error';
+import { AppNav } from '@/components/app-nav';
 import { useCourseCatalogQuery } from '@/features/catalog/hooks/catalog.queries';
 import {
 	filterCourses,
@@ -15,33 +17,16 @@ import {
 	getDisplayName,
 	getInitials,
 } from '@/features/catalog/lib/user-display';
-import { CatalogNav } from '@/features/catalog/components/catalog-nav';
 import { CatalogPageHeader } from '@/features/catalog/components/catalog-page-header';
 import { AreaSection } from '@/features/catalog/components/area-section';
 
-type GateState =
-	{ status: 'checking' } | { status: 'ready'; userName: string | null };
-
 function CatalogPage() {
 	const router = useRouter();
-	const [gate, setGate] = useState<GateState>({ status: 'checking' });
+	const ready = useRequireAuth();
 	const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
 	const [search, setSearch] = useState('');
 
-	useEffect(() => {
-		if (!getAccessToken()) {
-			router.replace(appRoutes.auth.login);
-			return;
-		}
-
-		// localStorage doesn't exist during SSR, so this read (and the auth
-		// gate above) can only happen after mount — deferring it to render
-		// instead would make the server/client first paint disagree.
-		// eslint-disable-next-line react-hooks/set-state-in-effect
-		setGate({ status: 'ready', userName: getUserName() });
-	}, [router]);
-
-	const query = useCourseCatalogQuery({ enabled: gate.status === 'ready' });
+	const query = useCourseCatalogQuery({ enabled: ready });
 
 	useEffect(() => {
 		if (
@@ -53,16 +38,16 @@ function CatalogPage() {
 		}
 	}, [query.isError, query.error, router]);
 
-	if (gate.status !== 'ready') {
+	if (!ready) {
 		return <div className="min-h-screen bg-[#0a0a0b]" />;
 	}
 
-	const displayName = getDisplayName(gate.userName);
-	const initials = getInitials(gate.userName);
+	const displayName = getDisplayName(getUserName());
+	const initials = getInitials(getUserName());
 
 	return (
 		<div className="min-h-screen bg-[#0a0a0b] text-[#f2f2f0]">
-			<CatalogNav displayName={displayName} initials={initials} />
+			<AppNav displayName={displayName} initials={initials} />
 
 			{query.isPending ? (
 				<p className="px-5 py-16 text-center font-sans text-sm font-light text-white/50 sm:px-10">

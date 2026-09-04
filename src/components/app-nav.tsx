@@ -1,11 +1,11 @@
 import Image from 'next/image';
 
-type CatalogNavProps = {
+type AppNavProps = {
 	displayName: string;
 	initials: string;
 };
 
-function CatalogNav({ displayName, initials }: CatalogNavProps) {
+function AppNav({ displayName, initials }: AppNavProps) {
 	return (
 		<header className="flex items-center justify-between border-b border-white/8 px-5 py-4.5 sm:px-10">
 			<div className="flex items-center gap-8.5">
@@ -39,4 +39,4 @@ function CatalogNav({ displayName, initials }: CatalogNavProps) {
 	);
 }
 
-export { CatalogNav };
+export { AppNav };

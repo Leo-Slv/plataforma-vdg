@@ -1,34 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { appRoutes } from '@/lib/routes/app-routes';
-import { getAccessToken, getUserEmail } from '@/lib/auth/access-token';
+import { getUserEmail } from '@/lib/auth/access-token';
+import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { ConfirmEmailForm } from '@/features/auth/components/confirm-email-form';
 
 const CONFIRMED_REDIRECT_DELAY_MS = 900;
 
-type GateState =
-	{ status: 'checking' } | { status: 'ready'; email: string | null };
-
 function ConfirmEmailPage() {
 	const router = useRouter();
-	const [gate, setGate] = useState<GateState>({ status: 'checking' });
+	const ready = useRequireAuth();
 	const [confirmed, setConfirmed] = useState(false);
-
-	useEffect(() => {
-		if (!getAccessToken()) {
-			router.replace(appRoutes.auth.login);
-			return;
-		}
-
-		// localStorage doesn't exist during SSR, so this read (and the auth
-		// gate above) can only happen after mount — deferring it to render
-		// instead would make the server/client first paint disagree.
-		// eslint-disable-next-line react-hooks/set-state-in-effect
-		setGate({ status: 'ready', email: getUserEmail() });
-	}, [router]);
 
 	function handleConfirmed() {
 		setConfirmed(true);
@@ -37,11 +22,11 @@ function ConfirmEmailPage() {
 		}, CONFIRMED_REDIRECT_DELAY_MS);
 	}
 
-	if (gate.status !== 'ready') {
+	if (!ready) {
 		return <div className="min-h-screen bg-[#0a0a0b]" />;
 	}
 
-	const { email } = gate;
+	const email = getUserEmail();
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-[#0a0a0b] px-5 py-11 text-[#f2f2f0] sm:px-6">
