@@ -138,14 +138,24 @@ time:
 2. **Resolve open decisions explicitly.** If something can't be inferred from
    the existing code, this CLAUDE.md, or the reference project, list the
    questions and ask before proceeding — don't assume silently.
-3. **Implementation plan (HOW)** at
+3. **Backend pendencies.** While speccing, record every mockup requirement
+   the CourseCore backend doesn't actually support today (missing field,
+   missing endpoint, an access model that rules out what the mockup assumes,
+   etc.) in `Docs/backend-pendencies/<domain>/<feature>.md` — mirrors the
+   spec's own path. State per pendency: what the mockup expects, what the
+   backend has today (with source evidence — file/class names), what closing
+   the gap would need, the workaround shipped instead, and a severity
+   (Blocking / Feature gap / Cosmetic / Config). Add the new screen to the
+   index at `Docs/backend-pendencies/README.md`. This is how backend gaps get
+   handed off instead of staying buried in spec prose.
+4. **Implementation plan (HOW)** at
    `Docs/specs/<domain>/<feature>-implementation-plan.md`.
-4. **Implement.**
-5. **Tests.** Fix/add tests until `npm run test`, `npm run typecheck`, and
+5. **Implement.**
+6. **Tests.** Fix/add tests until `npm run test`, `npm run typecheck`, and
    `npm run lint` all pass.
-6. **Docs.** Update `README.md` (and this file, if the architecture changed)
+7. **Docs.** Update `README.md` (and this file, if the architecture changed)
    to reflect the new feature.
-7. **Commit.** Conventional Commits, in English, separated by context
+8. **Commit.** Conventional Commits, in English, separated by context
    (several small commits, never one giant commit). Never add a
    `Co-Authored-By: Claude` trailer — commits are attributed to the user
    only. Never push to the remote without an explicit request.
