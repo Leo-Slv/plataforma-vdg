@@ -4,6 +4,10 @@
  * following the pattern already used by the reference project this repo's
  * architecture is based on (see CLAUDE.md).
  */
-const queryKeys = {} as const;
+const queryKeys = {
+	catalog: {
+		list: ['catalog', 'list'] as const,
+	},
+} as const;
 
 export { queryKeys };
