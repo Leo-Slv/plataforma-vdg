@@ -61,7 +61,7 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 
 	return (
 		<div className="min-h-screen bg-[#0a0a0b] text-[#f2f2f0]">
-			<AppNav displayName={displayName} initials={initials} />
+			<AppNav displayName={displayName} initials={initials} active="catalog" />
 
 			{catalogQuery.isPending ? (
 				<p className="px-5 py-16 text-center font-sans text-sm font-light text-white/50 sm:px-10">
