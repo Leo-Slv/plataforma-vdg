@@ -24,6 +24,9 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
   `/login`, and `/confirm-email` (resend/change-email etc. can join
   later); see `Docs/specs/auth/register.md`, `Docs/specs/auth/login.md`,
   and `Docs/specs/auth/confirm-email.md`.
+- `catalog/` — maps to the backend's Courses module. Currently `/catalog`
+  (the first feature with a real `useQuery`, not just mutations); see
+  `Docs/specs/catalog/course-catalog.md`.
 
 Each new feature is added following the workflow in the root `CLAUDE.md`
 (spec → resolve open decisions → implementation plan → implement → tests →

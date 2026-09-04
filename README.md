@@ -42,6 +42,11 @@ public/
   autenticação real (redireciona pra `/login` sem token salvo); permite
   colar o código recebido por e-mail, reenviar ou (stub) trocar o e-mail.
   Spec em `Docs/specs/auth/confirm-email.md`.
+- **Catálogo de cursos** (`/catalog`) — lista áreas e cursos via
+  `GET /api/courses/available`, com filtro por área e busca (ambos
+  client-side). Só usa o que a API realmente retorna — sem preço,
+  duração, progresso ou certificado, que o backend ainda não expõe. Spec
+  em `Docs/specs/catalog/course-catalog.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
