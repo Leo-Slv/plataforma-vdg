@@ -6,6 +6,7 @@ type CourseDetailOwnedProps = {
 	description: string;
 	areaName: string | null;
 	details: CourseDetails | undefined;
+	slug: string;
 };
 
 function CourseDetailOwned({
@@ -13,6 +14,7 @@ function CourseDetailOwned({
 	description,
 	areaName,
 	details,
+	slug,
 }: CourseDetailOwnedProps) {
 	const modules = details?.modules ?? [];
 	const lessonCount = modules.reduce(
@@ -65,6 +67,7 @@ function CourseDetailOwned({
 								key={module.id}
 								module={module}
 								position={index + 1}
+								slug={slug}
 							/>
 						))}
 					</div>

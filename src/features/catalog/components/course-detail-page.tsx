@@ -109,6 +109,7 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 							description={course.description}
 							areaName={areaName}
 							details={detailsQuery.data}
+							slug={slug}
 						/>
 					);
 				})()

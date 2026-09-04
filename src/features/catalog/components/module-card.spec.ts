@@ -34,24 +34,55 @@ const module1: CourseModule = {
 
 test('renders the module title and the "Módulo 0N · X aulas" eyebrow', () => {
 	const html = renderToStaticMarkup(
-		createElement(ModuleCard, { module: module1, position: 1 }),
+		createElement(ModuleCard, {
+			module: module1,
+			position: 1,
+			slug: 'escola-de-lideres',
+		}),
 	);
 
 	assert.match(html, /Chamado e caráter/);
 	assert.match(html, /Módulo 01 · 2 aulas/);
 });
 
-test('is not a link', () => {
+test('links to its first lesson when it has lessons', () => {
 	const html = renderToStaticMarkup(
-		createElement(ModuleCard, { module: module1, position: 1 }),
+		createElement(ModuleCard, {
+			module: module1,
+			position: 1,
+			slug: 'escola-de-lideres',
+		}),
+	);
+
+	assert.match(
+		html,
+		/<a[^>]*href="\/courses\/escola-de-lideres\/lessons\/l1"/,
+	);
+});
+
+test('is not a link when the module has no lessons', () => {
+	const emptyModule: CourseModule = { ...module1, lessons: [] };
+	const html = renderToStaticMarkup(
+		createElement(ModuleCard, {
+			module: emptyModule,
+			position: 1,
+			slug: 'escola-de-lideres',
+		}),
 	);
 	assert.doesNotMatch(html, /<a /);
 });
 
 test('uses the singular "aula" for a module with exactly one lesson', () => {
-	const singleLessonModule: CourseModule = { ...module1, lessons: [module1.lessons[0]!] };
+	const singleLessonModule: CourseModule = {
+		...module1,
+		lessons: [module1.lessons[0]!],
+	};
 	const html = renderToStaticMarkup(
-		createElement(ModuleCard, { module: singleLessonModule, position: 1 }),
+		createElement(ModuleCard, {
+			module: singleLessonModule,
+			position: 1,
+			slug: 'escola-de-lideres',
+		}),
 	);
 	assert.match(html, /Módulo 01 · 1 aula(?!s)/);
 });
