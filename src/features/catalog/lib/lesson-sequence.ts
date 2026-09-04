@@ -1,0 +1,55 @@
+import type {
+	CourseDetails,
+	CourseModule,
+	Lesson,
+} from '@/features/catalog/model/course-details';
+
+type LessonLocation = {
+	module: CourseModule;
+	modulePosition: number;
+	lesson: Lesson;
+	lessonPosition: number;
+};
+
+function findLessonById(
+	details: CourseDetails,
+	lessonId: string,
+): LessonLocation | undefined {
+	for (let index = 0; index < details.modules.length; index += 1) {
+		const courseModule = details.modules[index]!;
+		const lessonIndex = courseModule.lessons.findIndex(
+			(lesson) => lesson.id === lessonId,
+		);
+
+		if (lessonIndex !== -1) {
+			return {
+				module: courseModule,
+				modulePosition: index + 1,
+				lesson: courseModule.lessons[lessonIndex]!,
+				lessonPosition: lessonIndex + 1,
+			};
+		}
+	}
+
+	return undefined;
+}
+
+function flattenLessons(details: CourseDetails): Lesson[] {
+	return details.modules.flatMap((module) => module.lessons);
+}
+
+function findNextLessonId(
+	details: CourseDetails,
+	currentLessonId: string,
+): string | undefined {
+	const flat = flattenLessons(details);
+	const index = flat.findIndex((lesson) => lesson.id === currentLessonId);
+
+	if (index === -1 || index === flat.length - 1) {
+		return undefined;
+	}
+
+	return flat[index + 1]!.id;
+}
+
+export { findLessonById, findNextLessonId };
