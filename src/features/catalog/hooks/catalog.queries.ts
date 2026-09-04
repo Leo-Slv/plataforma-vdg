@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQueries, useQuery } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/constants/query-keys';
 import { getCourseCatalog } from '@/features/catalog/api/get-course-catalog';
@@ -42,9 +42,37 @@ function useRegisterLessonProgressMutation() {
 	});
 }
 
+function useOwnedCourseDetailsQueries(
+	courseIds: string[],
+	options: { enabled: boolean },
+) {
+	return useQueries({
+		queries: courseIds.map((courseId) => ({
+			queryKey: queryKeys.catalog.detail(courseId),
+			queryFn: () => getCourseDetails(courseId),
+			enabled: options.enabled,
+		})),
+	});
+}
+
+function useOwnedCourseProgressQueries(
+	courseIds: string[],
+	options: { enabled: boolean },
+) {
+	return useQueries({
+		queries: courseIds.map((courseId) => ({
+			queryKey: queryKeys.progress.course(courseId),
+			queryFn: () => getCourseProgress(courseId),
+			enabled: options.enabled,
+		})),
+	});
+}
+
 export {
 	useCourseCatalogQuery,
 	useCourseDetailsQuery,
 	useCourseProgressQuery,
 	useRegisterLessonProgressMutation,
+	useOwnedCourseDetailsQueries,
+	useOwnedCourseProgressQueries,
 };
