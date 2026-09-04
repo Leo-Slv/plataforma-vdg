@@ -24,11 +24,14 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
   `/login`, and `/confirm-email` (resend/change-email etc. can join
   later); see `Docs/specs/auth/register.md`, `Docs/specs/auth/login.md`,
   and `Docs/specs/auth/confirm-email.md`.
-- `catalog/` — maps to the backend's Courses module. Currently `/catalog`
-  (the first feature with a real `useQuery`, not just mutations) and
-  `/courses/[slug]` (the first dynamic route); see
-  `Docs/specs/catalog/course-catalog.md` and
-  `Docs/specs/catalog/course-detail.md`.
+- `catalog/` — maps to the backend's Courses (+ Progress) modules.
+  Currently `/catalog` (the first feature with a real `useQuery`, not
+  just mutations), `/courses/[slug]` (the first dynamic route), and
+  `/courses/[slug]/lessons/[lessonId]` (the first two-segment dynamic
+  route, and the first mutation that invalidates a query on success);
+  see `Docs/specs/catalog/course-catalog.md`,
+  `Docs/specs/catalog/course-detail.md`, and
+  `Docs/specs/catalog/lesson-player.md`.
 
 `src/components/app-nav.tsx` is the shared top nav for every
 authenticated (non-auth-flow) page — first used by `catalog/`, reused

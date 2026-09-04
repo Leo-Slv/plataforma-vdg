@@ -51,8 +51,15 @@ public/
   projeto. Sem acesso ao curso, `GET /api/courses/{id}` nem chega a ser
   chamado (retornaria 403 pra requisição inteira) — a tela usa só o que
   o catálogo já sabe. Com acesso, mostra descrição, contagem real de
-  módulos/aulas e a lista de módulos. Spec em
-  `Docs/specs/catalog/course-detail.md`.
+  módulos/aulas e a lista de módulos, cada um linkando pra sua primeira
+  aula. Spec em `Docs/specs/catalog/course-detail.md`.
+- **Player de aula** (`/courses/[slug]/lessons/[lessonId]`) — mostra
+  título/descrição da aula, progresso real do curso
+  (`GET /api/progress/courses/{id}`) e um botão "Marcar aula como
+  assistida" que chama `POST /api/progress/lessons` de verdade. Sem
+  acesso ao curso, redireciona pra `/courses/[slug]`. O player de vídeo
+  em si é um placeholder inerte — nenhuma rota do backend resolve o
+  vídeo de uma aula ainda. Spec em `Docs/specs/catalog/lesson-player.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
