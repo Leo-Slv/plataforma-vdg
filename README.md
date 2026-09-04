@@ -60,6 +60,13 @@ public/
   acesso ao curso, redireciona pra `/courses/[slug]`. O player de vídeo
   em si é um placeholder inerte — nenhuma rota do backend resolve o
   vídeo de uma aula ainda. Spec em `Docs/specs/catalog/lesson-player.md`.
+- **Meus cursos** (`/my-courses`) — dashboard com os cursos que a conta
+  já possui: um card "continue de onde parou" para o curso em andamento
+  assistido mais recentemente, e a grade completa com contagem real de
+  aulas e percentual real por curso. Montada a partir de três chamadas
+  já usadas por outras telas (catálogo filtrado + detalhes/progresso por
+  curso possuído) — nenhum endpoint novo. Sem duração ou certificado em
+  lugar nenhum. Spec em `Docs/specs/catalog/my-courses.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.

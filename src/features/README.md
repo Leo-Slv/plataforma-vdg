@@ -26,17 +26,21 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
   and `Docs/specs/auth/confirm-email.md`.
 - `catalog/` — maps to the backend's Courses (+ Progress) modules.
   Currently `/catalog` (the first feature with a real `useQuery`, not
-  just mutations), `/courses/[slug]` (the first dynamic route), and
+  just mutations), `/courses/[slug]` (the first dynamic route),
   `/courses/[slug]/lessons/[lessonId]` (the first two-segment dynamic
-  route, and the first mutation that invalidates a query on success);
-  see `Docs/specs/catalog/course-catalog.md`,
-  `Docs/specs/catalog/course-detail.md`, and
-  `Docs/specs/catalog/lesson-player.md`.
+  route, and the first mutation that invalidates a query on success),
+  and `/my-courses` (the first use of `useQueries` — a dynamic array of
+  queries sized by a previous response, N+1 requests for N owned
+  courses); see `Docs/specs/catalog/course-catalog.md`,
+  `Docs/specs/catalog/course-detail.md`,
+  `Docs/specs/catalog/lesson-player.md`, and
+  `Docs/specs/catalog/my-courses.md`.
 
 `src/components/app-nav.tsx` is the shared top nav for every
 authenticated (non-auth-flow) page — first used by `catalog/`, reused
-as-is by `catalog/`'s own course-detail page rather than each feature
-growing its own copy.
+as-is by every other page in this feature rather than each one growing
+its own copy. It's state-aware (`active: 'catalog' | 'my-courses'`)
+since `/my-courses` joined `/catalog` as a real nav destination.
 
 Each new feature is added following the workflow in the root `CLAUDE.md`
 (spec → resolve open decisions → implementation plan → implement → tests →
