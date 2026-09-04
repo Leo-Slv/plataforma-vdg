@@ -38,13 +38,13 @@ function ConfirmEmailPage() {
 	}
 
 	if (gate.status !== 'ready') {
-		return <div className="min-h-full bg-[#0a0a0b]" />;
+		return <div className="min-h-screen bg-[#0a0a0b]" />;
 	}
 
 	const { email } = gate;
 
 	return (
-		<div className="flex min-h-full items-center justify-center bg-[#0a0a0b] px-5 py-11 text-[#f2f2f0] sm:px-6">
+		<div className="flex min-h-screen items-center justify-center bg-[#0a0a0b] px-5 py-11 text-[#f2f2f0] sm:px-6">
 			<div className="w-full max-w-[520px] px-6 pt-9 pb-8 sm:px-0">
 				<div className="flex size-14 items-center justify-center rounded-full border border-[oklch(0.5_0.08_248)] font-heading text-[22px] font-extralight text-[oklch(0.75_0.1_248)]">
 					✉

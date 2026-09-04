@@ -54,14 +54,14 @@ function CatalogPage() {
 	}, [query.isError, query.error, router]);
 
 	if (gate.status !== 'ready') {
-		return <div className="min-h-full bg-[#0a0a0b]" />;
+		return <div className="min-h-screen bg-[#0a0a0b]" />;
 	}
 
 	const displayName = getDisplayName(gate.userName);
 	const initials = getInitials(gate.userName);
 
 	return (
-		<div className="min-h-full bg-[#0a0a0b] text-[#f2f2f0]">
+		<div className="min-h-screen bg-[#0a0a0b] text-[#f2f2f0]">
 			<CatalogNav displayName={displayName} initials={initials} />
 
 			{query.isPending ? (

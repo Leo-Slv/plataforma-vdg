@@ -6,7 +6,7 @@ import { LoginForm } from '@/features/auth/components/login-form';
 
 function LoginPage() {
 	return (
-		<div className="flex min-h-full items-center justify-center bg-[#0a0a0b] px-5 py-11 text-[#f2f2f0] sm:px-6">
+		<div className="flex min-h-screen items-center justify-center bg-[#0a0a0b] px-5 py-11 text-[#f2f2f0] sm:px-6">
 			<div className="w-full max-w-[520px] px-6 pt-9 pb-8 sm:px-0">
 				<Image
 					src="/brand/viver-da-graca-mark.png"
