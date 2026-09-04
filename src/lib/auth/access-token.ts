@@ -1,5 +1,6 @@
 const ACCESS_TOKEN_STORAGE_KEY = 'coursecore.auth.access-token';
 const USER_EMAIL_STORAGE_KEY = 'coursecore.auth.user-email';
+const USER_NAME_STORAGE_KEY = 'coursecore.auth.user-name';
 
 function canUseWebStorage() {
 	return (
@@ -41,6 +42,23 @@ function setUserEmail(email: string) {
 	window.localStorage.setItem(USER_EMAIL_STORAGE_KEY, email);
 }
 
+function getUserName() {
+	if (!canUseWebStorage()) {
+		return null;
+	}
+
+	const value = window.localStorage.getItem(USER_NAME_STORAGE_KEY);
+	return value && value.length > 0 ? value : null;
+}
+
+function setUserName(name: string) {
+	if (!canUseWebStorage()) {
+		return;
+	}
+
+	window.localStorage.setItem(USER_NAME_STORAGE_KEY, name);
+}
+
 function clearAccessToken() {
 	if (!canUseWebStorage()) {
 		return;
@@ -48,6 +66,7 @@ function clearAccessToken() {
 
 	window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
 	window.localStorage.removeItem(USER_EMAIL_STORAGE_KEY);
+	window.localStorage.removeItem(USER_NAME_STORAGE_KEY);
 }
 
 export {
@@ -56,4 +75,6 @@ export {
 	setAccessToken,
 	getUserEmail,
 	setUserEmail,
+	getUserName,
+	setUserName,
 };

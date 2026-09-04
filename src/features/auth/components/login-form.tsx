@@ -8,7 +8,11 @@ import Link from 'next/link';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { isApiError } from '@/lib/http/api-error';
-import { setAccessToken, setUserEmail } from '@/lib/auth/access-token';
+import {
+	setAccessToken,
+	setUserEmail,
+	setUserName,
+} from '@/lib/auth/access-token';
 import {
 	loginFormSchema,
 	type LoginFormValues,
@@ -39,6 +43,7 @@ function LoginForm() {
 			onSuccess: (data) => {
 				setAccessToken(data.token.accessToken);
 				setUserEmail(data.email);
+				setUserName(data.name);
 				router.push(appRoutes.catalog.index);
 			},
 			onError: (error) => {

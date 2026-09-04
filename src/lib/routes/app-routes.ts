@@ -12,6 +12,9 @@ const appRoutes = {
 	catalog: {
 		index: '/catalog',
 	},
+	courses: {
+		detail: (slug: string) => `/courses/${slug}`,
+	},
 } as const;
 
 export { appRoutes };
