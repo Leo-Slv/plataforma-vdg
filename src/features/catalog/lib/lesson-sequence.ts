@@ -3,6 +3,7 @@ import type {
 	CourseModule,
 	Lesson,
 } from '@/features/catalog/model/course-details';
+import type { CourseProgress } from '@/features/catalog/model/course-progress';
 
 type LessonLocation = {
 	module: CourseModule;
@@ -52,4 +53,20 @@ function findNextLessonId(
 	return flat[index + 1]!.id;
 }
 
-export { findLessonById, findNextLessonId };
+function findCurrentLesson(
+	details: CourseDetails,
+	progress: CourseProgress,
+): LessonLocation | undefined {
+	const completedIds = new Set(
+		progress.lessons
+			.filter((entry) => entry.completed)
+			.map((entry) => entry.lessonId),
+	);
+	const flat = flattenLessons(details);
+	const current = flat.find((lesson) => !completedIds.has(lesson.id));
+
+	return current ? findLessonById(details, current.id) : undefined;
+}
+
+export { findLessonById, findNextLessonId, findCurrentLesson };
+export type { LessonLocation };

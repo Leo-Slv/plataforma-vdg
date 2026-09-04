@@ -1,8 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { findLessonById, findNextLessonId } from '@/features/catalog/lib/lesson-sequence';
+import {
+	findLessonById,
+	findNextLessonId,
+	findCurrentLesson,
+} from '@/features/catalog/lib/lesson-sequence';
 import type { CourseDetails } from '@/features/catalog/model/course-details';
+import type { CourseProgress } from '@/features/catalog/model/course-progress';
 
 function lesson(id: string, displayOrder: number) {
 	return {
@@ -77,4 +82,30 @@ test('findNextLessonId returns undefined for the course\'s last lesson', () => {
 
 test('findNextLessonId returns undefined for an unknown current lessonId', () => {
 	assert.equal(findNextLessonId(details, 'unknown'), undefined);
+});
+
+function progressWith(...completedLessonIds: string[]): CourseProgress {
+	return {
+		progressPercent: 0,
+		lessons: completedLessonIds.map((lessonId) => ({
+			lessonId,
+			completed: true,
+			lastWatchedAt: '2026-09-04T10:00:00Z',
+		})),
+	};
+}
+
+test('findCurrentLesson returns the first lesson when nothing is completed', () => {
+	const result = findCurrentLesson(details, progressWith());
+	assert.equal(result?.lesson.id, 'l1');
+});
+
+test('findCurrentLesson returns the next lesson after completed ones', () => {
+	const result = findCurrentLesson(details, progressWith('l1', 'l2'));
+	assert.equal(result?.lesson.id, 'l3');
+});
+
+test('findCurrentLesson returns undefined when every lesson is completed', () => {
+	const result = findCurrentLesson(details, progressWith('l1', 'l2', 'l3'));
+	assert.equal(result, undefined);
 });
