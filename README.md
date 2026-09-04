@@ -38,6 +38,10 @@ public/
 - **Login** (`/login`) — formulário de acesso (e-mail, senha), chama
   `POST /api/auth/login` e redireciona para `/catalog` (rota stub) no
   sucesso. Spec em `Docs/specs/auth/login.md`.
+- **Confirmação de e-mail** (`/confirm-email`) — primeira página com gate de
+  autenticação real (redireciona pra `/login` sem token salvo); permite
+  colar o código recebido por e-mail, reenviar ou (stub) trocar o e-mail.
+  Spec em `Docs/specs/auth/confirm-email.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.

@@ -20,9 +20,10 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
 - `landing/` — the public `/` page. Static content only (no `api/`, `hooks/`,
   or `schemas/` — it makes no CourseCore calls); see
   `Docs/specs/landing/landing-page.md`.
-- `auth/` — maps to the backend's Auth module. Currently `/register` and
-  `/login` (confirm-email etc. can join later); see
-  `Docs/specs/auth/register.md` and `Docs/specs/auth/login.md`.
+- `auth/` — maps to the backend's Auth module. Currently `/register`,
+  `/login`, and `/confirm-email` (resend/change-email etc. can join
+  later); see `Docs/specs/auth/register.md`, `Docs/specs/auth/login.md`,
+  and `Docs/specs/auth/confirm-email.md`.
 
 Each new feature is added following the workflow in the root `CLAUDE.md`
 (spec → resolve open decisions → implementation plan → implement → tests →
