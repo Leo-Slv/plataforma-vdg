@@ -9,6 +9,9 @@ const queryKeys = {
 		list: ['catalog', 'list'] as const,
 		detail: (courseId: string) => ['catalog', 'detail', courseId] as const,
 	},
+	progress: {
+		course: (courseId: string) => ['progress', 'course', courseId] as const,
+	},
 } as const;
 
 export { queryKeys };
