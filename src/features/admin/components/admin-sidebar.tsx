@@ -3,18 +3,19 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 type AdminSidebarProps = {
-	active: 'areas';
+	active: 'areas' | 'courses';
+	areasSummary?: { name: string; courseCount: number }[];
 };
 
 const NAV_ITEMS = [
-	'Cursos',
-	'Áreas',
-	'Usuários',
-	'Vídeos',
-	'Auditoria',
+	{ label: 'Cursos', key: 'courses' },
+	{ label: 'Áreas', key: 'areas' },
+	{ label: 'Usuários', key: 'users' },
+	{ label: 'Vídeos', key: 'videos' },
+	{ label: 'Auditoria', key: 'audit' },
 ] as const;
 
-function AdminSidebar({ active }: AdminSidebarProps) {
+function AdminSidebar({ active, areasSummary }: AdminSidebarProps) {
 	return (
 		<div className="border-r border-white/8 p-5">
 			<div className="flex items-center gap-2.75 border-b border-white/8 pb-6">
@@ -33,21 +34,34 @@ function AdminSidebar({ active }: AdminSidebarProps) {
 			</div>
 
 			<nav className="mt-5.5 flex flex-col gap-0.75 font-sans text-[13px]">
-				{NAV_ITEMS.map((item) => {
-					const isActive = active === 'areas' && item === 'Áreas';
-					return (
-						<span
-							key={item}
-							className={cn(
-								'rounded-md px-3.25 py-2.75',
-								isActive ? 'bg-white/7' : 'text-white/50',
-							)}
-						>
-							{item}
-						</span>
-					);
-				})}
+				{NAV_ITEMS.map((item) => (
+					<span
+						key={item.key}
+						className={cn(
+							'rounded-md px-3.25 py-2.75',
+							active === item.key ? 'bg-white/7' : 'text-white/50',
+						)}
+					>
+						{item.label}
+					</span>
+				))}
 			</nav>
+
+			{areasSummary && areasSummary.length > 0 ? (
+				<div className="mt-7 border-t border-white/8 pt-5">
+					<span className="font-heading text-[10px] tracking-[0.16em] text-white/35 uppercase">
+						Áreas ativas
+					</span>
+					<div className="mt-4 flex flex-col gap-3 font-sans text-[12.5px] text-white/55">
+						{areasSummary.map((area) => (
+							<div key={area.name} className="flex justify-between">
+								<span>{area.name}</span>
+								<span className="text-white/30">{area.courseCount}</span>
+							</div>
+						))}
+					</div>
+				</div>
+			) : null}
 		</div>
 	);
 }
