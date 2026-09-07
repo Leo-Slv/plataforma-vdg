@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
+import { appRoutes } from '@/lib/routes/app-routes';
 import { AreasTable } from '@/features/admin/components/areas-table';
 import type { Area } from '@/features/admin/model/area';
 
@@ -50,6 +51,16 @@ test('renders the course count and slug for each area', () => {
 	);
 	assert.match(html, /\/discipulado/);
 	assert.match(html, />7</);
+});
+
+test('links each row to the area edit route', () => {
+	const html = renderToStaticMarkup(
+		createElement(AreasTable, { areas: [buildArea({ id: 'area-42' })] }),
+	);
+	assert.match(
+		html,
+		new RegExp(`href="${appRoutes.admin.areaEdit('area-42')}"`),
+	);
 });
 
 test('renders "Ativa" for an active area and "Inativa" for an inactive one', () => {

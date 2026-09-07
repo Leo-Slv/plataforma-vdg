@@ -1,4 +1,7 @@
+import Link from 'next/link';
+
 import { cn } from '@/lib/utils';
+import { appRoutes } from '@/lib/routes/app-routes';
 import { sortAreasByDisplayOrder } from '@/features/admin/lib/sort-areas';
 import type { Area } from '@/features/admin/model/area';
 
@@ -35,10 +38,11 @@ function AreasTable({ areas }: AreasTableProps) {
 			</div>
 
 			{sorted.map((area) => (
-				<div
+				<Link
 					key={area.id}
+					href={appRoutes.admin.areaEdit(area.id)}
 					className={cn(
-						'grid items-center gap-4 border-b border-white/7 py-4.5 font-sans text-[13.5px] text-white/75',
+						'grid items-center gap-4 border-b border-white/7 py-4.5 font-sans text-[13.5px] text-white/75 hover:bg-white/3',
 						COLUMNS,
 					)}
 				>
@@ -64,7 +68,7 @@ function AreasTable({ areas }: AreasTableProps) {
 						/>
 						{area.active ? 'Ativa' : 'Inativa'}
 					</span>
-				</div>
+				</Link>
 			))}
 		</div>
 	);
