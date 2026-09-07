@@ -6,7 +6,18 @@ cursos e áreas", "Cursos" section) and chose to skip it for now rather
 than ship it with a foot-gun at its center. Revisit once the two
 blocking gaps below are closed on the CourseCore side.
 
-## 1. No endpoint lists all courses (published + draft) — BLOCKING
+**Update 2026-09-07**: both blocking gaps below (pendencies 1 and 2)
+appear closed in the current CourseCore snapshot —
+`GET /api/courses` (`ListAllCoursesUseCase`) and `GET /api/audit-logs`
+(`AuditLogsController`) now exist, and pendency 3's `Unpublish` is wired
+too. The evidence sections below are left as originally written for
+history; the skip decision itself should be re-evaluated (and this
+screen specced) rather than trusted as still accurate. This file was
+not otherwise rewritten as part of documenting the new artboards `1l`
+through `1r` (see [`README.md`](../README.md)) — that work is a
+separate, larger decision than logging new pendencies.
+
+## 1. No endpoint lists all courses (published + draft) — CLOSED (was BLOCKING)
 
 - **Mockup expects**: an admin course table showing every course
   regardless of status, including drafts ("Rascunho" — the "C.D.F 2026"
@@ -34,7 +45,7 @@ blocking gaps below are closed on the CourseCore side.
   rather than document it as an accepted quirk.
 - **Severity**: Blocking.
 
-## 2. No audit-log read endpoint — BLOCKING
+## 2. No audit-log read endpoint — CLOSED (was BLOCKING)
 
 - **Mockup expects**: "Últimas ações auditadas" panel listing recent
   admin actions with relative timestamps.
@@ -57,7 +68,7 @@ blocking gaps below are closed on the CourseCore side.
   screen doesn't depend on it, but there's no partial version of an
   audit trail worth shipping.
 
-## 3. No unpublish endpoint
+## 3. No unpublish endpoint — CLOSED
 
 - Not shown directly in the mockup, but a real course-management screen
   would need it once courses can be listed at all.

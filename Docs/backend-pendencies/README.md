@@ -32,17 +32,20 @@ require, the workaround shipped instead, and a rough severity:
 
 ## Skipped screens
 
-Two mockup screens were evaluated and deliberately not built — the
-backend gap was severe enough that shipping them would have meant
-either fabricating data across the board or a workflow that silently
-loses admin work. No spec exists for either; each is documented as a
-pendency only, to revisit once its blocking gap closes on the
-CourseCore side.
+Mockup screens evaluated and not (yet) built because the backend gap was
+severe enough that shipping them would have meant either fabricating data
+across the board or a workflow that silently loses admin work. No spec
+exists for any of these; each is documented as a pendency only, to
+revisit once its blocking gap(s) close on the CourseCore side.
 
 | Screen | File | Why skipped |
 |---|---|---|
 | Checkout — Pix/cartão (`1i`) | [catalog/course-detail.md](catalog/course-detail.md) (pendency 6 update) | No payment/checkout endpoint at all — explicit backend non-goal, not just a missing field. |
-| Painel admin — Cursos (`1k`) | [admin/courses-panel.md](admin/courses-panel.md) | No endpoint lists draft courses (a draft would become unreachable after leaving the screen) and no audit-log read endpoint. |
+| Painel admin — Cursos (`1k`) | [admin/courses-panel.md](admin/courses-panel.md) | Originally: no endpoint lists draft courses, no audit-log read endpoint. **Both appear resolved as of the 2026-09-07 backend snapshot** — `GET /api/courses` (`ListAllCoursesUseCase`) and `GET /api/audit-logs` (`AuditLogsController`) now exist; `Unpublish` and `PriceAmount` are also wired. The skip decision should be revisited before this screen is picked up again. |
+| Áreas — lista / criar-editar (`1l`, `1m`) | [admin/areas-crud.md](admin/areas-crud.md) | Not blocking outright, but no course count/list per area, no accent-color field, no delete endpoint. |
+| Curso — criar/editar (`1n`) | [admin/course-crud.md](admin/course-crud.md) | No "por inscrição" pricing model, no certificate opt-in, no cover-image upload, no delete endpoint; content management (see next row) has nothing to link to. |
+| Curso → Módulos e aulas / Aula — criar/editar (`1o`, `1p`) | [admin/course-modules-lessons.md](admin/course-modules-lessons.md) | No endpoint to add, edit, reorder, or remove modules/lessons on a course that already exists — content is frozen at course creation. |
+| Usuários — lista / editar acesso (`1q`, `1r`) | [admin/users-panel.md](admin/users-panel.md) | No role data anywhere in the users API, and no way to read or revoke a user's area/course grants — an admin can currently only write access blind. |
 
 New screens get their own file here as part of the standard spec workflow
 (see `CLAUDE.md`, "Implementation Workflow") — add a row above when one is
