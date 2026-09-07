@@ -2,7 +2,7 @@
 
 Spec: [`Docs/specs/auth/login.md`](../../specs/auth/login.md)
 
-## 1. No forgot-password / password-recovery endpoint
+## 1. No forgot-password / password-recovery endpoint — CLOSED
 
 - **Mockup expects**: an "Esqueci minha senha" link leading to a real
   recovery flow (the reference project this repo is adapted from has one,
@@ -19,8 +19,18 @@ Spec: [`Docs/specs/auth/login.md`](../../specs/auth/login.md)
 - **Severity**: Feature gap — no partial version of this is possible until
   the backend adds it; revisit only if it gets specced on the CourseCore
   side first.
+- **Resolved, 2026-09-07**: `POST /api/auth/forgot-password` (request a
+  reset — always 204 regardless of whether the email exists, to avoid
+  account enumeration; captcha-protected and rate-limited like Register)
+  and `POST /api/auth/reset-password` (accept token + new password). New
+  `PasswordResetToken` concept, a structural mirror of the existing,
+  working `EmailVerificationToken` flow (same hash/expiry/consume
+  lifecycle, 1-hour expiry). On success: password changed, `TokenVersion`
+  incremented and all refresh tokens revoked (same session-invalidation
+  mechanism `UpdateUserUseCase` already uses for other security-relevant
+  account changes) — a successful reset logs every other session out.
 
-## 2. "Remember me" has no backend concept
+## 2. "Remember me" has no backend concept — CLOSED
 
 - **Mockup expects**: a "Continuar conectado neste aparelho" checkbox that
   extends how long the session lasts.
@@ -36,3 +46,14 @@ Spec: [`Docs/specs/auth/login.md`](../../specs/auth/login.md)
 - **Severity**: Cosmetic — low priority; decorative parity with the
   reference project was already an accepted outcome, not treated as a gap
   to fill.
+- **Resolved, 2026-09-07**: `LoginRequest.RememberMe` (default `true` —
+  preserves today's behavior for any caller that doesn't send it yet) now
+  controls the refresh-token cookie's lifetime in
+  `RefreshTokenCookieService`. `true` keeps the existing persistent cookie
+  (`MaxAgeDays`, 7 days by default); `false` omits `MaxAge` entirely,
+  producing a real session cookie the browser discards on close. Register
+  and refresh-token responses are unaffected — they keep issuing the
+  persistent cookie unconditionally, since neither has a "remember me"
+  concept in the mockups. The refresh token's own server-side expiry
+  (`RefreshTokenExpirationDays`) is unchanged either way — this only
+  changes how long the *browser* holds onto the cookie.

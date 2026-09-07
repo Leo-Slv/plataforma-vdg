@@ -6,16 +6,11 @@ cursos e áreas", "Cursos" section) and chose to skip it for now rather
 than ship it with a foot-gun at its center. Revisit once the two
 blocking gaps below are closed on the CourseCore side.
 
-**Update 2026-09-07**: both blocking gaps below (pendencies 1 and 2)
-appear closed in the current CourseCore snapshot —
-`GET /api/courses` (`ListAllCoursesUseCase`) and `GET /api/audit-logs`
-(`AuditLogsController`) now exist, and pendency 3's `Unpublish` is wired
-too. The evidence sections below are left as originally written for
-history; the skip decision itself should be re-evaluated (and this
-screen specced) rather than trusted as still accurate. This file was
-not otherwise rewritten as part of documenting the new artboards `1l`
-through `1r` (see [`README.md`](../README.md)) — that work is a
-separate, larger decision than logging new pendencies.
+**Update, 2026-09-07: all three backend gaps below are closed.** The
+admin screen itself remains unbuilt — no spec was ever written for it,
+and writing one is frontend work out of scope for this backend repo —
+but neither of the two reasons it was originally skipped applies
+anymore.
 
 ## 1. No endpoint lists all courses (published + draft) — CLOSED (was BLOCKING)
 
@@ -44,6 +39,10 @@ separate, larger decision than logging new pendencies.
   workflow break, not a cosmetic gap, so this plan chose not to ship it
   rather than document it as an accepted quirk.
 - **Severity**: Blocking.
+- **Resolved, 2026-09-07**: `GET /api/courses` (new `ListAllCoursesUseCase`,
+  calling the already-existing `ICourseRepository.ListAsync()`),
+  `ManageCourses` policy — exactly what "What's needed" already
+  specified. Returns every course regardless of `Published` status.
 
 ## 2. No audit-log read endpoint — CLOSED (was BLOCKING)
 
@@ -67,6 +66,16 @@ separate, larger decision than logging new pendencies.
 - **Severity**: Blocking for this specific panel — the rest of the
   screen doesn't depend on it, but there's no partial version of an
   audit trail worth shipping.
+- **Resolved, 2026-09-07**: `GET /api/audit-logs?page=&pageSize=`,
+  paginated (mirrors `Modules/Users/`'s existing `PagedResult`/
+  `PagedResponse` pattern exactly), newest-first, each entry exposing
+  `Action, EntityName, EntityId, UserId, Metadata (parsed from the
+  already-stored MetadataJson), CreatedAt`. Gated by a **new**
+  `AuthPolicyNames.ReadAudit` policy wired to `AuthPermissionNames.ReadAudit` —
+  that permission constant already existed in the codebase (even
+  already seeded as a real `Permission` row in the integration test
+  factory) but was never attached to a policy or a controller before
+  this; this closes that gap too.
 
 ## 3. No unpublish endpoint — CLOSED
 
@@ -76,13 +85,18 @@ separate, larger decision than logging new pendencies.
   no UseCase or Controller ever calls it — the same "exists, not wired"
   pattern as pendency 1.
 - **Severity**: Feature gap.
+- **Resolved, 2026-09-07**: `POST /api/courses/{courseId:guid}/unpublish`
+  (new `UnpublishCourseUseCase`, structural mirror of the existing
+  `PublishCourseUseCase`), same `ManageCourses` policy, records a new
+  `AuditLogActionNames.CourseUnpublished`.
 
 ## What's already real (for when this screen gets picked back up)
 
 - `POST /api/courses` (create), `PUT /api/courses/{id}` (update),
-  `POST /api/courses/{id}/publish` (publish) — all real, `ManageCourses`
-  policy. Already used successfully in this repo's own admin seeding
-  work via curl.
+  `POST /api/courses/{id}/publish` (publish), `POST /api/courses/{id}/unpublish`
+  (unpublish), `GET /api/courses` (admin list, all statuses) — all real,
+  `ManageCourses` policy.
+- `GET /api/audit-logs` (paginated, newest-first) — `ReadAudit` policy.
 - Areas: full CRUD via `AreaManagementController` (`POST`/`PUT`/`GET
   /api/areas`), `ManageAreas` policy.
 - Access grants: `POST /api/access/user-area`,
@@ -92,12 +106,11 @@ separate, larger decision than logging new pendencies.
 - Users: full CRUD via `UsersController` (`ManageUsers` policy) — not
   drawn in this mockup artboard, but real if a "Usuários" screen gets
   specced later.
-- Still no price amount anywhere (`PricingModel` is `Free`/`Paid` only)
-  — same standing gap as every catalog-adjacent screen; the mockup's
-  "Cobrança" column ("R$ 149", "R$ 89", "R$ 199") would need this too.
+- Real price amount now exists (`Course.PriceAmount`, see
+  `Docs/backend-pendencies/catalog/course-catalog.md` pendency 3) — the
+  mockup's "Cobrança" column ("R$ 149", "R$ 89", "R$ 199") has real data
+  behind it now, no longer a standing gap.
 
-Given how much has to be added on the backend side before this screen
-can be built honestly — an admin course-listing endpoint, an audit-log
-read endpoint, ideally unpublish — this is a bigger ask than any other
-pendency documented so far: closer to "spec a small new read surface"
-than "add a field."
+Every backend gap that blocked this screen is closed. Building the
+admin "Cursos" screen itself is now unblocked whenever it gets a spec —
+that's frontend work, not tracked further here.

@@ -5,7 +5,7 @@ No spec was written for these screens yet — same status as
 ("Usuários — lista") and `1r` ("Usuário — editar acesso"), added under the
 new "Painel admin — CRUDs de entidades" mockup group.
 
-## 1. No role data anywhere in the users list or user record — BLOCKING for the "Papel" column/field
+## 1. No role data anywhere in the users list or user record — CLOSED (was BLOCKING)
 
 - **Mockup expects**: a "Papel" column in the users list (`1q`, values
   "Aluna"/"Admin") and a "Papel" dropdown on the user edit screen (`1r`).
@@ -27,8 +27,17 @@ new "Painel admin — CRUDs de entidades" mockup group.
 - **Severity**: Blocking for this specific column/field — it's the
   identity of the row shown at a glance in the mockup's table, not a
   secondary detail.
+- **Resolved (2026-09-07)**: added `GET /api/users/{id}` (a detail route
+  that didn't exist before at all) and `RoleNames` on both it and
+  `GET /api/users` (list — batch-fetched per page to avoid N+1), plus
+  `POST /api/users/{id}/roles/{roleId}` and
+  `DELETE /api/users/{id}/roles/{roleId}` to assign/unassign, all behind
+  the existing `ManageUsers` policy. `IRoleRepository` gained
+  `FindRoleNamesByUserIdsAsync`/`AssignToUserAsync`/`RemoveFromUserAsync`
+  — the assignment table (`UserRolePersistenceModel`) already existed,
+  it was just never wired to a write path.
 
-## 2. No way to read (or revoke) a user's area grants — BLOCKING for "Áreas liberadas"
+## 2. No way to read (or revoke) a user's area grants — CLOSED (was BLOCKING)
 
 - **Mockup expects**: a "Áreas liberadas" column in the list (tag chips per
   user) and, on the edit screen, a per-area on/off toggle grid the admin
@@ -49,8 +58,15 @@ new "Painel admin — CRUDs de entidades" mockup group.
 - **Severity**: Blocking for this part of the screen — same shape of gap
   as pendency 1: the admin can currently write grants blind (no way to see
   what's already there) and can't undo them at all through the API.
+- **Resolved (2026-09-07)**: added `GET /api/access/user-area/{userId}`
+  and `DELETE /api/access/user-area/{userId}/{areaId}`, both behind the
+  existing `ManageUserAreaAccess` policy (same as the grant route already
+  on this controller). Revoke reuses the already-existing
+  `UserAreaAccess.Revoke()` domain method (soft-revoke — sets both
+  `CanView`/`CanManage` to false, keeps the row for history) — it just
+  had never been called from anywhere before this.
 
-## 3. No aggregate user counts ("312 cadastrados · 298 confirmados")
+## 3. No aggregate user counts ("312 cadastrados · 298 confirmados") — CLOSED
 
 - **Mockup expects**: a header subtitle on the users list with total
   registered and total confirmed counts.
@@ -65,8 +81,14 @@ new "Painel admin — CRUDs de entidades" mockup group.
   breakdown to a stats-shaped response.
 - **Severity**: Cosmetic — the table itself would work; only the summary
   line would be wrong or unbuildable as drawn.
+- **Resolved (2026-09-07)**: `GET /api/users` now returns
+  `{ page: PagedResponse<UserResponse>, totalRegistered, totalConfirmed }`
+  — `UserListResponse` wraps the existing `PagedResponse<T>` rather than
+  extending it (that generic type is shared with `AuditLogs`; adding
+  Users-only fields there would've leaked across modules). Both counts
+  are unfiltered (whole table), even when `search` narrows the page.
 
-## 4. No search/filter on the users list
+## 4. No search/filter on the users list — CLOSED
 
 - **Mockup implies** (consistent with every other admin list screen in
   this mockup, e.g. the catalog's area/search filters) that an admin-scale
@@ -77,6 +99,9 @@ new "Painel admin — CRUDs de entidades" mockup group.
 - **Severity**: Feature gap — not strictly required to ship the screen as
   literally drawn, but a 312-row table with no filter is not a workable
   admin tool.
+- **Resolved (2026-09-07)**: `ListUsersRequest`/`ListUsersInput` gained
+  `Search` (optional, case-sensitive substring on `Name` OR `Email`) —
+  `GET /api/users?search=...`.
 
 ## 5. No invite-by-email flow — "Convidar usuário" has no matching endpoint
 
@@ -94,8 +119,12 @@ new "Painel admin — CRUDs de entidades" mockup group.
   likely reusing patterns from the existing email-confirmation flow in
   `Auth`).
 - **Severity**: Feature gap.
+- **Decision (2026-09-07)**: out of scope for now — admin-set password at
+  creation (already real, `POST /api/users`) is the shipped "Convidar
+  usuário" behavior; no invite/email flow built. Avoids duplicating the
+  existing email-confirmation flow in `Auth` for a second purpose.
 
-## 6. "Cursos pagos concedidos" (paid-course access grants) has no admin-facing read/grant/revoke endpoint
+## 6. "Cursos pagos concedidos" (paid-course access grants) has no admin-facing read/grant/revoke endpoint — CLOSED
 
 - **Mockup expects** (`1r`): a panel listing paid courses the user already
   has ("Escola de Líderes — Comprado") plus a "+ Conceder acesso a um
@@ -115,6 +144,19 @@ new "Painel admin — CRUDs de entidades" mockup group.
   either way, a read endpoint to list a user's current grants is still
   missing.
 - **Severity**: Feature gap.
+- **Resolved (2026-09-07)**: reused the existing `AccessRequest`
+  request→approve flow rather than building a separate direct-grant path
+  — new `POST /api/access/requests/grant` (`UserId`, `CourseId`) creates
+  *and* immediately approves an `AccessRequest` in one transaction (or
+  approves an existing pending one for that user+course if present,
+  instead of creating a duplicate), so it's never observably "Pending."
+  Same guards as the self-service flow (course must be published and not
+  `Free`, user must not already have access). New
+  `GET /api/access/requests/users/{userId}/granted` lists a user's
+  `Approved` requests (filters the already-existing
+  `IAccessRequestRepository.ListByUserIdAsync`, no new repository
+  method). Both routes behind `ManageUserAreaAccess` (same policy as
+  `approve`/`reject` on this controller).
 
 ## 7. "Status da conta" is drawn as multi-state but the backend only has a boolean
 
@@ -130,6 +172,9 @@ new "Painel admin — CRUDs de entidades" mockup group.
   accepted — the dropdown should just be a toggle. Only relevant if a
   richer status model is intentional.
 - **Severity**: Cosmetic.
+- **Decision (2026-09-07)**: two-state Ativa/Bloqueada (`User.Active`) is
+  accepted as-is — no richer status model built. The dropdown should just
+  render as a toggle.
 
 ## What's already real
 

@@ -21,7 +21,7 @@ require, the workaround shipped instead, and a rough severity:
 
 | Screen | File | Worst severity |
 |---|---|---|
-| Landing (`/`) | [landing/landing-page.md](landing/landing-page.md) | Cosmetic |
+| Landing (`/`) | [landing/landing-page.md](landing/landing-page.md) | Resolved (2026-09-07) |
 | Register (`/register`) | [auth/register.md](auth/register.md) | Config |
 | Login (`/login`) | [auth/login.md](auth/login.md) | Feature gap |
 | Confirm email (`/confirm-email`) | [auth/confirm-email.md](auth/confirm-email.md) | Feature gap |
@@ -42,10 +42,10 @@ revisit once its blocking gap(s) close on the CourseCore side.
 |---|---|---|
 | Checkout — Pix/cartão (`1i`) | [catalog/course-detail.md](catalog/course-detail.md) (pendency 6 update) | No payment/checkout endpoint at all — explicit backend non-goal, not just a missing field. |
 | Painel admin — Cursos (`1k`) | [admin/courses-panel.md](admin/courses-panel.md) | Originally: no endpoint lists draft courses, no audit-log read endpoint. **Both appear resolved as of the 2026-09-07 backend snapshot** — `GET /api/courses` (`ListAllCoursesUseCase`) and `GET /api/audit-logs` (`AuditLogsController`) now exist; `Unpublish` and `PriceAmount` are also wired. The skip decision should be revisited before this screen is picked up again. |
-| Áreas — lista / criar-editar (`1l`, `1m`) | [admin/areas-crud.md](admin/areas-crud.md) | Not blocking outright, but no course count/list per area, no accent-color field, no delete endpoint. |
-| Curso — criar/editar (`1n`) | [admin/course-crud.md](admin/course-crud.md) | No "por inscrição" pricing model, no certificate opt-in, no cover-image upload, no delete endpoint; content management (see next row) has nothing to link to. |
-| Curso → Módulos e aulas / Aula — criar/editar (`1o`, `1p`) | [admin/course-modules-lessons.md](admin/course-modules-lessons.md) | No endpoint to add, edit, reorder, or remove modules/lessons on a course that already exists — content is frozen at course creation. |
-| Usuários — lista / editar acesso (`1q`, `1r`) | [admin/users-panel.md](admin/users-panel.md) | No role data anywhere in the users API, and no way to read or revoke a user's area/course grants — an admin can currently only write access blind. |
+| Áreas — lista / criar-editar (`1l`, `1m`) | [admin/areas-crud.md](admin/areas-crud.md) | **Resolved as of the 2026-09-07 backend snapshot** — per-area course count/list, an `AccentColor` field, and the delete-area decision (`Deactivate` as shipped "Excluir área", same choice as courses) are all wired. The skip decision should be revisited before this screen is picked up again. |
+| Curso — criar/editar (`1n`) | [admin/course-crud.md](admin/course-crud.md) | **Resolved as of the 2026-09-07 backend snapshot** — `EnrollmentControlled` pricing model, `IssuesCertificate` opt-in, and module/lesson content management (see next row) are all wired; cover-image upload and course delete were deliberately kept out of scope (plain URL field, `Unpublish` respectively). The skip decision should be revisited before this screen is picked up again. |
+| Curso → Módulos e aulas / Aula — criar/editar (`1o`, `1p`) | [admin/course-modules-lessons.md](admin/course-modules-lessons.md) | **Resolved as of the 2026-09-07 backend snapshot** — `CourseModulesController`/`LessonsController` now support add/edit/reorder/remove for modules and lessons on an existing course, and lesson video view/replace/remove is wired (`GET/PUT/DELETE /api/videos/lessons/{lessonId}`, YouTube-link storage). The skip decision should be revisited before this screen is picked up again. |
+| Usuários — lista / editar acesso (`1q`, `1r`) | [admin/users-panel.md](admin/users-panel.md) | **Resolved as of the 2026-09-07 backend snapshot** — role read/assign, area-grant read/revoke, aggregate counts, search/filter, and admin-initiated course-access grants are all wired; invite-by-email and a richer account-status model were deliberately kept out of scope. The skip decision should be revisited before this screen is picked up again. |
 
 New screens get their own file here as part of the standard spec workflow
 (see `CLAUDE.md`, "Implementation Workflow") — add a row above when one is

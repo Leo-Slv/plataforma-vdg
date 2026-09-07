@@ -5,7 +5,7 @@ No spec was written for these screens yet — same status as
 ("Curso → Módulos e aulas") and `1p` ("Aula — criar/editar"), added under
 the new "Painel admin — CRUDs de entidades" mockup group.
 
-## 1. No endpoint to add, edit, reorder, or remove modules/lessons on an existing course — BLOCKING
+## 1. No endpoint to add, edit, reorder, or remove modules/lessons on an existing course — CLOSED (was BLOCKING)
 
 - **Mockup expects**: `1o` shows "Novo módulo", "Editar módulo", and
   "+ Nova aula neste módulo" actions, plus drag handles ("⋮⋮") implying
@@ -34,8 +34,24 @@ the new "Painel admin — CRUDs de entidades" mockup group.
   `1o` and `1p` (editing content after the fact) has no backing API. A
   course's content becomes fixed the moment it's created.
 - **Severity**: Blocking.
+- **Resolved (2026-09-07)**: added `CourseModulesController`
+  (`api/courses/{courseId}/modules`: `POST`, `PUT {moduleId}`,
+  `DELETE {moduleId}`, `PUT reorder`) and `LessonsController`
+  (`api/courses/{courseId}/modules/{moduleId}/lessons`: `POST`,
+  `PUT {lessonId}`, `DELETE {lessonId}`, `PUT reorder`), both behind
+  `ManageCourses`. New modules/lessons are appended with an auto-computed
+  next `DisplayOrder` (no manual ordering input at creation, avoiding the
+  unique `(CourseId, DisplayOrder)` / `(ModuleId, DisplayOrder)` DB index
+  collisions); explicit reordering goes through a dedicated two-phase
+  (negative-then-final) `DisplayOrder` rewrite so the unique indexes are
+  never violated mid-transaction. Removing a module requires it have no
+  lessons first, and removing a lesson requires it have no recorded
+  student progress (both return 409 Conflict otherwise) — a lesson's
+  video, if any, is removed automatically as part of lesson removal. This
+  mirrors the same conservative, no-cascade philosophy chosen for course
+  deletion in `course-crud.md` pendency 5.
 
-## 2. No per-lesson video replace/detach
+## 2. No per-lesson video replace/detach — CLOSED
 
 - **Mockup expects** (`1p`): a "Vídeo da aula" panel showing "Vídeo
   enviado · 18min · processado", implying a video can be viewed, replaced,
@@ -54,8 +70,14 @@ the new "Painel admin — CRUDs de entidades" mockup group.
   replace/remove it.
 - **Severity**: Feature gap (compounds with pendency 1 — moot until lessons
   themselves can be edited at all).
+- **Resolved (2026-09-07)**: added `GET/PUT/DELETE /api/videos/lessons/{lessonId}`
+  behind `ManageVideos` — `GET` wires the already-existing
+  `IVideoRepository.FindByLessonIdAsync` to a real read route (closing the
+  same gap flagged in `catalog/lesson-player.md`); `PUT` is an upsert
+  (updates the existing video in place if one exists, else creates one);
+  `DELETE` removes it.
 
-## 3. No file-upload endpoint for video bytes
+## 3. No file-upload endpoint for video bytes — CLOSED (via decision)
 
 - **Mockup expects**: a drop zone implying the admin can hand the platform
   a video file directly.
@@ -76,6 +98,21 @@ the new "Painel admin — CRUDs de entidades" mockup group.
   whatever triggers transcoding before `.../ready` is called.
 - **Severity**: Feature gap — this is a real product decision (which
   storage/transcoding provider), not a small addition.
+- **Decision (2026-09-07)**: no bucket/upload endpoint for now — video
+  hosting is "via link," using private/unlisted YouTube videos as the
+  storage provider. Added `YouTube` to `VideoStorageProvider`
+  (`Modules/Media/Domain/Enums/VideoStorageProvider.cs`); an admin
+  registers a lesson's video the same way as any other provider (`PUT
+  /api/videos/lessons/{lessonId}` with `storageProvider: "YouTube"` and
+  `storageKey` set to the YouTube video id) — no raw bytes ever pass
+  through CourseCore. `VideoStorageService.GeneratePlaybackUrlAsync`
+  returns a `youtube-nocookie.com/embed/{videoId}` URL for that provider
+  instead of the generic signed backend-proxy URL used by the other
+  providers, but the existing entitlement check in
+  `RequestVideoPlaybackUseCase` (has access, or lesson is a free preview)
+  still gates whether that URL is ever returned at all — so "private"
+  YouTube videos stay access-controlled the same way any other lesson
+  video is.
 
 ## What's already real
 
