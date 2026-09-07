@@ -68,6 +68,15 @@ public/
   curso possuído) — nenhum endpoint novo. Sem duração ou certificado em
   lugar nenhum. Spec em `Docs/specs/catalog/my-courses.md`.
 
+- **Admin — Áreas** (`/admin/areas`) — primeira tela do painel
+  administrativo: lista todas as áreas (`GET /api/areas`) com contagem
+  real de cursos, ordem de exibição e status. Acesso restrito a quem tem
+  a claim de permissão `areas.manage` no token (decodificada
+  client-side); quem não tem é redirecionado para `/catalog`. Criar/editar
+  área (mockup `1m`) ainda não existe — "Nova área" e as ações por linha
+  ficam inertes por enquanto. Spec em
+  `Docs/specs/admin/areas-list.md`.
+
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
 

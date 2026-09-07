@@ -36,6 +36,15 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
   `Docs/specs/catalog/lesson-player.md`, and
   `Docs/specs/catalog/my-courses.md`.
 
+- `admin/` — the admin panel, mapping to whichever CourseCore module the
+  current screen manages (starts with Access's areas endpoints). Currently
+  `/admin/areas` (areas list) — the first screen behind permission-claim
+  gating (`src/lib/auth/use-require-permission.ts`, decodes the JWT
+  `permission` claim instead of just checking for a token) rather than
+  `useRequireAuth`. `AdminSidebar` is this section's nav shell, the
+  `admin/` equivalent of `AppNav`, `active`-aware the same way. See
+  `Docs/specs/admin/areas-list.md`.
+
 `src/components/app-nav.tsx` is the shared top nav for every
 authenticated (non-auth-flow) page — first used by `catalog/`, reused
 as-is by every other page in this feature rather than each one growing
