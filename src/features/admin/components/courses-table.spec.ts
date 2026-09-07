@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
+import { appRoutes } from '@/lib/routes/app-routes';
 import { CoursesTable } from '@/features/admin/components/courses-table';
 import type { Course } from '@/features/admin/model/course';
 import type { Area } from '@/features/admin/model/area';
@@ -105,6 +106,19 @@ test('renders "Publicado" and "Rascunho" correctly', () => {
 	);
 	assert.match(html, /Publicado/);
 	assert.match(html, /Rascunho/);
+});
+
+test('links each row to the course edit route', () => {
+	const html = renderToStaticMarkup(
+		createElement(CoursesTable, {
+			courses: [buildCourse({ id: 'course-42' })],
+			areas: [],
+		}),
+	);
+	assert.match(
+		html,
+		new RegExp(`href="${appRoutes.admin.courseEdit('course-42')}"`),
+	);
 });
 
 test('resolves area ids to area names', () => {

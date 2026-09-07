@@ -1,4 +1,7 @@
+import Link from 'next/link';
+
 import { cn } from '@/lib/utils';
+import { appRoutes } from '@/lib/routes/app-routes';
 import { sortCoursesByDisplayOrder } from '@/features/admin/lib/sort-courses';
 import { formatCurrencyBrl } from '@/features/admin/lib/format-currency-brl';
 import type { Course } from '@/features/admin/model/course';
@@ -58,10 +61,11 @@ function CoursesTable({ courses, areas }: CoursesTableProps) {
 			</div>
 
 			{sorted.map((course) => (
-				<div
+				<Link
 					key={course.id}
+					href={appRoutes.admin.courseEdit(course.id)}
 					className={cn(
-						'grid items-center gap-4 border-b border-white/7 py-4.5 font-sans text-[13.5px] text-white/75',
+						'grid items-center gap-4 border-b border-white/7 py-4.5 font-sans text-[13.5px] text-white/75 hover:bg-white/3',
 						COLUMNS,
 					)}
 				>
@@ -83,7 +87,7 @@ function CoursesTable({ courses, areas }: CoursesTableProps) {
 						{course.published ? 'Publicado' : 'Rascunho'}
 					</span>
 					<span className="text-white/40">{course.displayOrder}</span>
-				</div>
+				</Link>
 			))}
 		</div>
 	);

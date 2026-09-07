@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { authPermissions } from '@/lib/auth/auth-permissions';
@@ -72,13 +73,12 @@ function CoursesPanelPage() {
 								: ' '}
 						</p>
 					</div>
-					<button
-						type="button"
-						disabled
-						className="rounded-full bg-[#f4f4f2] px-5.5 py-3.25 font-sans text-[13px] text-[#0a0a0b] disabled:cursor-not-allowed disabled:opacity-60"
+					<Link
+						href={appRoutes.admin.courseNew}
+						className="rounded-full bg-[#f4f4f2] px-5.5 py-3.25 font-sans text-[13px] text-[#0a0a0b]"
 					>
 						Novo curso
-					</button>
+					</Link>
 				</div>
 
 				<div className="mt-8.5">
