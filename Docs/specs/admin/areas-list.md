@@ -119,6 +119,10 @@ Resolved with the user on 2026-09-07:
   clickable/navigating) — the same posture already taken for the landing
   page's not-yet-built nav/footer links (`Docs/specs/landing/landing-page.md`).
   Revisit once artboard `1m` gets its own spec and implementation.
+  **Superseded 2026-09-07**: `1m` is now specced and implemented
+  (`Docs/specs/admin/area-form.md`) — both are wired to real routes
+  (`appRoutes.admin.areaNew`, `appRoutes.admin.areaEdit(id)`) instead of
+  being inert.
 
 ## Acceptance criteria
 
@@ -132,6 +136,7 @@ Resolved with the user on 2026-09-07:
   from `GET /api/areas` — no hardcoded area data.
 - Loading, error (with retry), and empty states are handled as described
   above.
-- "Nova área" and any per-row edit affordance are visibly present but do
-  not navigate anywhere.
+- ~~"Nova área" and any per-row edit affordance are visibly present but do
+  not navigate anywhere.~~ Superseded: both now navigate to the create/edit
+  screen (`Docs/specs/admin/area-form.md`).
 - No write call (`POST`/`PUT /api/areas`) is made from this screen.
