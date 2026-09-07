@@ -1,0 +1,48 @@
+'use client';
+
+import { useId, type ComponentProps } from 'react';
+
+import { cn } from '@/lib/utils';
+
+type AdminFieldProps = ComponentProps<'input'> & {
+	label: string;
+	error?: string;
+};
+
+function AdminField({
+	label,
+	error,
+	id,
+	className,
+	...inputProps
+}: AdminFieldProps) {
+	const generatedId = useId();
+	const fieldId = id ?? generatedId;
+
+	return (
+		<div>
+			<label
+				htmlFor={fieldId}
+				className="mb-2.25 block font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase"
+			>
+				{label}
+			</label>
+			<input
+				id={fieldId}
+				className={cn(
+					'w-full rounded-md border border-white/12 bg-[#141416] px-4 py-3.25 font-sans text-[14px] font-light text-[#f2f2f0] outline-none focus:border-[oklch(0.62_0.1_248)]',
+					className,
+				)}
+				aria-invalid={Boolean(error)}
+				{...inputProps}
+			/>
+			{error ? (
+				<p className="mt-2 text-[12.5px] text-[oklch(0.704_0.191_22.216)]">
+					{error}
+				</p>
+			) : null}
+		</div>
+	);
+}
+
+export { AdminField };
