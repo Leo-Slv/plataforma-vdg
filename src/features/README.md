@@ -52,9 +52,17 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
   each with its own loading/error/permission handling; since the audit
   log stores only ids, `lib/resolve-audit-label.ts` does best-effort
   name resolution against data the page already has loaded, falling
-  back to `{EntityName} #{short id}` otherwise. See
-  `Docs/specs/admin/areas-list.md`, `Docs/specs/admin/area-form.md`, and
-  `Docs/specs/admin/courses-panel.md`.
+  back to `{EntityName} #{short id}` otherwise. Also
+  `/admin/courses/new` and `/admin/courses/[courseId]/edit`
+  (`CourseForm`, structurally parallel to `AreaForm`) — the edit form
+  has no dedicated single-course fetch (`GET /api/courses/{id}` is the
+  student-facing detail endpoint and would 403 an admin with no
+  personal access to the course), so it finds the course by id in the
+  already-fetched admin course list instead. Publishing/unpublishing is
+  a separate call from the field update, since `PUT /api/courses/{id}`
+  carries no `Published` field. See `Docs/specs/admin/areas-list.md`,
+  `Docs/specs/admin/area-form.md`, `Docs/specs/admin/courses-panel.md`,
+  and `Docs/specs/admin/course-form.md`.
 
 `src/components/app-nav.tsx` is the shared top nav for every
 authenticated (non-auth-flow) page — first used by `catalog/`, reused

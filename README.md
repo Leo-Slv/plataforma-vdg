@@ -86,9 +86,20 @@ public/
   (`GET /api/audit-logs`) — como o audit log só guarda IDs, o painel
   resolve nome de curso/área quando já tem esse dado carregado na
   própria tela e cai para `{Ação} · {Tipo} #{id curto}` no resto. "Novo
-  curso" e as linhas da tabela ficam inertes (tela de criar/editar,
-  mockup `1n`, ainda não existe). Spec em
-  `Docs/specs/admin/courses-panel.md`.
+  curso" e as linhas da tabela linkam para a tela de criar/editar. Spec
+  em `Docs/specs/admin/courses-panel.md`.
+- **Admin — Curso, criar/editar** (`/admin/courses/new`,
+  `/admin/courses/[courseId]/edit`) — título, descrição, capa (URL, sem
+  upload), modelo de cobrança (gratuito/pago/por inscrição), área,
+  status, ordem, "emitir certificado" e "curso em destaque" (este
+  último não está no mockup — adicionado porque é um campo real que a
+  landing page já usa). Como `PUT /api/courses/{id}` não tem campo de
+  status, trocar Publicado/Rascunho dispara uma chamada separada para
+  `.../publish` ou `.../unpublish` depois do PUT principal. "Excluir
+  curso" despublica, mesma lógica de "Excluir área". "Gerenciar
+  módulos →" fica inerte — o backend nem tem como *ler* módulos/aulas
+  de um curso ainda, só criar/editar/remover às cegas. Spec em
+  `Docs/specs/admin/course-form.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
