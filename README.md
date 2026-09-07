@@ -78,6 +78,17 @@ public/
   claim de permissão `areas.manage` no token (decodificada client-side);
   quem não tem é redirecionado para `/catalog`. Specs em
   `Docs/specs/admin/areas-list.md` e `Docs/specs/admin/area-form.md`.
+- **Admin — Cursos** (`/admin/courses`) — tela originalmente pulada em
+  2026-09-04 por falta de endpoint admin de cursos e de audit log; ambos
+  existem agora. Lista todos os cursos (`GET /api/courses`, publicados +
+  rascunho) com áreas, cobrança e status reais, um resumo "Áreas ativas"
+  na sidebar e um painel "Últimas ações auditadas"
+  (`GET /api/audit-logs`) — como o audit log só guarda IDs, o painel
+  resolve nome de curso/área quando já tem esse dado carregado na
+  própria tela e cai para `{Ação} · {Tipo} #{id curto}` no resto. "Novo
+  curso" e as linhas da tabela ficam inertes (tela de criar/editar,
+  mockup `1n`, ainda não existe). Spec em
+  `Docs/specs/admin/courses-panel.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.

@@ -47,8 +47,14 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
   `admin/` equivalent of `AppNav`, `active`-aware the same way. The
   create/edit form always computes its slug from the name
   (`lib/slugify.ts`) rather than taking one as input — there is no slug
-  text field. See `Docs/specs/admin/areas-list.md` and
-  `Docs/specs/admin/area-form.md`.
+  text field. Also `/admin/courses` — the first admin screen composing
+  three independent queries on one page (courses, areas, audit logs),
+  each with its own loading/error/permission handling; since the audit
+  log stores only ids, `lib/resolve-audit-label.ts` does best-effort
+  name resolution against data the page already has loaded, falling
+  back to `{EntityName} #{short id}` otherwise. See
+  `Docs/specs/admin/areas-list.md`, `Docs/specs/admin/area-form.md`, and
+  `Docs/specs/admin/courses-panel.md`.
 
 `src/components/app-nav.tsx` is the shared top nav for every
 authenticated (non-auth-flow) page — first used by `catalog/`, reused

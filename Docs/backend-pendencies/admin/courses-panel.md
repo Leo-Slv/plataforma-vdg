@@ -90,6 +90,35 @@ anymore.
   `PublishCourseUseCase`), same `ManageCourses` policy, records a new
   `AuditLogActionNames.CourseUnpublished`.
 
+## 4. Audit log entries carry no human-readable display name
+
+- **Mockup expects**: readable text per entry — "CoursePublished · Curso
+  de Batismo", "UserAreaAccessGranted · ana.souza@email.com →
+  Liderança", "VideoCreated · Aula 03 — Módulo 01".
+- **Backend today**: every `RecordAsync` call site across the codebase
+  (checked all of them, in `Courses`, `Access`, and `Media`) stores only
+  GUIDs — `EntityId` plus a `Metadata` dictionary of raw id strings
+  (`targetUserId`, `courseId`, `areaId`, `lessonId`, `moduleId`, etc.).
+  None store a title, email, or name string anywhere. `CoursePublished`
+  and `CourseUnpublished` specifically record no metadata at all beyond
+  the course's own `EntityId`. There is also no generic "resolve these
+  ids to display names" endpoint spanning entity types.
+- **What's needed**: either add a display-name string to each
+  `RecordAsync` call site at the point of action (the use case already
+  has the entity in hand — e.g. `PublishCourseUseCase` already holds
+  `course.Title`, it just isn't passed to `RecordAsync`), or add a
+  batch id→name resolution endpoint per entity type for the frontend to
+  call.
+- **Workaround shipped**: the frontend resolves what it can from data
+  it already has loaded for other reasons on the same screen — course
+  titles from the admin course list, area names from the areas list —
+  and falls back to `{EntityName} #{short id}` for everything else
+  (users, videos, lessons, modules). Decided 2026-09-07 rather than
+  adding new endpoints or an N+1 per-row lookup just for this one panel.
+- **Severity**: Cosmetic — the panel works and is truthful, just less
+  polished than the mockup for action types the current page has no
+  other reason to have already fetched.
+
 ## What's already real (for when this screen gets picked back up)
 
 - `POST /api/courses` (create), `PUT /api/courses/{id}` (update),
