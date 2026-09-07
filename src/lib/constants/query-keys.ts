@@ -15,6 +15,9 @@ const queryKeys = {
 	admin: {
 		areas: ['admin', 'areas'] as const,
 		area: (areaId: string) => ['admin', 'areas', areaId] as const,
+		courses: ['admin', 'courses'] as const,
+		auditLogs: (page: number, pageSize: number) =>
+			['admin', 'audit-logs', page, pageSize] as const,
 	},
 } as const;
 
