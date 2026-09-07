@@ -20,6 +20,9 @@ const appRoutes = {
 		lesson: (slug: string, lessonId: string) =>
 			`/courses/${slug}/lessons/${lessonId}`,
 	},
+	admin: {
+		areas: '/admin/areas',
+	},
 } as const;
 
 export { appRoutes };

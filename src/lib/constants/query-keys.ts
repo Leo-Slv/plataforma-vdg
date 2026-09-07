@@ -12,6 +12,9 @@ const queryKeys = {
 	progress: {
 		course: (courseId: string) => ['progress', 'course', courseId] as const,
 	},
+	admin: {
+		areas: ['admin', 'areas'] as const,
+	},
 } as const;
 
 export { queryKeys };
