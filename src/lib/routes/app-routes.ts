@@ -25,6 +25,8 @@ const appRoutes = {
 		areaNew: '/admin/areas/new',
 		areaEdit: (areaId: string) => `/admin/areas/${areaId}/edit`,
 		courses: '/admin/courses',
+		courseNew: '/admin/courses/new',
+		courseEdit: (courseId: string) => `/admin/courses/${courseId}/edit`,
 	},
 } as const;
 

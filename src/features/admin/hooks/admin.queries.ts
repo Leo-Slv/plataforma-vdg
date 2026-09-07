@@ -7,6 +7,10 @@ import { createArea } from '@/features/admin/api/create-area';
 import { updateArea } from '@/features/admin/api/update-area';
 import { getCourses } from '@/features/admin/api/get-courses';
 import { getAuditLogs } from '@/features/admin/api/get-audit-logs';
+import { createCourse } from '@/features/admin/api/create-course';
+import { updateCourse } from '@/features/admin/api/update-course';
+import { publishCourse } from '@/features/admin/api/publish-course';
+import { unpublishCourse } from '@/features/admin/api/unpublish-course';
 
 function useAreasQuery(options: { enabled: boolean }) {
 	return useQuery({
@@ -63,6 +67,36 @@ function useAuditLogsQuery(
 	});
 }
 
+function useCreateCourseMutation() {
+	return useMutation({
+		mutationFn: createCourse,
+	});
+}
+
+function useUpdateCourseMutation() {
+	return useMutation({
+		mutationFn: ({
+			courseId,
+			payload,
+		}: {
+			courseId: string;
+			payload: Parameters<typeof updateCourse>[1];
+		}) => updateCourse(courseId, payload),
+	});
+}
+
+function usePublishCourseMutation() {
+	return useMutation({
+		mutationFn: publishCourse,
+	});
+}
+
+function useUnpublishCourseMutation() {
+	return useMutation({
+		mutationFn: unpublishCourse,
+	});
+}
+
 export {
 	useAreasQuery,
 	useAreaQuery,
@@ -70,4 +104,8 @@ export {
 	useUpdateAreaMutation,
 	useCoursesQuery,
 	useAuditLogsQuery,
+	useCreateCourseMutation,
+	useUpdateCourseMutation,
+	usePublishCourseMutation,
+	useUnpublishCourseMutation,
 };
