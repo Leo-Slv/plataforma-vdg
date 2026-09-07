@@ -14,6 +14,7 @@ const queryKeys = {
 	},
 	admin: {
 		areas: ['admin', 'areas'] as const,
+		area: (areaId: string) => ['admin', 'areas', areaId] as const,
 	},
 } as const;
 
