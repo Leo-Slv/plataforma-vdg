@@ -102,16 +102,30 @@ public/
 - **Admin — Módulos e aulas** (`/admin/courses/[courseId]/modules`) —
   lista os módulos de um curso (`GET /api/courses/{id}/modules`, um
   endpoint que não existia quando a tela de curso foi feita) com suas
-  aulas aninhadas; cria/edita/exclui/reordena módulo e aula por modais
-  simples (sem rota própria) e setas ↑↓ no lugar do arrastar do mockup
-  (sem biblioteca de drag-and-drop no projeto). Excluir módulo fica
-  desabilitado enquanto ele tiver aulas (o backend rejeitaria com 409);
-  excluir aula não dá pra prever (progresso de aluno não aparece na
-  listagem), então o 409 vira um erro inline na própria aula. Vídeo de
-  aula aparece só como status (tem/não tem, duração) — anexar/trocar
-  vídeo fica para uma tela de edição de aula futura (mockup `1p`), que
-  ainda não foi especificada. Spec em
-  `Docs/specs/admin/course-modules.md`.
+  aulas aninhadas; cria/edita/exclui/reordena módulo por modais simples
+  (sem rota própria) e setas ↑↓ no lugar do arrastar do mockup (sem
+  biblioteca de drag-and-drop no projeto). Cria aula pelo mesmo tipo de
+  modal; "Editar" de uma aula agora navega para a tela de edição de aula
+  (abaixo) em vez de abrir modal. Excluir módulo fica desabilitado
+  enquanto ele tiver aulas (o backend rejeitaria com 409); excluir aula
+  não dá pra prever (progresso de aluno não aparece na listagem), então
+  o 409 vira um erro inline na própria aula. Vídeo de aula aparece só
+  como status (tem/não tem, duração) — anexar/trocar vídeo é feito na
+  tela de edição de aula. Spec em `Docs/specs/admin/course-modules.md`.
+- **Admin — Editar aula** (`/admin/courses/[courseId]/modules/[moduleId]/lessons/[lessonId]/edit`)
+  — título, descrição/transcrição, "aula gratuita" e "publicada", mais um
+  painel de vídeo (ver/registrar/substituir/remover, via
+  `GET/PUT/DELETE /api/videos/lessons/{lessonId}`). Só existe hospedagem
+  "por link" (YouTube não listado) — sem upload de arquivo — então o
+  formulário de vídeo pede ID do vídeo no YouTube, não um arquivo; depois
+  de registrar, o front chama `POST /api/videos/{id}/ready` na hora, já
+  que vídeo do YouTube não passa por nenhum processamento no CourseCore.
+  Módulo e ordem aparecem só como leitura (mockup mostra como editável,
+  mas não existe endpoint para mover aula de módulo nem para setar ordem
+  direto). Painel de vídeo exige a permissão `videos.manage`, separada da
+  `courses.manage` que já gate a tela inteira. "Excluir aula" reaparece
+  aqui e volta para a lista de módulos. Spec em
+  `Docs/specs/admin/lesson-editor.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.

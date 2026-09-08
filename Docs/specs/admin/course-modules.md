@@ -27,21 +27,21 @@ Design reference: artboard `1o` ("Curso → Módulos e aulas") in
 
 ## Non-goals
 
-- **Video attachment/replacement.** The mockup's per-lesson "Editar"
-  in artboard `1p` implies a richer lesson editor including a video
-  panel; that's a separate, not-yet-specced screen. This screen's own
-  lesson create/edit only covers the fields `AddLessonRequest`/
-  `UpdateLessonRequest` actually take (title, description, free
-  preview, published) — no video upload/replace here. A lesson's
-  existing video status still renders (from `LessonResponse.VideoId`/
-  `DurationSeconds`, already returned by the new list endpoint), just
-  not editable.
+- **Video attachment/replacement.** Now covered by the dedicated lesson
+  editor screen (`Docs/specs/admin/lesson-editor.md`, artboard `1p`,
+  reachable from this screen's per-lesson "Editar" — see "Open
+  decisions" in that spec). This screen's own lesson create still only
+  covers the fields `AddLessonRequest` takes (title, description, free
+  preview) — no video upload here. A lesson's existing video status
+  still renders in this screen's list (from `LessonResponse.VideoId`/
+  `DurationSeconds`), just not editable from here.
 - **Drag-and-drop reordering.** The mockup draws drag handles (`⋮⋮`);
   this ships as up/down buttons calling the same
   `PUT .../reorder` endpoints instead — see "Open decisions".
-- **A full lesson editor screen (artboard `1p`).** Not specced here;
-  this screen's lesson create/edit is a lightweight modal, not a
-  dedicated route.
+- **Editing an existing lesson's fields from this screen.** Per-lesson
+  "Editar" navigates to `lesson-editor.md`'s dedicated route instead of
+  opening a modal here — see that spec's "Open decisions" for why. This
+  screen's own lesson modal is create-only.
 
 ## Page content
 
@@ -82,8 +82,8 @@ Nested under each module, its lessons in `DisplayOrder`:
   exactly — `FreePreview: true` → "Gratuita").
 - Up/down reorder buttons, scoped within the module (disabled at the
   first/last position within that module).
-- "Editar" — opens an edit-lesson modal (title, description, free
-  preview, published).
+- "Editar" — navigates to the dedicated lesson editor
+  (`Docs/specs/admin/lesson-editor.md`), not a modal.
 - Delete — always enabled (unlike module delete, below): whether a
   lesson has recorded student progress isn't part of
   `LessonResponse`, so there's nothing to pre-check client-side. A
@@ -120,10 +120,16 @@ Resolved with the user on 2026-09-08:
 Derived without needing to ask (mechanical, consistent with prior
 screens' precedent):
 
-- **Module/lesson create & edit are modals on this page, not separate
-  routes** — the backend fields involved (title, description, a couple
-  of booleans) don't warrant a dedicated screen the way area/course
-  create-edit did, and the mockup itself never draws one for either.
+- **Module create & edit, and lesson create, are modals on this page,
+  not separate routes** — the backend fields involved (title,
+  description, a couple of booleans) don't warrant a dedicated screen
+  the way area/course create-edit did, and the mockup itself never
+  draws one for either. Lesson *edit* is the one exception: once
+  `lesson-editor.md` shipped its own route (title, description, video,
+  free preview, published, delete), "Editar" on this screen was
+  repointed to navigate there instead of opening the old lightweight
+  modal — resolved with the user on 2026-09-08 while speccing that
+  screen.
 - **Destructive actions are prevented client-side, not just
   error-handled** — disabling "Excluir" when the backend would 409
   anyway is more honest than letting the admin click it and see a
