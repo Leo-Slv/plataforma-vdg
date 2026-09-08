@@ -11,6 +11,15 @@ import { createCourse } from '@/features/admin/api/create-course';
 import { updateCourse } from '@/features/admin/api/update-course';
 import { publishCourse } from '@/features/admin/api/publish-course';
 import { unpublishCourse } from '@/features/admin/api/unpublish-course';
+import { getCourseModules } from '@/features/admin/api/get-course-modules';
+import { createCourseModule } from '@/features/admin/api/create-course-module';
+import { updateCourseModule } from '@/features/admin/api/update-course-module';
+import { deleteCourseModule } from '@/features/admin/api/delete-course-module';
+import { reorderCourseModules } from '@/features/admin/api/reorder-course-modules';
+import { createLesson } from '@/features/admin/api/create-lesson';
+import { updateLesson } from '@/features/admin/api/update-lesson';
+import { deleteLesson } from '@/features/admin/api/delete-lesson';
+import { reorderLessons } from '@/features/admin/api/reorder-lessons';
 
 function useAreasQuery(options: { enabled: boolean }) {
 	return useQuery({
@@ -97,6 +106,125 @@ function useUnpublishCourseMutation() {
 	});
 }
 
+function useCourseModulesQuery(
+	courseId: string,
+	options: { enabled: boolean },
+) {
+	return useQuery({
+		queryKey: queryKeys.admin.courseModules(courseId),
+		queryFn: () => getCourseModules(courseId),
+		enabled: options.enabled && courseId.length > 0,
+	});
+}
+
+function useCreateCourseModuleMutation() {
+	return useMutation({
+		mutationFn: ({
+			courseId,
+			payload,
+		}: {
+			courseId: string;
+			payload: Parameters<typeof createCourseModule>[1];
+		}) => createCourseModule(courseId, payload),
+	});
+}
+
+function useUpdateCourseModuleMutation() {
+	return useMutation({
+		mutationFn: ({
+			courseId,
+			moduleId,
+			payload,
+		}: {
+			courseId: string;
+			moduleId: string;
+			payload: Parameters<typeof updateCourseModule>[2];
+		}) => updateCourseModule(courseId, moduleId, payload),
+	});
+}
+
+function useDeleteCourseModuleMutation() {
+	return useMutation({
+		mutationFn: ({
+			courseId,
+			moduleId,
+		}: {
+			courseId: string;
+			moduleId: string;
+		}) => deleteCourseModule(courseId, moduleId),
+	});
+}
+
+function useReorderCourseModulesMutation() {
+	return useMutation({
+		mutationFn: ({
+			courseId,
+			moduleIds,
+		}: {
+			courseId: string;
+			moduleIds: string[];
+		}) => reorderCourseModules(courseId, moduleIds),
+	});
+}
+
+function useCreateLessonMutation() {
+	return useMutation({
+		mutationFn: ({
+			courseId,
+			moduleId,
+			payload,
+		}: {
+			courseId: string;
+			moduleId: string;
+			payload: Parameters<typeof createLesson>[2];
+		}) => createLesson(courseId, moduleId, payload),
+	});
+}
+
+function useUpdateLessonMutation() {
+	return useMutation({
+		mutationFn: ({
+			courseId,
+			moduleId,
+			lessonId,
+			payload,
+		}: {
+			courseId: string;
+			moduleId: string;
+			lessonId: string;
+			payload: Parameters<typeof updateLesson>[3];
+		}) => updateLesson(courseId, moduleId, lessonId, payload),
+	});
+}
+
+function useDeleteLessonMutation() {
+	return useMutation({
+		mutationFn: ({
+			courseId,
+			moduleId,
+			lessonId,
+		}: {
+			courseId: string;
+			moduleId: string;
+			lessonId: string;
+		}) => deleteLesson(courseId, moduleId, lessonId),
+	});
+}
+
+function useReorderLessonsMutation() {
+	return useMutation({
+		mutationFn: ({
+			courseId,
+			moduleId,
+			lessonIds,
+		}: {
+			courseId: string;
+			moduleId: string;
+			lessonIds: string[];
+		}) => reorderLessons(courseId, moduleId, lessonIds),
+	});
+}
+
 export {
 	useAreasQuery,
 	useAreaQuery,
@@ -108,4 +236,13 @@ export {
 	useUpdateCourseMutation,
 	usePublishCourseMutation,
 	useUnpublishCourseMutation,
+	useCourseModulesQuery,
+	useCreateCourseModuleMutation,
+	useUpdateCourseModuleMutation,
+	useDeleteCourseModuleMutation,
+	useReorderCourseModulesMutation,
+	useCreateLessonMutation,
+	useUpdateLessonMutation,
+	useDeleteLessonMutation,
+	useReorderLessonsMutation,
 };
