@@ -12,6 +12,10 @@ const queryKeys = {
 	progress: {
 		course: (courseId: string) => ['progress', 'course', courseId] as const,
 	},
+	landing: {
+		catalogSummary: ['landing', 'catalog-summary'] as const,
+		testimonials: ['landing', 'testimonials'] as const,
+	},
 	admin: {
 		areas: ['admin', 'areas'] as const,
 		area: (areaId: string) => ['admin', 'areas', areaId] as const,
