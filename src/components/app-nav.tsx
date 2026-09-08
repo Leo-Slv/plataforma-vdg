@@ -1,8 +1,14 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
+import { clearAccessToken, getUserEmail } from '@/lib/auth/access-token';
+import { authPermissions } from '@/lib/auth/auth-permissions';
+import { decodeAccessTokenClaims, hasPermission } from '@/lib/auth/jwt-claims';
 
 type AppNavProps = {
 	displayName: string;
@@ -10,9 +16,42 @@ type AppNavProps = {
 	active: 'catalog' | 'my-courses';
 };
 
+const ADMIN_PANEL_PERMISSIONS = [
+	authPermissions.manageCourses,
+	authPermissions.manageAreas,
+	authPermissions.manageUsers,
+	authPermissions.manageVideos,
+	authPermissions.readAudit,
+];
+
 function AppNav({ displayName, initials, active }: AppNavProps) {
+	const [menuOpen, setMenuOpen] = useState(false);
+
+	useEffect(() => {
+		function handleKeyDown(event: KeyboardEvent) {
+			if (event.key === 'Escape') {
+				setMenuOpen(false);
+			}
+		}
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, []);
+
+	const email = getUserEmail();
+	const claims = decodeAccessTokenClaims();
+	const canSeeAdminPanel = ADMIN_PANEL_PERMISSIONS.some((permission) =>
+		hasPermission(claims, permission),
+	);
+
+	function handleLogout() {
+		clearAccessToken();
+		// Full page navigation, not router.push: guarantees every cached
+		// query and in-memory auth state resets, not just the URL.
+		window.location.href = appRoutes.auth.login;
+	}
+
 	return (
-		<header className="flex items-center justify-between border-b border-white/8 px-5 py-4.5 sm:px-10">
+		<header className="relative flex items-center justify-between border-b border-white/8 px-5 py-4.5 sm:px-10">
 			<div className="flex items-center gap-8.5">
 				<Image
 					src="/brand/viver-da-graca-mark.png"
@@ -54,10 +93,71 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 						{displayName}
 					</span>
 				) : null}
-				<span className="flex size-7.5 items-center justify-center rounded-full bg-[#22222a] font-heading text-xs">
+				<button
+					type="button"
+					onClick={() => setMenuOpen((current) => !current)}
+					aria-haspopup="menu"
+					aria-expanded={menuOpen}
+					className="flex size-7.5 items-center justify-center rounded-full bg-[#22222a] font-heading text-xs"
+				>
 					{initials}
-				</span>
+				</button>
 			</div>
+
+			{menuOpen ? (
+				<>
+					<div
+						className="fixed inset-0 z-40"
+						onClick={() => setMenuOpen(false)}
+					/>
+					<div
+						role="menu"
+						className="absolute top-[calc(100%+8px)] right-5 z-50 w-[260px] overflow-hidden rounded-[10px] border border-white/10 bg-[#141416] shadow-[0_12px_30px_rgba(0,0,0,0.5)] sm:right-10"
+					>
+						<div className="flex items-center gap-3 border-b border-white/8 p-4.5">
+							<span className="flex size-9.5 flex-none items-center justify-center rounded-full bg-[#22222a] font-heading text-xs">
+								{initials}
+							</span>
+							<div className="min-w-0">
+								<div className="truncate font-sans text-[13.5px] text-[#f2f2f0]">
+									{displayName}
+								</div>
+								{email ? (
+									<div className="truncate font-sans text-[11.5px] font-light text-white/42">
+										{email}
+									</div>
+								) : null}
+							</div>
+						</div>
+						<div className="flex flex-col p-2">
+							<span className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-white/40">
+								Editar perfil
+							</span>
+							<span className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-white/55">
+								Certificados
+							</span>
+							{canSeeAdminPanel ? (
+								<Link
+									href={appRoutes.admin.courses}
+									onClick={() => setMenuOpen(false)}
+									className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-white/55 hover:bg-white/5"
+								>
+									Painel admin
+								</Link>
+							) : null}
+						</div>
+						<div className="border-t border-white/8 p-2">
+							<button
+								type="button"
+								onClick={handleLogout}
+								className="w-full rounded-md px-2.5 py-2.75 text-left font-sans text-[13.5px] text-white/70 hover:bg-white/5"
+							>
+								Sair
+							</button>
+						</div>
+					</div>
+				</>
+			) : null}
 		</header>
 	);
 }

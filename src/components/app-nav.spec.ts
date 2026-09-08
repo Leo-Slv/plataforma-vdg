@@ -49,3 +49,18 @@ test('active="my-courses" underlines only Meus cursos', () => {
 	assert.ok(!catalogLink?.includes('border-b'));
 	assert.ok(myCoursesLink?.includes('border-b'));
 });
+
+test('renders the profile menu trigger, closed by default', () => {
+	const html = renderToStaticMarkup(
+		createElement(AppNav, {
+			displayName: 'Ana',
+			initials: 'AB',
+			active: 'catalog',
+		}),
+	);
+
+	assert.match(html, /aria-haspopup="menu"/);
+	assert.match(html, /aria-expanded="false"/);
+	assert.doesNotMatch(html, />Sair</);
+	assert.doesNotMatch(html, />Editar perfil</);
+});
