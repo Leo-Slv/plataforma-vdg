@@ -5,6 +5,7 @@ import { getCourseCatalog } from '@/features/catalog/api/get-course-catalog';
 import { getCourseDetails } from '@/features/catalog/api/get-course-details';
 import { getCourseProgress } from '@/features/catalog/api/get-course-progress';
 import { registerLessonProgress } from '@/features/catalog/api/register-lesson-progress';
+import { getVideoPlayback } from '@/features/catalog/api/get-video-playback';
 
 function useCourseCatalogQuery(options: { enabled: boolean }) {
 	return useQuery({
@@ -42,6 +43,15 @@ function useRegisterLessonProgressMutation() {
 	});
 }
 
+function useVideoPlaybackQuery(videoId: string, options: { enabled: boolean }) {
+	return useQuery({
+		queryKey: queryKeys.media.playback(videoId),
+		queryFn: () => getVideoPlayback(videoId),
+		enabled: options.enabled && videoId.length > 0,
+		retry: false,
+	});
+}
+
 function useOwnedCourseDetailsQueries(
 	courseIds: string[],
 	options: { enabled: boolean },
@@ -75,4 +85,5 @@ export {
 	useRegisterLessonProgressMutation,
 	useOwnedCourseDetailsQueries,
 	useOwnedCourseProgressQueries,
+	useVideoPlaybackQuery,
 };
