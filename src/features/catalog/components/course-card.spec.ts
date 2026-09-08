@@ -65,12 +65,31 @@ test('renders "Gratuito" for a locked free course', () => {
 	assert.match(html, /Gratuito/);
 });
 
-test('renders "Pago" for a locked paid course', () => {
+test('falls back to "Pago" for a locked paid course with no priceAmount set', () => {
 	const html = renderToStaticMarkup(
 		createElement(CourseCard, {
-			course: course({ hasAccess: false, pricingModel: 'Paid' }),
+			course: course({
+				hasAccess: false,
+				pricingModel: 'Paid',
+				priceAmount: null,
+			}),
 			area,
 		}),
 	);
 	assert.match(html, /Pago/);
+});
+
+test('renders the real price instead of "Pago" for a locked paid course', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseCard, {
+			course: course({
+				hasAccess: false,
+				pricingModel: 'Paid',
+				priceAmount: 149,
+			}),
+			area,
+		}),
+	);
+	assert.doesNotMatch(html, /Pago/);
+	assert.match(html, /R\$\s?149/);
 });

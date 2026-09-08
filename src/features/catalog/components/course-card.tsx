@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
+import { formatCurrencyBrl } from '@/features/catalog/lib/format-currency-brl';
 import type {
 	AreaSummary,
 	CourseCatalogItem,
@@ -23,9 +24,37 @@ function accessBadge(
 	return course.pricingModel === 'Free' ? 'Gratuito' : 'Pago';
 }
 
-function CourseCard({ course, area }: CourseCardProps) {
+function AccessBadge({
+	course,
+}: {
+	course: Pick<CourseCatalogItem, 'hasAccess' | 'pricingModel' | 'priceAmount'>;
+}) {
+	if (course.hasAccess) {
+		return null;
+	}
+
+	if (course.pricingModel !== 'Free' && course.priceAmount !== null) {
+		return (
+			<span className="absolute top-2.5 left-2.5 rounded-full bg-[#f4f4f2] px-2.25 py-1.25 font-heading text-[9.5px] tracking-[0.14em] whitespace-nowrap text-[#0a0a0b] uppercase">
+				{formatCurrencyBrl(course.priceAmount)}
+			</span>
+		);
+	}
+
 	const badge = accessBadge(course);
 
+	if (!badge) {
+		return null;
+	}
+
+	return (
+		<span className="absolute top-2.5 left-2.5 rounded-full bg-[#0a0a0b]/85 px-2.25 py-1.25 font-heading text-[9.5px] tracking-[0.14em] whitespace-nowrap text-[oklch(0.75_0.1_248)] uppercase">
+			{badge}
+		</span>
+	);
+}
+
+function CourseCard({ course, area }: CourseCardProps) {
 	return (
 		<Link
 			href={appRoutes.courses.detail(course.slug)}
@@ -53,11 +82,7 @@ function CourseCard({ course, area }: CourseCardProps) {
 						className="size-full object-cover"
 					/>
 				) : null}
-				{badge ? (
-					<span className="absolute top-2.5 left-2.5 rounded-full bg-[#0a0a0b]/85 px-2.25 py-1.25 font-heading text-[9.5px] tracking-[0.14em] whitespace-nowrap text-[oklch(0.75_0.1_248)] uppercase">
-						{badge}
-					</span>
-				) : null}
+				<AccessBadge course={course} />
 			</div>
 			<div className="mt-3.5 flex gap-3">
 				<Image
