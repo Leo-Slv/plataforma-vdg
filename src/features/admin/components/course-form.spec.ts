@@ -44,6 +44,7 @@ test('edit mode renders "Salvar curso", the delete action, and content panel', (
 			mode: 'edit',
 			defaultValues: baseValues,
 			areas: [],
+			modulesHref: '/admin/courses/course-1/modules',
 			onCancel: noop,
 			onSubmit: noop,
 			isSubmitting: false,
@@ -54,6 +55,7 @@ test('edit mode renders "Salvar curso", the delete action, and content panel', (
 	assert.match(html, /Salvar curso/);
 	assert.match(html, /Excluir curso/);
 	assert.match(html, /Conteúdo/);
+	assert.match(html, /href="\/admin\/courses\/course-1\/modules"/);
 });
 
 test('renders "Pré-visualizar" as a link when previewHref is given', () => {

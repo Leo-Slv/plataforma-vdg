@@ -265,6 +265,11 @@ function CourseFormPage(props: CourseFormPageProps) {
 				defaultValues={defaultValues}
 				areas={areas}
 				previewHref={course ? appRoutes.courses.detail(course.slug) : undefined}
+				modulesHref={
+					props.mode === 'edit'
+						? appRoutes.admin.courseModules(props.courseId)
+						: undefined
+				}
 				onCancel={goToList}
 				onSubmit={handleSubmit}
 				isSubmitting={isSubmitting}

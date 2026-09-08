@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -20,6 +21,7 @@ type CourseFormProps = {
 	defaultValues: CourseFormValues;
 	areas: Area[];
 	previewHref?: string;
+	modulesHref?: string;
 	onCancel: () => void;
 	onSubmit: (values: CourseFormValues) => void;
 	isSubmitting: boolean;
@@ -33,6 +35,7 @@ function CourseForm({
 	defaultValues,
 	areas,
 	previewHref,
+	modulesHref,
 	onCancel,
 	onSubmit,
 	isSubmitting,
@@ -194,14 +197,17 @@ function CourseForm({
 						}
 					/>
 
-					{mode === 'edit' ? (
+					{mode === 'edit' && modulesHref ? (
 						<div className="border-t border-white/8 pt-4.5">
 							<span className="font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">
 								Conteúdo
 							</span>
-							<span className="mt-2 block font-sans text-[12.5px] font-light text-white/50">
+							<Link
+								href={modulesHref}
+								className="mt-2 block font-sans text-[12.5px] text-[oklch(0.72_0.1_248)]"
+							>
 								Gerenciar módulos →
-							</span>
+							</Link>
 						</div>
 					) : null}
 
