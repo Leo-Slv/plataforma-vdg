@@ -17,8 +17,18 @@ src/features/<feature>/
 of implementing business logic inline. `src/components/**` only holds
 cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
 
-- `landing/` — the public `/` page. Static content only (no `api/`, `hooks/`,
-  or `schemas/` — it makes no CourseCore calls); see
+- `landing/` — the public `/` page. Mostly static editorial content, but
+  the first feature to call two `[AllowAnonymous]` public endpoints
+  (`GET /api/courses/public-summary`, `GET /api/testimonials/public`) via
+  a normal `useQuery` — same pattern as every gated feature, just with no
+  `enabled` precondition since the page is public. Hero stats, the areas
+  grid, the "Formação em destaque" panel, and testimonials are real; the
+  "Comece por aqui" cards stay editorial (enriched by real cover
+  image/link when a live course happens to match by slug) since the
+  public summary deliberately omits pricing/duration/area fields. Every
+  data-backed section hides on load/error/empty instead of showing
+  placeholder content — a public marketing page degrades to its
+  pre-revision static-only look rather than ever looking broken; see
   `Docs/specs/landing/landing-page.md`.
 - `auth/` — maps to the backend's Auth module. Currently `/register`,
   `/login`, and `/confirm-email` (resend/change-email etc. can join

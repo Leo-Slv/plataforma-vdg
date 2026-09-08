@@ -29,8 +29,17 @@ public/
 
 ## Módulos ativos
 
-- **Landing page** (`/`) — página pública de entrada, com conteúdo estático
-  (sem chamada à API do CourseCore ainda). Spec em
+- **Landing page** (`/`) — página pública de entrada. Estatísticas do
+  hero, grade "Áreas de ensino", painel "Formação em destaque" e
+  depoimentos vêm de `GET /api/courses/public-summary` e
+  `GET /api/testimonials/public` (ambos `[AllowAnonymous]`, sem token
+  necessário). Os 3 cards "Comece por aqui" continuam com copy editorial
+  fixa (preço/duração/módulos não vêm no endpoint público — de propósito,
+  por segurança) e só ganham capa/link reais quando o slug bate com um
+  curso publicado de verdade. Qualquer seção com dado real (stats, grade
+  de áreas, formação em destaque, depoimentos) some por completo se
+  ainda não carregou, deu erro, ou veio vazia — nunca mostra algo
+  fabricado nem um estado de erro visível numa página pública. Spec em
   `Docs/specs/landing/landing-page.md`.
 - **Cadastro** (`/register`) — formulário público de registro (nome, e-mail,
   senha, CAPTCHA Cloudflare Turnstile), chama `POST /api/auth/register`.

@@ -1,184 +1,232 @@
-# Landing Page — Implementation Plan
+# Landing Page — Implementation Plan (2026-09-08 revision)
 
-Implements [`landing-page.md`](landing-page.md).
+Implements the revised [`landing-page.md`](landing-page.md). Supersedes
+the original plan's "no HTTP calls" premise — this feature gets `api/`,
+`hooks/`, `schemas/`, and new `model/` files for the first time.
 
-## Route constants
-
-Add to `src/lib/routes/app-routes.ts` (extends the existing `system` group
-and introduces an `auth`/`catalog` group — no routes exist there yet):
-
-```ts
-const appRoutes = {
-	system: {
-		home: '/',
-	},
-	auth: {
-		login: '/login',
-		register: '/register',
-	},
-	catalog: {
-		index: '/catalog',
-	},
-} as const;
-```
-
-English slugs, matching the CourseCore endpoint naming
-(`/api/auth/register`) and this repo's code-language convention. These
-paths are link targets only — no `src/app/login`, `src/app/register`, or
-`src/app/catalog` route is created by this plan (non-goal per the spec);
-until those features are specced, Next.js will 404 on click, which is
-acceptable per the spec's acceptance criteria ("routes may be stubbed").
-
-## Feature slice: `src/features/landing/`
-
-This feature has no HTTP calls (spec: "No network call is made to
-CourseCore from this page") and no per-request server state, so it skips
-`api/`, `hooks/`, and `schemas/` — nothing in those folders would have a
-reason to exist yet.
+## Data layer: `src/features/landing/`
 
 ```text
 src/features/landing/
+├── schemas/
+│   ├── public-catalog-summary.schema.ts
+│   └── testimonial.schema.ts
 ├── model/
-│   └── featured-course.ts       # FeaturedCourse type
-├── lib/
-│   └── landing-content.ts       # all static copy: hero, stats, featured
-│                                 # courses, how-it-works steps, footer
-└── components/
-    ├── landing-page.tsx         # composes the sections below, in order
-    ├── landing-header.tsx
-    ├── landing-hero.tsx
-    ├── featured-courses-section.tsx
-    ├── featured-course-card.tsx # one card, used 3x by the section above
-    ├── how-it-works-section.tsx
-    ├── landing-footer.tsx
-    └── *.spec.ts                # colocated, see "Tests" below
+│   ├── public-catalog-summary.ts
+│   └── testimonial.ts
+├── api/
+│   ├── get-public-catalog-summary.ts   # GET /api/courses/public-summary
+│   └── get-public-testimonials.ts      # GET /api/testimonials/public
+└── hooks/
+    └── landing.queries.ts              # usePublicCatalogSummaryQuery, usePublicTestimonialsQuery
 ```
 
-`src/app/page.tsx` is replaced with a thin wrapper:
+### `schemas/public-catalog-summary.schema.ts`
 
-```tsx
-import { LandingPage } from '@/features/landing/components/landing-page';
+```ts
+const publicFeaturedCourseSchema = z.object({
+	id: z.string(),
+	title: z.string(),
+	slug: z.string(),
+	description: z.string(),
+	thumbnailUrl: z.string().nullable(),
+});
 
-export default function Home() {
-	return <LandingPage />;
+const publicAreaSummarySchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	slug: z.string(),
+	publishedCourseCount: z.number(),
+});
+
+const publicCatalogSummarySchema = z.object({
+	activeAreaCount: z.number(),
+	publishedCourseCount: z.number(),
+	featuredCourses: z.array(publicFeaturedCourseSchema),
+	highlightedCourse: publicFeaturedCourseSchema.nullable(),
+	areas: z.array(publicAreaSummarySchema),
+});
+```
+
+### `schemas/testimonial.schema.ts`
+
+```ts
+const testimonialSchema = z.object({
+	id: z.string(),
+	authorName: z.string(),
+	quote: z.string(),
+	avatarUrl: z.string().nullable(),
+	courseId: z.string().nullable(),
+	published: z.boolean(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+});
+```
+
+### `api/get-public-catalog-summary.ts` / `api/get-public-testimonials.ts`
+
+Same thin-wrapper shape as every other `api/*.ts` file in this codebase
+(`apiFetch` + `schema.parse`). Both hit `[AllowAnonymous]` routes —
+`apiFetch` still attaches a bearer token if one happens to exist (a
+logged-in user could in theory land on `/`), which is harmless since the
+routes don't require it.
+
+### `hooks/landing.queries.ts`
+
+```ts
+function usePublicCatalogSummaryQuery() {
+	return useQuery({
+		queryKey: queryKeys.landing.catalogSummary,
+		queryFn: getPublicCatalogSummary,
+	});
+}
+
+function usePublicTestimonialsQuery() {
+	return useQuery({
+		queryKey: queryKeys.landing.testimonials,
+		queryFn: getPublicTestimonials,
+	});
 }
 ```
 
-### `model/featured-course.ts`
+No `{ enabled }` option on either — unlike every gated admin/catalog
+query, there's no permission or route-param precondition here; the page
+is public and always wants both as soon as it mounts.
 
+`src/lib/constants/query-keys.ts`: add
 ```ts
-type FeaturedCourse = {
-	slug: string;
-	title: string;
-	category: string;
-	moduleCount: number;
-	lessonCount: number;
-	durationLabel: string; // "7h", "2h30", "12h" — pre-formatted, not computed
-	price: 'free' | { amountLabel: string }; // "free" | { amountLabel: "R$ 149" }
-	statusLabel: string; // "Aberto para toda a igreja", "Turmas novas todo mês", "2 aulas liberadas · certificado"
-	coverImageUrl: string;
-};
+landing: {
+	catalogSummary: ['landing', 'catalog-summary'] as const,
+	testimonials: ['landing', 'testimonials'] as const,
+},
 ```
 
-### `lib/landing-content.ts`
+## Content restructuring
 
-One module, exporting the static editorial data named in the spec:
+`lib/landing-content.ts` keeps everything that has no live counterpart:
+`heroContent` (drop the `stats` array — that's now live), `featuredCourses`
+(unchanged, still the 3 editorial entries with full metadata),
+`howItWorksIntro`/`howItWorksSteps`, `footerContent`, plus new static
+content for the closing CTA and the featured-formation panel's cohort
+copy:
 
-- `heroContent`: eyebrow, headline, subtext (desktop + mobile variant),
-  primary/secondary CTA labels, stat row (`{ value, label }[]`).
-- `featuredCourses: FeaturedCourse[]` — the 3 entries from the spec
-  ("Fundamentos da Fé", "Curso de Batismo", "Escola de Líderes"), verbatim
-  copy.
-- `howItWorksSteps: { step: string; title: string; description: string }[]`
-  — the 3 entries from the spec.
-- `footerContent`: org name, school name, link labels, copyright year.
+```ts
+const featuredFormationCopy = {
+	eyebrow: 'Formação em destaque',
+	description:
+		'8 módulos, mentoria em grupo e certificado ao final. Turma limitada, com encontros presenciais mensais.',
+	primaryCtaLabel: 'Inscrever-se',
+	secondaryCtaLabel: 'Saiba mais →',
+} as const;
 
-Centralizing content in one file (rather than inlining strings per
-component) is what makes the "revisit once CourseCore exposes a public
-catalog/stats endpoint" note in the spec actionable later: swapping this
-module for a React Query hook is a localized change.
+const closingCtaContent = {
+	headline: 'Comece sua jornada hoje.',
+	subtext:
+		'Crie sua conta gratuita e tenha acesso imediato aos cursos abertos da sua área.',
+	primaryCtaLabel: 'Criar conta gratuita',
+	secondaryCtaLabel: 'Ver o catálogo',
+} as const;
+```
 
-### Components
+`model/featured-course.ts` is unchanged.
 
-- **`landing-header.tsx`**: brand + nav (`Cursos`, `Áreas`, `Sobre a
-  escola` as inert placeholders — render as non-interactive text or
-  `<span>`, not `<a href="#">`, to avoid implying a working link) + two
-  `Button`s (`variant="outline"` for "Entrar" linking to
-  `appRoutes.auth.login`, `variant="default"` for "Criar conta" linking
-  to `appRoutes.auth.register`) via `asChild` wrapping `next/link`.
-- **`landing-hero.tsx`**: renders `heroContent`. CTAs are `Button asChild`
-  wrapping `Link` (primary → `appRoutes.auth.register`, secondary →
-  `appRoutes.catalog.index`). Stat row hidden below `sm` breakpoint per
-  the mobile mockup (`1b` drops it).
-- **`featured-course-card.tsx`**: one `Card` per course — cover image,
-  `Badge` for price (`Gratuito` vs `R$ 149`), title (`CardTitle`),
-  category/module meta, status line. Takes a `FeaturedCourse` prop.
-- **`featured-courses-section.tsx`**: section heading + "Todos os cursos
-  →" link (→ `appRoutes.catalog.index`) + a responsive grid (`grid-cols-1`
-  mobile, `grid-cols-3` desktop) mapping `featuredCourses` through
-  `FeaturedCourseCard`.
-- **`how-it-works-section.tsx`**: heading + intro line + 3-column
-  (1-column on mobile) numbered step list from `howItWorksSteps`.
-- **`landing-footer.tsx`**: org/school name, inert link labels (same
-  placeholder treatment as header nav), copyright.
-- **`landing-page.tsx`**: renders header, hero, featured-courses,
-  how-it-works, footer in order. No props, no state.
+## Components
 
-Images: `coverImageUrl` in `landing-content.ts` points at a same-origin
-placeholder path (e.g. `/images/courses/<slug>.jpg`) using `next/image`;
-actual photography is a content task, not a code task, and is out of
-scope here. Until real files exist, use a solid-fill placeholder image
-already available in `public/` (or, if none exists, a plain
-background-color `div` in `featured-course-card.tsx` sized to the same
-aspect ratio) so the page doesn't 404 on missing assets.
-
-## Styling notes
-
-- Use Tailwind utilities directly against the existing design tokens
-  (`bg-primary`, `text-foreground`, etc. from `globals.css` /
-  `components.json`'s `lyra` preset) — no new tokens introduced.
-  Headings use the `font-heading` class already wired to Jost (see
-  `CardTitle`'s use of it); body copy uses the default body font (DM
-  Sans).
-- No new shadcn primitives needed — `Button`, `Card` (+ sub-parts), and
-  `Badge` cover every element in the mockup.
+- **`landing-page.tsx`** becomes `'use client'`. Calls both hooks,
+  derives the props each section needs, and composes:
+  header → hero → featured-courses → how-it-works → areas-grid (if
+  `summary?.areas.length`) → featured-formation (if
+  `summary?.highlightedCourse`) → testimonials (if
+  `testimonials?.length`) → closing-cta → footer.
+- **`landing-hero.tsx`**: add a `stats: { activeAreaCount: number;
+  publishedCourseCount: number } | undefined` prop. Stat row renders only
+  when `stats` is defined — three items: `activeAreaCount` (label "áreas
+  de ensino"), `publishedCourseCount` (label "cursos publicados"), and
+  the static "11" / "anos de igreja" (always rendered once the other two
+  resolve, matching the mockup's three-item row — hiding the whole row
+  during load rather than showing 2 of 3 items avoids an odd partial
+  state).
+- **`featured-courses-section.tsx`**: add a `liveCourses:
+  PublicFeaturedCourse[] | undefined` prop, passed through to each
+  `FeaturedCourseCard` alongside its static `course` entry. Matching is
+  by slug: `liveCourses?.find(c => c.slug === course.slug)`.
+- **`featured-course-card.tsx`**: add an optional `live?: {
+  thumbnailUrl: string | null; slug: string }` prop. When present: wrap
+  the card in a `Link` to `appRoutes.courses.detail(live.slug)`, and
+  render `live.thumbnailUrl` via `next/image` instead of the striped
+  placeholder when it's non-null. When absent: exactly today's markup
+  (no link, striped placeholder) — a pure additive change, no existing
+  test assertion should need to change for the no-match case.
+- **`areas-grid-section.tsx`** (new): props `{ areas:
+  PublicAreaSummary[] }` (parent only renders this component when
+  non-empty, so no internal empty-state branch needed). Section header +
+  "Ver todas as áreas →" (→ `appRoutes.catalog.index`) + a
+  `grid-cols-{areas.length}`-ish responsive grid (cap the desktop column
+  count sensibly, e.g. `sm:grid-cols-3 lg:grid-cols-6`, since the mockup
+  assumes exactly 6 but the real count could differ) of numbered cells
+  (`String(index + 1).padStart(2, '0')`, `area.name`,
+  `${area.publishedCourseCount} cursos`).
+- **`featured-formation-section.tsx`** (new): props `{ course:
+  PublicFeaturedCourse }` (parent only renders when non-null). Cover
+  image (`course.thumbnailUrl`, falls back to the striped placeholder
+  pattern if null — a featured course *should* have a thumbnail in
+  practice, but don't crash if an admin marked one featured without
+  setting one), eyebrow/description from `featuredFormationCopy`, real
+  `course.title`, both CTAs → `appRoutes.courses.detail(course.slug)`.
+- **`testimonials-section.tsx`** (new): props `{ testimonials:
+  Testimonial[] }` (parent only renders when non-empty). Grid of quote
+  cards — quote, avatar (`testimonial.avatarUrl` via `next/image`, else
+  the shared `/brand/viver-da-graca-mark.png` placeholder already used
+  elsewhere), `authorName`.
+- **`closing-cta-section.tsx`** (new): fully static, from
+  `closingCtaContent` — headline, subtext, two CTAs
+  (`appRoutes.auth.register`, `appRoutes.catalog.index`).
 
 ## Tests
 
-No DOM-testing library is installed (`npm run test` runs Node's built-in
-test runner via `tsx --test`, no jsdom). Adding `@testing-library/react` +
-a DOM environment is more than this presentational feature needs, so
-component specs render with `react-dom/server`'s `renderToStaticMarkup`
-(pure Node, already available via `react-dom`, no new dependency) and
-assert against the resulting HTML string. Planned specs:
+`landing-page.tsx` now calls hooks (`useQuery`), so — same precedent as
+every other page-level container in this codebase (`course-modules-page`,
+`lesson-editor-page`, `users-list-page`) — it gets **no** `.spec.ts` of
+its own; **delete** `landing-page.spec.ts` and move its coverage down to
+the presentational sections it composes, each of which stays plain-props,
+no hooks, and testable with `renderToStaticMarkup` same as before:
 
-- `landing-content.spec.ts` (in `lib/`, not `components/` — not a
-  component): `featuredCourses` has exactly 3 entries with the expected
-  titles/prices; `howItWorksSteps` has exactly 3 entries.
-- `landing-hero.spec.ts`: rendered markup contains the headline text and
-  both CTA `href`s point at `appRoutes.auth.register` /
-  `appRoutes.catalog.index`.
-- `featured-courses-section.spec.ts`: renders exactly 3
-  `featured-course-card` outputs (e.g. count title occurrences).
-- `landing-page.spec.ts`: smoke test — renders without throwing and the
-  output contains one instance of each section's identifying text (hero
-  headline, "Comece por aqui", "Como a escola funciona", footer org name).
+- `landing-hero.spec.ts`: extend — with `stats` provided, the rendered
+  markup contains the real numbers; with `stats` undefined, no stat row
+  markup appears at all (assert the "áreas de ensino" label is absent).
+- `featured-courses-section.spec.ts`: extend — a matching `liveCourses`
+  entry produces a `Link` `href` to the course's detail route for that
+  card; a non-matching (or absent) `liveCourses` list produces the exact
+  previous output (no link).
+- `areas-grid-section.spec.ts` (new): renders one cell per area with the
+  right name/count and numbering.
+- `featured-formation-section.spec.ts` (new): renders the real title and
+  both CTAs pointing at the course's detail route.
+- `testimonials-section.spec.ts` (new): renders each quote/author; falls
+  back to the brand-mark image when `avatarUrl` is `null`.
+- `landing-content.spec.ts`: unchanged assertions for `featuredCourses`/
+  `howItWorksSteps`; drop the now-removed `heroContent.stats` if any spec
+  touched it (check first — the existing spec file doesn't).
 
 ## Steps
 
-1. Add `auth`/`catalog` route groups to `app-routes.ts`.
-2. Add `model/featured-course.ts` and `lib/landing-content.ts`.
-3. Build components bottom-up: `featured-course-card` →
-   `featured-courses-section` → `landing-header` / `landing-hero` /
-   `how-it-works-section` / `landing-footer` → `landing-page`.
-4. Replace `src/app/page.tsx` with the thin wrapper.
-5. Add the colocated specs listed above.
-6. Run `npm run test`, `npm run typecheck`, `npm run lint`; fix until
-   green.
-7. Manually check `/` in the dev server at both a desktop and a mobile
-   viewport against mockup frames `1a`/`1b`.
-8. Update `src/features/README.md`'s "No feature folder exists yet" line
-   and root `README.md` per CLAUDE.md's "Docs" workflow step.
-9. Commit in small, conventional-commit chunks separated by context (e.g.
-   route constants; feature content/model; components; app wiring; tests;
-   docs) — per CLAUDE.md, never one giant commit.
+1. Schemas, model, api, hooks, query keys.
+2. `lib/landing-content.ts` edits (drop hero stats, add
+   `featuredFormationCopy`/`closingCtaContent`).
+3. `featured-course-card.tsx` (`live` prop) →
+   `featured-courses-section.tsx` (`liveCourses` prop) → `landing-hero.tsx`
+   (`stats` prop) — extend existing components first.
+4. New components: `areas-grid-section.tsx`, `featured-formation-section.tsx`,
+   `testimonials-section.tsx`, `closing-cta-section.tsx`.
+5. `landing-page.tsx`: `'use client'`, wire both hooks, compose every
+   section with its derived props/conditional rendering.
+6. Tests: extend the three touched specs, add the four new ones, delete
+   `landing-page.spec.ts`.
+7. `npm run test`, `npm run typecheck`, `npm run lint`.
+8. Manually check `/` in the dev server (with the CourseCore backend
+   running) at both desktop and mobile viewports, and with the backend
+   stopped (to confirm graceful degradation to the pre-revision look).
+9. Update `src/features/README.md`'s landing bullet (no longer "Static
+   content only... makes no CourseCore calls") and root `README.md`.
+10. Commit in small chunks: data layer; component changes; new sections +
+    page wiring; tests; docs.
