@@ -1,4 +1,7 @@
+import Link from 'next/link';
+
 import { cn } from '@/lib/utils';
+import { appRoutes } from '@/lib/routes/app-routes';
 import { formatRoleNames } from '@/features/admin/lib/format-role-names';
 import { formatDateBr } from '@/features/admin/lib/format-date-br';
 import { UserAreaChips } from '@/features/admin/components/user-area-chips';
@@ -37,10 +40,11 @@ function UsersTable({ users, areas }: UsersTableProps) {
 			</div>
 
 			{users.map((user) => (
-				<div
+				<Link
 					key={user.id}
+					href={appRoutes.admin.userEdit(user.id)}
 					className={cn(
-						'grid items-center gap-4 border-b border-white/7 py-4 font-sans text-[13px] text-white/75',
+						'grid items-center gap-4 border-b border-white/7 py-4 font-sans text-[13px] text-white/75 hover:bg-white/3',
 						COLUMNS,
 					)}
 				>
@@ -70,7 +74,7 @@ function UsersTable({ users, areas }: UsersTableProps) {
 						{user.emailVerifiedAt ? 'Confirmado' : 'Pendente'}
 					</span>
 					<span className="text-white/40">{formatDateBr(user.createdAt)}</span>
-				</div>
+				</Link>
 			))}
 		</div>
 	);
