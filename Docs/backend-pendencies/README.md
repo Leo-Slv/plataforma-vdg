@@ -29,6 +29,7 @@ require, the workaround shipped instead, and a rough severity:
 | Course detail (`/courses/[slug]`) | [catalog/course-detail.md](catalog/course-detail.md) | Feature gap (pendencies 5-7 remain: installments, checkout, course "kind") |
 | Lesson player (`/courses/[slug]/lessons/[lessonId]`) | [catalog/lesson-player.md](catalog/lesson-player.md) | **Blocking** |
 | My courses (`/my-courses`) | [catalog/my-courses.md](catalog/my-courses.md) | Feature gap |
+| Profile (`/profile`) | [auth/profile.md](auth/profile.md) | Feature gap |
 
 ## Skipped screens
 

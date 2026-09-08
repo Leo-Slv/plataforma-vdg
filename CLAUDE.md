@@ -118,15 +118,18 @@ envelope pattern when adding new API calls.
   (`Auth:RefreshTokenCookie:*` config in CourseCore) and is sent
   automatically via `credentials: 'include'` (already the default in
   `apiFetch`) — it is never readable or stored from JavaScript.
-- **Known gap, decided 2026-09-02**: CourseCore has no `GET /api/auth/me` (or
-  equivalent "current user") endpoint. The reference project's server-side
-  session bootstrap (`src/lib/auth/session.ts`, used in Server Components to
-  gate routes before render) depends on such an endpoint and is **not**
-  replicated here. For now, authenticated-route gating happens entirely
-  client-side (read the stored access token / decoded JWT claims, redirect if
-  missing or invalid). Revisit this only if a "current user" endpoint gets
-  added to the backend first — that would need its own spec on the CourseCore
-  side before this repo builds against it.
+- **Resolved 2026-09-08**: CourseCore now has `GET /api/auth/me`
+  (`AuthController.MeAsync`, returns `CurrentUserResponse`), closing the gap
+  noted here since 2026-09-02. This repo still doesn't replicate the
+  reference project's server-side session bootstrap (`src/lib/auth/session.ts`,
+  used in Server Components to gate routes before render) — that's a bigger
+  architectural change (SSR data fetching isn't used anywhere in this repo
+  yet) than what `/profile` (the endpoint's first consumer, see
+  `Docs/specs/auth/profile.md`) needed. Authenticated-route gating stays
+  entirely client-side for now (read the stored access token / decoded JWT
+  claims, redirect if missing or invalid); `/api/auth/me` is used
+  client-side, via TanStack Query, wherever a screen needs the current
+  user's own data.
 
 ## Implementation Workflow
 
