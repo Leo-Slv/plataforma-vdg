@@ -27,6 +27,12 @@ import { deleteLessonVideo } from '@/features/admin/api/delete-lesson-video';
 import { getUsers } from '@/features/admin/api/get-users';
 import { createUser } from '@/features/admin/api/create-user';
 import { getUserAreaAccess } from '@/features/admin/api/get-user-area-access';
+import { getUser } from '@/features/admin/api/get-user';
+import { updateUser } from '@/features/admin/api/update-user';
+import { grantUserAreaAccess } from '@/features/admin/api/grant-user-area-access';
+import { revokeUserAreaAccess } from '@/features/admin/api/revoke-user-area-access';
+import { getGrantedCourseAccess } from '@/features/admin/api/get-granted-course-access';
+import { grantCourseAccess } from '@/features/admin/api/grant-course-access';
 
 function useAreasQuery(options: { enabled: boolean }) {
 	return useQuery({
@@ -293,6 +299,59 @@ function useUserAreaAccessQuery(userId: string, options: { enabled: boolean }) {
 	});
 }
 
+function useUserQuery(userId: string, options: { enabled: boolean }) {
+	return useQuery({
+		queryKey: queryKeys.admin.user(userId),
+		queryFn: () => getUser(userId),
+		enabled: options.enabled && userId.length > 0,
+		retry: false,
+	});
+}
+
+function useUpdateUserMutation() {
+	return useMutation({
+		mutationFn: ({
+			userId,
+			payload,
+		}: {
+			userId: string;
+			payload: Parameters<typeof updateUser>[1];
+		}) => updateUser(userId, payload),
+	});
+}
+
+function useGrantUserAreaAccessMutation() {
+	return useMutation({
+		mutationFn: ({ userId, areaId }: { userId: string; areaId: string }) =>
+			grantUserAreaAccess(userId, areaId),
+	});
+}
+
+function useRevokeUserAreaAccessMutation() {
+	return useMutation({
+		mutationFn: ({ userId, areaId }: { userId: string; areaId: string }) =>
+			revokeUserAreaAccess(userId, areaId),
+	});
+}
+
+function useGrantedCourseAccessQuery(
+	userId: string,
+	options: { enabled: boolean },
+) {
+	return useQuery({
+		queryKey: queryKeys.admin.grantedCourseAccess(userId),
+		queryFn: () => getGrantedCourseAccess(userId),
+		enabled: options.enabled && userId.length > 0,
+	});
+}
+
+function useGrantCourseAccessMutation() {
+	return useMutation({
+		mutationFn: ({ userId, courseId }: { userId: string; courseId: string }) =>
+			grantCourseAccess(userId, courseId),
+	});
+}
+
 export {
 	useAreasQuery,
 	useAreaQuery,
@@ -320,4 +379,10 @@ export {
 	useUsersQuery,
 	useCreateUserMutation,
 	useUserAreaAccessQuery,
+	useUserQuery,
+	useUpdateUserMutation,
+	useGrantUserAreaAccessMutation,
+	useRevokeUserAreaAccessMutation,
+	useGrantedCourseAccessQuery,
+	useGrantCourseAccessMutation,
 };
