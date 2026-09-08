@@ -17,7 +17,6 @@ import {
 	useDeleteCourseModuleMutation,
 	useReorderCourseModulesMutation,
 	useCreateLessonMutation,
-	useUpdateLessonMutation,
 	useDeleteLessonMutation,
 	useReorderLessonsMutation,
 } from '@/features/admin/hooks/admin.queries';
@@ -35,7 +34,6 @@ type ModalState =
 	| { type: 'create-module' }
 	| { type: 'edit-module'; moduleId: string }
 	| { type: 'create-lesson'; moduleId: string }
-	| { type: 'edit-lesson'; moduleId: string; lessonId: string }
 	| null;
 
 type CourseModulesPageProps = {
@@ -55,7 +53,6 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 	const deleteModuleMutation = useDeleteCourseModuleMutation();
 	const reorderModulesMutation = useReorderCourseModulesMutation();
 	const createLessonMutation = useCreateLessonMutation();
-	const updateLessonMutation = useUpdateLessonMutation();
 	const deleteLessonMutation = useDeleteLessonMutation();
 	const reorderLessonsMutation = useReorderLessonsMutation();
 
@@ -139,25 +136,6 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 						description: values.description,
 						freePreview: values.freePreview,
 					},
-				},
-				{
-					onSuccess: () => {
-						invalidateModules();
-						setModal(null);
-					},
-					onError: () => setPageError(GENERIC_ERROR_MESSAGE),
-				},
-			);
-			return;
-		}
-
-		if (modal?.type === 'edit-lesson') {
-			updateLessonMutation.mutate(
-				{
-					courseId,
-					moduleId: modal.moduleId,
-					lessonId: modal.lessonId,
-					payload: values,
 				},
 				{
 					onSuccess: () => {
@@ -349,11 +327,13 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 										})
 									}
 									onEditLesson={(lessonId) =>
-										setModal({
-											type: 'edit-lesson',
-											moduleId: courseModule.id,
-											lessonId,
-										})
+										router.push(
+											appRoutes.admin.lessonEdit(
+												courseId,
+												courseModule.id,
+												lessonId,
+											),
+										)
 									}
 									onMoveLessonUp={(lessonId) => {
 										const lessonIndex = courseModule.lessons.findIndex(
@@ -429,32 +409,6 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 					isSubmitting={createLessonMutation.isPending}
 				/>
 			) : null}
-
-			{modal?.type === 'edit-lesson'
-				? (() => {
-						const editingModule = modules.find((m) => m.id === modal.moduleId);
-						const editingLesson = editingModule?.lessons.find(
-							(lesson) => lesson.id === modal.lessonId,
-						);
-						if (!editingLesson) {
-							return null;
-						}
-						return (
-							<LessonFormModal
-								mode="edit"
-								defaultValues={{
-									title: editingLesson.title,
-									description: editingLesson.description,
-									freePreview: editingLesson.freePreview,
-									published: editingLesson.published,
-								}}
-								onClose={() => setModal(null)}
-								onSubmit={handleLessonSubmit}
-								isSubmitting={updateLessonMutation.isPending}
-							/>
-						);
-					})()
-				: null}
 		</div>
 	);
 }
