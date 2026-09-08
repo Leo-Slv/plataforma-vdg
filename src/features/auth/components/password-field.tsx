@@ -1,6 +1,7 @@
 'use client';
 
 import { useId, useState, type ComponentProps, type ReactNode } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { passwordStrengthSegments } from '@/features/auth/lib/password-strength';
@@ -59,9 +60,14 @@ function PasswordField({
 				<button
 					type="button"
 					onClick={() => setVisible((current) => !current)}
-					className="shrink-0 font-sans text-[11px] text-white/40"
+					aria-label={visible ? 'Ocultar senha' : 'Mostrar senha'}
+					className="shrink-0 text-white/40"
 				>
-					{visible ? 'ocultar' : 'mostrar'}
+					{visible ? (
+						<EyeOff className="size-4.5" aria-hidden />
+					) : (
+						<Eye className="size-4.5" aria-hidden />
+					)}
 				</button>
 			</div>
 

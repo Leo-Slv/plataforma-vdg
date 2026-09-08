@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 
 import { PasswordField } from '@/features/auth/components/password-field';
 
-test('starts masked, with the "mostrar" toggle and the length helper', () => {
+test('starts masked, with the "Mostrar senha" toggle and the length helper', () => {
 	const html = renderToStaticMarkup(
 		createElement(PasswordField, {
 			label: 'Senha',
@@ -16,7 +16,7 @@ test('starts masked, with the "mostrar" toggle and the length helper', () => {
 	);
 
 	assert.match(html, /type="password"/);
-	assert.match(html, />mostrar</);
+	assert.match(html, /aria-label="Mostrar senha"/);
 	assert.match(html, /Mínimo de 12 caracteres\./);
 });
 
