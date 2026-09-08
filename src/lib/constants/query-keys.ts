@@ -5,6 +5,9 @@
  * architecture is based on (see CLAUDE.md).
  */
 const queryKeys = {
+	auth: {
+		currentUser: ['auth', 'current-user'] as const,
+	},
 	catalog: {
 		list: ['catalog', 'list'] as const,
 		detail: (courseId: string) => ['catalog', 'detail', courseId] as const,

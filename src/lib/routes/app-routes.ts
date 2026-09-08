@@ -15,6 +15,9 @@ const appRoutes = {
 	myCourses: {
 		index: '/my-courses',
 	},
+	profile: {
+		index: '/profile',
+	},
 	courses: {
 		detail: (slug: string) => `/courses/${slug}`,
 		lesson: (slug: string, lessonId: string) =>
