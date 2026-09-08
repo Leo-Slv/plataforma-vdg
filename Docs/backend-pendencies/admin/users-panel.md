@@ -176,6 +176,29 @@ new "Painel admin — CRUDs de entidades" mockup group.
   accepted as-is — no richer status model built. The dropdown should just
   render as a toggle.
 
+## 8. No batch endpoint to list area grants for multiple users at once
+
+- **Mockup expects** (`1q`): an "Áreas liberadas" column per row in a
+  potentially large user table.
+- **Backend today**: pendency 2's resolution added
+  `GET /api/access/user-area/{userId}` — one user at a time. There's no
+  `GET /api/access/user-area?userIds=...` or similar batch shape, unlike
+  pendency 1's role names (`FindRoleNamesByUserIdsAsync`, batch-fetched
+  server-side and included directly on `UserResponse`/the list endpoint).
+- **What's needed**: a batch read (e.g.
+  `GET /api/access/user-area?userIds=a,b,c` or folding granted-area ids
+  directly into `UserResponse`/`GET /api/users`, the same way `RoleNames`
+  already is) so a page of users doesn't cost one request per row.
+- **Workaround shipped**: `Docs/specs/admin/users-list.md` fetches area
+  access per row, scoped to the current page (typically ≤20 users) — see
+  that spec's "Open decisions" for why this is judged acceptable here
+  despite `courses-panel.md` rejecting the same N+1 shape for audit-log
+  enrichment (that case was unbounded and decorative; this one is bounded
+  to on-screen rows and is the literal reason the column exists).
+- **Severity**: Cosmetic today (page sizes are small); would become a
+  real performance concern if this list ever grows a much larger page
+  size or an "export all" view.
+
 ## What's already real
 
 - `POST /api/users` (create), `PUT /api/users/{id}` (update, including the

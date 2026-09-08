@@ -126,6 +126,21 @@ public/
   `courses.manage` que já gate a tela inteira. "Excluir aula" reaparece
   aqui e volta para a lista de módulos. Spec em
   `Docs/specs/admin/lesson-editor.md`.
+- **Admin — Usuários** (`/admin/users`) — lista paginada e pesquisável
+  (nome/e-mail) de `GET /api/users`, com contagem real de cadastrados/
+  confirmados no cabeçalho. Coluna "Papel" vem pronta no próprio
+  `UserResponse` (`RoleNames`); "Áreas liberadas" não tem endpoint em
+  lote (só `GET /api/access/user-area/{userId}`, um por usuário), então
+  cada linha da página atual busca a própria — um admin (`RoleNames`
+  inclui "Admin") mostra "Todas" sem chamada, já que o bypass de área é
+  por papel, não por concessão individual. O cabeçalho "E-mail" do
+  mockup na verdade desenha Confirmado/Pendente — a coluna real virou
+  "Status" com esse valor, e o e-mail passou a ser uma segunda linha sob
+  o nome do usuário. "Convidar usuário" cria a conta na hora
+  (`POST /api/users`, senha mínima de 12 caracteres) — sem fluxo de
+  convite por e-mail nem atribuição de papel na criação (isso fica para
+  a tela `1r`, ainda não especificada). Linhas não navegam para lugar
+  nenhum. Spec em `Docs/specs/admin/users-list.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
