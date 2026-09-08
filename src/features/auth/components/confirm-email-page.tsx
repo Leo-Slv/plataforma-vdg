@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { appRoutes } from '@/lib/routes/app-routes';
 import { getUserEmail } from '@/lib/auth/access-token';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
+import { LoadingScreen } from '@/components/loading-screen';
 import { ConfirmEmailForm } from '@/features/auth/components/confirm-email-form';
 
 const CONFIRMED_REDIRECT_DELAY_MS = 900;
@@ -23,7 +24,7 @@ function ConfirmEmailPage() {
 	}
 
 	if (!ready) {
-		return <div className="min-h-screen bg-[#0a0a0b]" />;
+		return <LoadingScreen />;
 	}
 
 	const email = getUserEmail();

@@ -9,6 +9,7 @@ import { authPermissions } from '@/lib/auth/auth-permissions';
 import { useRequirePermission } from '@/lib/auth/use-require-permission';
 import { decodeAccessTokenClaims, hasPermission } from '@/lib/auth/jwt-claims';
 import { isApiError } from '@/lib/http/api-error';
+import { LoadingScreen } from '@/components/loading-screen';
 import {
 	useAreasQuery,
 	useAuditLogsQuery,
@@ -45,7 +46,7 @@ function CoursesPanelPage() {
 	}, [coursesQuery.isError, coursesQuery.error, router]);
 
 	if (!ready) {
-		return <div className="min-h-screen bg-[#0a0a0b]" />;
+		return <LoadingScreen />;
 	}
 
 	const areas = areasQuery.data ?? [];

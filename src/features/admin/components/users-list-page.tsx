@@ -8,6 +8,7 @@ import { authPermissions } from '@/lib/auth/auth-permissions';
 import { useRequirePermission } from '@/lib/auth/use-require-permission';
 import { appRoutes } from '@/lib/routes/app-routes';
 import { isApiError } from '@/lib/http/api-error';
+import { LoadingScreen } from '@/components/loading-screen';
 import {
 	useAreasQuery,
 	useUsersQuery,
@@ -80,7 +81,7 @@ function UsersListPage() {
 	}
 
 	if (!ready) {
-		return <div className="min-h-screen bg-[#0a0a0b]" />;
+		return <LoadingScreen />;
 	}
 
 	const areas = areasQuery.data ?? [];

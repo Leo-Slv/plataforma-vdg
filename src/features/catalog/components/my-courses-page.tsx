@@ -9,6 +9,7 @@ import { getUserName } from '@/lib/auth/access-token';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { isApiError } from '@/lib/http/api-error';
 import { AppNav } from '@/components/app-nav';
+import { LoadingScreen } from '@/components/loading-screen';
 import {
 	useCourseCatalogQuery,
 	useOwnedCourseDetailsQueries,
@@ -57,7 +58,7 @@ function MyCoursesPage() {
 	});
 
 	if (!ready) {
-		return <div className="min-h-screen bg-[#0a0a0b]" />;
+		return <LoadingScreen />;
 	}
 
 	const displayName = getDisplayName(getUserName());
@@ -66,7 +67,11 @@ function MyCoursesPage() {
 
 	return (
 		<div className="min-h-screen bg-[#0a0a0b] text-[#f2f2f0]">
-			<AppNav displayName={displayName} initials={initials} active="my-courses" />
+			<AppNav
+				displayName={displayName}
+				initials={initials}
+				active="my-courses"
+			/>
 
 			{catalogQuery.isPending ? (
 				<p className="px-5 py-16 text-center font-sans text-sm font-light text-white/50 sm:px-10">

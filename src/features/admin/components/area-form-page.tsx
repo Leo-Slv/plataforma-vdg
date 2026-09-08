@@ -9,6 +9,7 @@ import { useRequirePermission } from '@/lib/auth/use-require-permission';
 import { isApiError } from '@/lib/http/api-error';
 import { queryKeys } from '@/lib/constants/query-keys';
 import { useQueryClient } from '@tanstack/react-query';
+import { LoadingScreen } from '@/components/loading-screen';
 import {
 	useAreaQuery,
 	useCreateAreaMutation,
@@ -143,7 +144,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 	}
 
 	if (!ready) {
-		return <div className="min-h-screen bg-[#0a0a0b]" />;
+		return <LoadingScreen />;
 	}
 
 	const isSubmitting = createMutation.isPending || updateMutation.isPending;

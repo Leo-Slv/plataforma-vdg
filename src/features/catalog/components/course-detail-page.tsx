@@ -9,6 +9,7 @@ import { getUserName } from '@/lib/auth/access-token';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { isApiError } from '@/lib/http/api-error';
 import { AppNav } from '@/components/app-nav';
+import { LoadingScreen } from '@/components/loading-screen';
 import {
 	useCourseCatalogQuery,
 	useCourseDetailsQuery,
@@ -53,7 +54,7 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 	});
 
 	if (!ready) {
-		return <div className="min-h-screen bg-[#0a0a0b]" />;
+		return <LoadingScreen />;
 	}
 
 	const displayName = getDisplayName(getUserName());

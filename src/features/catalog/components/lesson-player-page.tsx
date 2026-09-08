@@ -11,6 +11,7 @@ import { getUserName } from '@/lib/auth/access-token';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { isApiError } from '@/lib/http/api-error';
 import { AppNav } from '@/components/app-nav';
+import { LoadingScreen } from '@/components/loading-screen';
 import {
 	useCourseCatalogQuery,
 	useCourseDetailsQuery,
@@ -78,7 +79,7 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 	}, [lessonId]);
 
 	if (!ready) {
-		return <div className="min-h-screen bg-[#0a0a0b]" />;
+		return <LoadingScreen />;
 	}
 
 	const displayName = getDisplayName(getUserName());
@@ -220,9 +221,9 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 									<div className="mt-7 flex items-start justify-between gap-7">
 										<div>
 											<div className="font-heading text-[10.5px] tracking-[0.16em] text-white/42 uppercase">
-												Módulo {String(location.modulePosition).padStart(2, '0')}{' '}
-												· Aula{' '}
-												{String(location.lessonPosition).padStart(2, '0')}
+												Módulo{' '}
+												{String(location.modulePosition).padStart(2, '0')} ·
+												Aula {String(location.lessonPosition).padStart(2, '0')}
 											</div>
 											<h1 className="mt-3 font-heading text-[28px] leading-[1.2] font-extralight">
 												{location.lesson.title}

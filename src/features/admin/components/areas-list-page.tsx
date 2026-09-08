@@ -8,6 +8,7 @@ import { appRoutes } from '@/lib/routes/app-routes';
 import { authPermissions } from '@/lib/auth/auth-permissions';
 import { useRequirePermission } from '@/lib/auth/use-require-permission';
 import { isApiError } from '@/lib/http/api-error';
+import { LoadingScreen } from '@/components/loading-screen';
 import { useAreasQuery } from '@/features/admin/hooks/admin.queries';
 import { AdminSidebar } from '@/features/admin/components/admin-sidebar';
 import { AreasTable } from '@/features/admin/components/areas-table';
@@ -29,7 +30,7 @@ function AreasListPage() {
 	}, [query.isError, query.error, router]);
 
 	if (!ready) {
-		return <div className="min-h-screen bg-[#0a0a0b]" />;
+		return <LoadingScreen />;
 	}
 
 	const activeCount = query.data?.filter((area) => area.active).length ?? 0;

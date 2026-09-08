@@ -9,6 +9,7 @@ import { authPermissions } from '@/lib/auth/auth-permissions';
 import { useRequirePermission } from '@/lib/auth/use-require-permission';
 import { isApiError } from '@/lib/http/api-error';
 import { queryKeys } from '@/lib/constants/query-keys';
+import { LoadingScreen } from '@/components/loading-screen';
 import {
 	useCoursesQuery,
 	useCourseModulesQuery,
@@ -218,7 +219,7 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 	}
 
 	if (!ready) {
-		return <div className="min-h-screen bg-[#0a0a0b]" />;
+		return <LoadingScreen />;
 	}
 
 	const course = coursesQuery.data?.find((item) => item.id === courseId);
