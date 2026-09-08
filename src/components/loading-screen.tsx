@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 function LoadingScreen() {
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-[#0a0a0b]">
+		<div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0b]">
 			<div className="relative flex size-[200px] items-center justify-center">
 				<div className="absolute inset-0 rounded-full border-2 border-white/8" />
 				<div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-[oklch(0.72_0.12_248)] border-r-[oklch(0.72_0.12_248_/_0.35)]" />
