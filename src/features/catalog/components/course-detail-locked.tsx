@@ -1,4 +1,3 @@
-import { accessBadge } from '@/features/catalog/components/course-card';
 import { PreviewModuleCard } from '@/features/catalog/components/preview-module-card';
 import {
 	formatCurrencyBrl,
@@ -52,6 +51,42 @@ function PriceLine({
 	);
 }
 
+function AccessBadge({ course }: { course: CourseCatalogItem }) {
+	if (course.hasAccess) {
+		return null;
+	}
+
+	if (course.pricingModel === 'Free') {
+		return (
+			<span className="mt-6 inline-block rounded-full bg-[#101012] px-4 py-2 font-heading text-[11px] tracking-[0.14em] text-[oklch(0.75_0.1_248)] uppercase">
+				Gratuito
+			</span>
+		);
+	}
+
+	if (course.pricingModel === 'EnrollmentControlled') {
+		return (
+			<span className="mt-6 inline-block rounded-full bg-[#101012] px-4 py-2 font-heading text-[11px] tracking-[0.14em] text-[oklch(0.75_0.1_248)] uppercase">
+				Por inscrição
+			</span>
+		);
+	}
+
+	if (course.priceAmount === null) {
+		return (
+			<span className="mt-6 inline-block rounded-full bg-[#101012] px-4 py-2 font-heading text-[11px] tracking-[0.14em] text-[oklch(0.75_0.1_248)] uppercase">
+				Pago
+			</span>
+		);
+	}
+
+	return (
+		<span className="mt-6 inline-block rounded-full bg-[#f4f4f2] px-4 py-2 font-heading text-[11px] tracking-[0.14em] text-[#0a0a0b] uppercase">
+			{formatCurrencyBrl(course.priceAmount)}
+		</span>
+	);
+}
+
 function PriceCard({ course }: { course: CourseCatalogItem }) {
 	return (
 		<div className="overflow-hidden rounded-[10px] border border-white/12 bg-[#101012] sm:sticky sm:top-5">
@@ -90,7 +125,6 @@ function CourseDetailLocked({
 	areaName,
 	details,
 }: CourseDetailLockedProps) {
-	const badge = accessBadge(course);
 	const moduleWord = course.moduleCount === 1 ? 'módulo' : 'módulos';
 	const lessonWord = course.lessonCount === 1 ? 'aula' : 'aulas';
 
@@ -110,11 +144,7 @@ function CourseDetailLocked({
 						{course.description}
 					</p>
 
-					{badge ? (
-						<span className="mt-6 inline-block rounded-full bg-[#101012] px-4 py-2 font-heading text-[11px] tracking-[0.14em] text-[oklch(0.75_0.1_248)] uppercase">
-							{badge}
-						</span>
-					) : null}
+					<AccessBadge course={course} />
 
 					<div className="mt-8.5 flex flex-wrap gap-9 border-t border-b border-white/9 py-5.5 font-sans text-[13px] font-light text-white/45">
 						<div>

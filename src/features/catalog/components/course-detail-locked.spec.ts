@@ -40,7 +40,7 @@ test('renders "Gratuito" for a free course', () => {
 	assert.match(html, /Discipulado/);
 });
 
-test('renders "Pago" badge and the price with installments for a paid course', () => {
+test('renders the price (not "Pago") as the badge, plus installments in the price card', () => {
 	const html = renderToStaticMarkup(
 		createElement(CourseDetailLocked, {
 			course: course({ pricingModel: 'Paid', priceAmount: 149 }),
@@ -48,10 +48,26 @@ test('renders "Pago" badge and the price with installments for a paid course', (
 		}),
 	);
 
-	assert.match(html, /Pago/);
-	assert.match(html, /R\$\s?149/);
+	assert.doesNotMatch(html, />Pago</);
+	const priceOccurrences = html.split(/R\$\s?149/).length - 1;
+	assert.equal(
+		priceOccurrences,
+		2,
+		'expected the price in the badge and the price card',
+	);
 	assert.match(html, /3× de/);
 	assert.match(html, /R\$\s?49,67/);
+});
+
+test('falls back to a "Pago" badge for a paid course with no priceAmount set', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({ pricingModel: 'Paid', priceAmount: null }),
+			areaName: 'Liderança',
+		}),
+	);
+
+	assert.match(html, />Pago</);
 });
 
 test('renders no price line for a paid course with no priceAmount set', () => {
