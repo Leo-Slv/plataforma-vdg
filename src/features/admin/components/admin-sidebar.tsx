@@ -1,6 +1,8 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
+import { appRoutes } from '@/lib/routes/app-routes';
 
 type AdminSidebarProps = {
 	active: 'areas' | 'courses' | 'users';
@@ -8,11 +10,11 @@ type AdminSidebarProps = {
 };
 
 const NAV_ITEMS = [
-	{ label: 'Cursos', key: 'courses' },
-	{ label: 'Áreas', key: 'areas' },
-	{ label: 'Usuários', key: 'users' },
-	{ label: 'Vídeos', key: 'videos' },
-	{ label: 'Auditoria', key: 'audit' },
+	{ label: 'Cursos', key: 'courses', href: appRoutes.admin.courses },
+	{ label: 'Áreas', key: 'areas', href: appRoutes.admin.areas },
+	{ label: 'Usuários', key: 'users', href: appRoutes.admin.users },
+	{ label: 'Vídeos', key: 'videos', href: null },
+	{ label: 'Auditoria', key: 'audit', href: null },
 ] as const;
 
 function AdminSidebar({ active, areasSummary }: AdminSidebarProps) {
@@ -34,17 +36,27 @@ function AdminSidebar({ active, areasSummary }: AdminSidebarProps) {
 			</div>
 
 			<nav className="mt-5.5 flex flex-col gap-0.75 font-sans text-[13px]">
-				{NAV_ITEMS.map((item) => (
-					<span
-						key={item.key}
-						className={cn(
-							'rounded-md px-3.25 py-2.75',
-							active === item.key ? 'bg-white/7' : 'text-white/50',
-						)}
-					>
-						{item.label}
-					</span>
-				))}
+				{NAV_ITEMS.map((item) =>
+					item.href ? (
+						<Link
+							key={item.key}
+							href={item.href}
+							className={cn(
+								'rounded-md px-3.25 py-2.75',
+								active === item.key ? 'bg-white/7' : 'text-white/50',
+							)}
+						>
+							{item.label}
+						</Link>
+					) : (
+						<span
+							key={item.key}
+							className="rounded-md px-3.25 py-2.75 text-white/50"
+						>
+							{item.label}
+						</span>
+					),
+				)}
 			</nav>
 
 			{areasSummary && areasSummary.length > 0 ? (
