@@ -53,21 +53,31 @@ public/
   Spec em `Docs/specs/auth/confirm-email.md`.
 - **Catálogo de cursos** (`/catalog`) — lista áreas e cursos via
   `GET /api/courses/available`, com filtro por área e busca (ambos
-  client-side). Só usa o que a API realmente retorna — sem preço,
-  duração, progresso ou certificado, que o backend ainda não expõe. Spec
-  em `Docs/specs/catalog/course-catalog.md`.
+  client-side). O backend já retorna preço, duração, contagem de módulos/
+  aulas e certificado por curso; ainda não há parcelamento real (fixo em
+  3x, calculado no client) nem checkout. Spec em
+  `Docs/specs/catalog/course-catalog.md`.
 - **Página do curso** (`/courses/[slug]`) — a primeira rota dinâmica do
-  projeto. Sem acesso ao curso, `GET /api/courses/{id}` nem chega a ser
-  chamado (retornaria 403 pra requisição inteira) — a tela usa só o que
-  o catálogo já sabe. Com acesso, mostra descrição, contagem real de
-  módulos/aulas e a lista de módulos, cada um linkando pra sua primeira
-  aula. Spec em `Docs/specs/catalog/course-detail.md`.
+  projeto. `GET /api/courses/{id}` agora é chamado mesmo sem acesso ao
+  curso — o backend parou de retornar 403 pra requisição inteira e passou
+  a devolver a estrutura completa de módulos/aulas, só que com
+  `VideoId`/`DurationSeconds` nulos em toda aula que não for
+  `FreePreview` (a aula liberada continua tocável de verdade, via
+  `/courses/[slug]/lessons/[lessonId]`, mesmo sem o curso inteiro
+  comprado). Card de preço com base em dado real (`R$ {valor}` + parcela
+  calculada), grade "Conteúdo do curso" com cada módulo mostrando
+  "Assistir aula grátis" (quando tem alguma aula liberada) ou "Bloqueado"
+  (quando não tem — sem inventar uma duração que o backend não manda
+  nesse caso). Spec em `Docs/specs/catalog/course-detail.md`.
 - **Player de aula** (`/courses/[slug]/lessons/[lessonId]`) — mostra
   título/descrição da aula, progresso real do curso
   (`GET /api/progress/courses/{id}`) e um botão "Marcar aula como
-  assistida" que chama `POST /api/progress/lessons` de verdade. Sem
-  acesso ao curso, redireciona pra `/courses/[slug]`. O player de vídeo
-  em si é um placeholder inerte — nenhuma rota do backend resolve o
+  assistida" que chama `POST /api/progress/lessons` de verdade — mas só
+  quando o curso é realmente possuído; numa aula grátis assistida sem
+  ter o curso, mostra "Aula grátis" no lugar (sem tracking de progresso,
+  já que não há relação de matrícula). Sem acesso ao curso E a aula não
+  sendo `freePreview`, redireciona pra `/courses/[slug]`. O player de
+  vídeo em si é um placeholder inerte — nenhuma rota do backend resolve o
   vídeo de uma aula ainda. Spec em `Docs/specs/catalog/lesson-player.md`.
 - **Meus cursos** (`/my-courses`) — dashboard com os cursos que a conta
   já possui: um card "continue de onde parou" para o curso em andamento

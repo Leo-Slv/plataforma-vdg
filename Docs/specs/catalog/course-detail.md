@@ -2,151 +2,138 @@
 
 ## Why
 
-Every course card in `/catalog` links to `appRoutes.courses.detail(slug)`
-— a stub since that work shipped. This is the page that lives there:
-what a course actually is, and — for a course the account already has
-access to — its module breakdown.
+Every course card in `/catalog` links to `appRoutes.courses.detail(slug)`.
+This is the page that lives there: what a course actually is, its module
+breakdown, and — for a locked course — how much of that breakdown a
+visitor can preview before enrolling.
 
 ## Source
 
 Design reference: artboard `1g` ("Página do curso") in
 [`Docs/design/mockups/Plataforma VDG.html`](../../design/mockups/Plataforma%20VDG.html).
-Same visual system as `/catalog` (see
-[`course-catalog.md`](course-catalog.md)) and the same top nav — reused
-as-is here rather than reproducing the mockup's own slightly different
-nav for this frame (it drops "Certificados" and the user avatar). One
-shared, consistent nav across every authenticated page beats matching
-each mockup frame's nav pixel-for-pixel, and "Certificados" has no
-backend behind it either way (see `course-catalog.md`'s gap table).
+Same visual system and nav as `/catalog` (see `course-catalog.md`).
 
-**This mockup has the same problem `course-catalog.md` documented, more
-severely.** Read that spec's "What the backend actually returns" first;
-this page needs a second pass because the backend's access model, not
-just missing fields, makes most of the mockup's "browse before you buy"
-design impossible to build as drawn.
+## Revision (2026-09-08): the access model stopped being all-or-nothing
 
-## The access model changes what this page can show, not just what it can't
+The original version of this spec (2026-09-03) documented
+`GetCourseDetailsUseCase` 403ing the entire request for any course the
+account didn't fully own, making the mockup's "browse before you buy"
+layout — modules unlocked as a preview, "Assistir aula grátis" on
+individual lessons — impossible to build. That's closed now
+(`Docs/backend-pendencies/catalog/course-detail.md` pendencies 1-4, 8):
 
-`GET /api/courses/{courseId}` (`GetCourseDetailsUseCase`) — the only
-endpoint with module/lesson data — throws a **403 for the entire
-request** if the account doesn't have access to the course:
+- `GetCourseDetailsUseCase` returns the full module/lesson structure for a
+  locked-but-otherwise-valid course (real account, published course, just
+  missing an area grant) instead of 403ing — `CourseDetailsResponse.HasAccess`
+  says which case you're in. It still hard-403s for the cases that
+  genuinely have nothing to preview (bad account, unpublished course).
+- Every lesson not flagged `FreePreview` reports `VideoId: null` and
+  `DurationSeconds: null` when the course is locked — the enforcement
+  mechanism, not just a display convention. `RequestVideoPlaybackUseCase`
+  independently allows playback for a `FreePreview` lesson regardless of
+  course-level access, so a free lesson is actually watchable, not just
+  visible.
+- `CourseDetailsResponse` also gained `PriceAmount` and `CertificateIssued`
+  (installments are still not modeled — see "Non-goals").
 
-```csharp
-var access = await _courseAccessService.CanUserAccessCourseAsync(userId, courseId, ct);
-if (!access.CanAccess) { throw new ForbiddenException(...); }
-```
-
-Access itself (`CourseAccessService.CanUserAccessCourseAsync`) is
-**all-or-nothing per course** — free, or an area grant covering the
-whole course. There's no partial state.
-
-The mockup assumes something in between: 2 of 8 modules unlocked as a
-preview, "Assistir aula grátis" on individual lessons. That maps to
-`LessonResponse.FreePreview` — a real field — but it's **decorative
-data with no enforcement anywhere**: not in `GetCourseDetailsUseCase`
-(which 403s before any lesson is even reachable without full access),
-not in `RequestVideoPlaybackUseCase` (checks the same all-or-nothing
-`CanUserAccessCourseAsync`, never reads `FreePreview`). Same category as
-`User.EmailVerifiedAt` before the confirm-email work gave it a
-consumer — a column that exists and is written by admin tooling, wired
-to nothing on the read/access side. This spec doesn't build UI around
-`FreePreview`: showing a "grátis" badge on a lesson that 403s the moment
-either its course details or its playback is requested would be a
-worse bug than not showing the badge.
-
-Consequence: **this page's whole shape branches on `hasAccess`,** not
-just individual pieces of content:
-
-- **`hasAccess: true`** → `GET /api/courses/{id}` succeeds. Full page:
-  description, real module/lesson counts, the module list.
-- **`hasAccess: false`** → that call would 403, so this plan never makes
-  it. The page falls back to what `GET /api/courses/available` already
-  returned for this course (title, description, thumbnail,
-  pricingModel) — the same data `/catalog` used to render its card —
-  and shows a locked landing with no module breakdown, because there is
-  none to show without a 403.
-
-`hasAccess` itself comes from the catalog list, not this page — see
-"Data" below.
-
-## What else is in the mockup that isn't in the backend
-
-Beyond what `course-catalog.md` already ruled out (module/lesson counts
-*are* real here, unlike the catalog card — see above):
-
-| Mockup shows | Backend has it? |
-|---|---|
-| "12h de vídeo" | No duration anywhere reachable without playback access per video, one at a time (`VideoPlaybackOutput.DurationSeconds`) — not a course-level or bulk figure. |
-| "Sim" / certificado | No certificate concept anywhere (confirmed in `course-catalog.md`). |
-| "R$ 149", "ou 3× de R$ 49,67" | `PricingModel` is still just `Free`/`Paid`, no amount, no installment concept. |
-| "Inscrever-se agora" (checkout) | No purchase/checkout endpoint — explicit non-goal in the backend's own spec. |
-| "Assistir aula grátis" | `LessonResponse.FreePreview` exists but is unenforced everywhere — see above. |
-| A course "kind" ("· Formação" next to the area name) | No such field on `CourseDetailsResponse`/the catalog item. |
-| A progress bar on a module card | Same per-course-only progress endpoint gap as the catalog page — nothing bulk, nothing module-level. |
+This page and `/courses/[slug]/lessons/[lessonId]` were both still built
+against the old all-or-nothing assumption until this revision.
 
 ## Goals
 
 - Resolve `/courses/[slug]` against the catalog list (`GET
-  /api/courses/available`, same query the catalog page uses — same
-  cache key, so arriving from a catalog click costs no extra request)
-  to find the course and its `hasAccess`.
-- **Owns the course**: show the real title, description, area, module
-  count, lesson count (both summed from `GET /api/courses/{id}`'s real
-  `Modules`/`Lessons`), and the module list itself.
-- **Doesn't own it**: show what the catalog already told the browser
-  (title, description, area, Gratuito/Pago) with no module breakdown,
-  and an enroll CTA — inert, no checkout exists (see table above).
+  /api/courses/available`) to find the course, its `hasAccess`, and the
+  real aggregate counts (`moduleCount`, `lessonCount`, `durationSeconds`,
+  `certificateIssued`, `priceAmount` — all real fields on
+  `CourseCatalogItemResponse`, see `course-catalog.md`).
+- Fetch `GET /api/courses/{course.id}` **regardless of `hasAccess`** —
+  the whole point of this revision. Its response shape differs by case:
+  - **`hasAccess: true`**: every lesson has real `VideoId`/`DurationSeconds`.
+  - **`hasAccess: false`**: only `FreePreview` lessons do; everything
+    else reports `null` for both.
+- **Owns the course**: full module list, each card linking to its first
+  lesson (unchanged from before this revision).
+- **Doesn't own it**: price card (see `Docs/specs/catalog/course-catalog.md`
+  and the 1g price-card fix already shipped), plus a module grid where
+  each card reflects what's actually previewable:
+  - A module with at least one `FreePreview` lesson: real summed
+    duration of *those* lessons, count of free lessons, "Assistir aula
+    grátis" linking to the first one.
+  - A module with none: "Requer inscrição", a disabled "Bloqueado"
+    state, no link — and no duration line, since a locked module's full
+    duration genuinely isn't in the response (every non-free lesson's
+    `DurationSeconds` is `null`).
+- A free-preview lesson is actually playable from
+  `/courses/[slug]/lessons/[lessonId]` without full course access —
+  gated on `location.lesson.freePreview`, not `course.hasAccess`.
 - **Unknown slug**: a not-found state, not a crash.
-- Same authenticated shell as `/catalog` (nav, dark card system).
 
 ## Non-goals
 
-- Everything in the two gap tables above — no invented durations,
-  certificates, prices, installments, free-preview enforcement, or
-  course "kind".
-- **The lesson player** (mockup `1h`). Module cards in the owned view
-  are informational, not links — there's no destination page yet, and
-  no agreed URL shape for one. Revisit once that screen is specced.
-- **Checkout/enrollment actually doing anything.** The button exists
-  because the mockup has one and hiding it would look broken; it
-  doesn't start a flow.
-- **Promoting `FreePreview` to a real feature** (wiring it into access
-  checks). That's a CourseCore change, out of scope here — noted so it
-  isn't mistaken for an oversight.
+- **Installments as real data.** `PriceAmount` is a single total; "ou 3×
+  de R$ X" is still a client-side computed assumption (fixed 3x), not a
+  backend concept — see `course-catalog.md`'s own pendency for this.
+- **Checkout/enrollment actually doing anything.** No purchase endpoint
+  exists; "Inscrever-se agora" renders but starts no flow.
+- **A course "kind" field** ("· Formação" next to the area name) — not on
+  any response.
+- **Progress tracking for a free-preview viewer without course access.**
+  `POST /api/progress/lessons` implies an enrollment relationship; the
+  lesson player hides "Marcar aula como assistida" and the progress bar
+  entirely when `!course.hasAccess`, showing "Aula grátis" instead. Not
+  verified against the backend either way — a conservative choice to
+  avoid an unverified write, not a confirmed restriction.
+- **Locked-module duration for modules with zero free lessons.** The
+  mockup's own example shows a duration ("1h 30min · requer inscrição")
+  for a fully-locked module — not reproducible honestly, since the
+  backend genuinely omits `DurationSeconds` for every non-free lesson in
+  that case. This spec shows no duration there rather than a number that
+  can't be real.
+- **Disabling locked lessons in the lesson-player sidebar.** Clicking a
+  locked lesson from within the free-preview player still navigates and
+  bounces back to the course detail page (the same not-accessible check
+  the URL itself enforces) rather than being visually disabled in place —
+  a safe fallback, not a polished one.
 
 ## Data
 
 1. `useCourseCatalogQuery()` (existing, shared cache) — find the course
-   by `slug`. Not found in the list → not-found state (see "Behavior").
-2. If found and `hasAccess`, a second query,
-   `GET /api/courses/{course.id}` — new, `enabled: hasAccess`. Its
-   `Modules`/`Lessons` drive the module count, lesson count, and module
-   list. This call is never made when `hasAccess` is `false` — that's
-   the point, not an optimization.
+   by `slug`; gives `hasAccess` and every aggregate field.
+2. `useCourseDetailsQuery(course.id, { enabled: Boolean(course) })` — no
+   longer conditioned on `hasAccess`. Feeds the module grid on both the
+   owned and locked views once it resolves; the locked view shows
+   "Carregando conteúdo…" until then, same as the owned view already did.
+3. On the lesson player
+   (`/courses/[slug]/lessons/[lessonId]`): the same details query, also
+   unconditional now. `lessonIsAccessible = course.hasAccess ||
+   location.lesson.freePreview` decides whether to render the player or
+   redirect back to the course detail page.
 
 ## Behavior
 
-- No stored access token → redirect to `/login`, same gate every
-  authenticated page in this repo already has.
-- Catalog list loading → the same loading state `/catalog` uses.
+- No stored access token → redirect to `/login`.
 - Catalog list loaded, no course matches the slug → "Curso não
-  encontrado" with a link back to `/catalog`.
-- Course found, `hasAccess: false` → locked view from catalog data only.
-- Course found, `hasAccess: true`, details loading → loading state for
-  just the module section (title/description/area already known from
-  the catalog match, so they render immediately).
-- Details request somehow still fails (e.g. access was revoked between
-  the two requests) → treat like the locked view rather than an error
-  page; it's a legitimate state, not a failure.
+  encontrado."
+- Course found → price card, stats row, and module grid all render from
+  real data; `hasAccess` only changes which module cards are unlocked and
+  whether the module card links anywhere.
+- Details request genuinely fails (bad account, unpublished course,
+  network error) → same locked-view fallback as before, module section
+  shows nothing rather than an error banner.
+- Lesson player: URL for a lesson that isn't free-preview and course
+  isn't owned → redirect to the course detail page, same as an unknown
+  lesson id.
 
 ## Acceptance criteria
 
 - `/courses/[slug]` with no stored token redirects to `/login`.
-- An unknown slug shows a not-found state, not a blank page or crash.
-- A course with `hasAccess: false` never triggers a request to
-  `GET /api/courses/{id}` and renders title/description/area/badge from
-  the catalog data alone, no module list.
-- A course with `hasAccess: true` renders real module and lesson counts
-  and the real module list from `GET /api/courses/{id}` — no duration,
-  certificate, price, or free-preview state anywhere on the page.
+- An unknown slug shows a not-found state.
+- A locked course shows the price card, the real stats row, and a module
+  grid where free-preview modules link to their first lesson and others
+  show "Bloqueado".
+- An owned course shows the full module list unchanged from before this
+  revision.
+- `/courses/[slug]/lessons/[lessonId]` plays a free-preview lesson even
+  when the course itself is locked; any other lesson on a locked course
+  redirects back to the course detail page.
 - The page uses the same nav and visual system as `/catalog`.

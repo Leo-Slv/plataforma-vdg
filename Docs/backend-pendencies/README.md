@@ -26,7 +26,7 @@ require, the workaround shipped instead, and a rough severity:
 | Login (`/login`) | [auth/login.md](auth/login.md) | Feature gap |
 | Confirm email (`/confirm-email`) | [auth/confirm-email.md](auth/confirm-email.md) | Feature gap |
 | Catalog (`/catalog`) | [catalog/course-catalog.md](catalog/course-catalog.md) | Feature gap |
-| Course detail (`/courses/[slug]`) | [catalog/course-detail.md](catalog/course-detail.md) | Feature gap |
+| Course detail (`/courses/[slug]`) | [catalog/course-detail.md](catalog/course-detail.md) | Feature gap (pendencies 5-7 remain: installments, checkout, course "kind") |
 | Lesson player (`/courses/[slug]/lessons/[lessonId]`) | [catalog/lesson-player.md](catalog/lesson-player.md) | **Blocking** |
 | My courses (`/my-courses`) | [catalog/my-courses.md](catalog/my-courses.md) | Feature gap |
 
