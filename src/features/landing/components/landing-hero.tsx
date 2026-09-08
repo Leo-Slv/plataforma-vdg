@@ -4,7 +4,11 @@ import Link from 'next/link';
 import { appRoutes } from '@/lib/routes/app-routes';
 import { heroContent } from '@/features/landing/lib/landing-content';
 
-function LandingHero() {
+type LandingHeroProps = {
+	stats?: { activeAreaCount: number; publishedCourseCount: number };
+};
+
+function LandingHero({ stats }: LandingHeroProps) {
 	return (
 		<section className="relative overflow-hidden px-5 py-11 sm:px-11 sm:py-26">
 			<Image
@@ -52,16 +56,28 @@ function LandingHero() {
 					</Link>
 				</div>
 
-				<div className="mt-15 hidden gap-11 text-[13px] text-white/45 sm:flex">
-					{heroContent.stats.map((stat) => (
-						<div key={stat.label}>
+				{stats ? (
+					<div className="mt-15 hidden gap-11 text-[13px] text-white/45 sm:flex">
+						<div>
 							<div className="font-heading text-[34px] font-extralight text-[#f2f2f0]">
-								{stat.value}
+								{stats.activeAreaCount}
 							</div>
-							{stat.label}
+							áreas de ensino
 						</div>
-					))}
-				</div>
+						<div>
+							<div className="font-heading text-[34px] font-extralight text-[#f2f2f0]">
+								{stats.publishedCourseCount}
+							</div>
+							cursos publicados
+						</div>
+						<div>
+							<div className="font-heading text-[34px] font-extralight text-[#f2f2f0]">
+								11
+							</div>
+							anos de igreja
+						</div>
+					</div>
+				) : null}
 			</div>
 		</section>
 	);

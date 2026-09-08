@@ -1,25 +1,69 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import type { ReactNode } from 'react';
 
+import { appRoutes } from '@/lib/routes/app-routes';
 import type { FeaturedCourse } from '@/features/landing/model/featured-course';
+
+type LiveCourseInfo = {
+	slug: string;
+	thumbnailUrl: string | null;
+};
 
 function priceLabel(price: FeaturedCourse['price']) {
 	return price === 'free' ? 'Gratuito' : price.amountLabel;
 }
 
-function FeaturedCourseCard({ course }: { course: FeaturedCourse }) {
+function CardWrapper({
+	live,
+	children,
+}: {
+	live?: LiveCourseInfo;
+	children: ReactNode;
+}) {
+	if (live) {
+		return <Link href={appRoutes.courses.detail(live.slug)}>{children}</Link>;
+	}
+	return <>{children}</>;
+}
+
+function CoverImage({ live }: { live?: LiveCourseInfo }) {
+	if (live?.thumbnailUrl) {
+		return (
+			// eslint-disable-next-line @next/next/no-img-element -- external, unconfigured media host
+			<img
+				src={live.thumbnailUrl}
+				alt=""
+				className="absolute inset-0 size-full object-cover"
+			/>
+		);
+	}
+	return (
+		<div
+			className="absolute inset-0"
+			style={{
+				backgroundImage:
+					'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
+			}}
+		/>
+	);
+}
+
+function FeaturedCourseCard({
+	course,
+	live,
+}: {
+	course: FeaturedCourse;
+	live?: LiveCourseInfo;
+}) {
 	const price = priceLabel(course.price);
 	const isFree = course.price === 'free';
 
 	return (
-		<>
+		<CardWrapper live={live}>
 			<div className="hidden text-[#f2f2f0] sm:block">
-				<div
-					className="relative aspect-video overflow-hidden rounded-[10px]"
-					style={{
-						backgroundImage:
-							'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
-					}}
-				>
+				<div className="relative aspect-video overflow-hidden rounded-[10px]">
+					<CoverImage live={live} />
 					<span className="absolute right-2.5 bottom-2.5 rounded bg-[#0a0a0b]/85 px-1.75 py-1 font-sans text-[11.5px] font-medium whitespace-nowrap">
 						{course.lessonCount} aulas · {course.durationLabel}
 					</span>
@@ -57,13 +101,9 @@ function FeaturedCourseCard({ course }: { course: FeaturedCourse }) {
 			</div>
 
 			<div className="flex items-center gap-3.5 sm:hidden">
-				<div
-					className="h-16 w-22 flex-none rounded-md"
-					style={{
-						backgroundImage:
-							'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
-					}}
-				/>
+				<div className="relative h-16 w-22 flex-none overflow-hidden rounded-md">
+					<CoverImage live={live} />
+				</div>
 				<div>
 					<div
 						className={`font-heading text-[10px] tracking-[0.14em] uppercase ${
@@ -78,7 +118,7 @@ function FeaturedCourseCard({ course }: { course: FeaturedCourse }) {
 					</div>
 				</div>
 			</div>
-		</>
+		</CardWrapper>
 	);
 }
 

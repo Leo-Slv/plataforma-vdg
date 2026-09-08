@@ -10,11 +10,6 @@ const heroContent = {
 		'Cursos gratuitos e formações da Igreja Viver da Graça, no seu ritmo.',
 	primaryCtaLabel: 'Começar gratuitamente',
 	secondaryCtaLabel: 'Ver o catálogo',
-	stats: [
-		{ value: '6', label: 'áreas de ensino' },
-		{ value: '18', label: 'cursos publicados' },
-		{ value: '11', label: 'anos de igreja' },
-	],
 } as const;
 
 const featuredCourses: FeaturedCourse[] = [
@@ -78,10 +73,28 @@ const footerContent = {
 	copyrightYear: 2026,
 } as const;
 
+const featuredFormationCopy = {
+	eyebrow: 'Formação em destaque',
+	description:
+		'8 módulos, mentoria em grupo e certificado ao final. Turma limitada, com encontros presenciais mensais.',
+	primaryCtaLabel: 'Inscrever-se',
+	secondaryCtaLabel: 'Saiba mais →',
+} as const;
+
+const closingCtaContent = {
+	headline: 'Comece sua jornada hoje.',
+	subtext:
+		'Crie sua conta gratuita e tenha acesso imediato aos cursos abertos da sua área.',
+	primaryCtaLabel: 'Criar conta gratuita',
+	secondaryCtaLabel: 'Ver o catálogo',
+} as const;
+
 export {
 	heroContent,
 	featuredCourses,
 	howItWorksIntro,
 	howItWorksSteps,
 	footerContent,
+	featuredFormationCopy,
+	closingCtaContent,
 };
