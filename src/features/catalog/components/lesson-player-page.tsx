@@ -17,6 +17,7 @@ import {
 	useCourseDetailsQuery,
 	useCourseProgressQuery,
 	useRegisterLessonProgressMutation,
+	useVideoPlaybackQuery,
 } from '@/features/catalog/hooks/catalog.queries';
 import { findCourseBySlug } from '@/features/catalog/lib/find-course';
 import {
@@ -27,7 +28,10 @@ import {
 	getDisplayName,
 	getInitials,
 } from '@/features/catalog/lib/user-display';
-import { LessonVideoPlaceholder } from '@/features/catalog/components/lesson-video-placeholder';
+import {
+	VideoPlayer,
+	type VideoPlayerStatus,
+} from '@/features/catalog/components/video-player';
 import { LessonSidebar } from '@/features/catalog/components/lesson-sidebar';
 
 type LessonPlayerPageProps = {
@@ -69,6 +73,11 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 		: undefined;
 	const lessonIsAccessible =
 		Boolean(course?.hasAccess) || Boolean(lessonLocation?.lesson.freePreview);
+
+	const videoId = lessonLocation?.lesson.videoId ?? '';
+	const playbackQuery = useVideoPlaybackQuery(videoId, {
+		enabled: ready && lessonIsAccessible && videoId.length > 0,
+	});
 
 	const blockedFromDetails =
 		Boolean(course) &&
@@ -187,6 +196,14 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 						? Math.round(progressQuery.data.progressPercent)
 						: null;
 
+					const videoStatus: VideoPlayerStatus = !location.lesson.videoId
+						? 'no-video'
+						: playbackQuery.isPending
+							? 'loading'
+							: playbackQuery.isError
+								? 'error'
+								: 'ready';
+
 					return (
 						<>
 							<div className="flex items-center justify-between border-b border-white/8 px-5 py-3.5 sm:px-7">
@@ -213,7 +230,10 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 
 							<div className="grid grid-cols-1 sm:grid-cols-[1fr_360px]">
 								<div className="px-5 py-7 sm:px-10">
-									<LessonVideoPlaceholder />
+									<VideoPlayer
+										status={videoStatus}
+										playbackUrl={playbackQuery.data?.playbackUrl}
+									/>
 
 									{course.hasAccess ? (
 										<button
