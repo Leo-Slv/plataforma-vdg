@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 type AdminSidebarProps = {
-	active: 'areas' | 'courses';
+	active: 'areas' | 'courses' | 'users';
 	areasSummary?: { name: string; courseCount: number }[];
 };
 
