@@ -20,6 +20,10 @@ import { createLesson } from '@/features/admin/api/create-lesson';
 import { updateLesson } from '@/features/admin/api/update-lesson';
 import { deleteLesson } from '@/features/admin/api/delete-lesson';
 import { reorderLessons } from '@/features/admin/api/reorder-lessons';
+import { getLessonVideo } from '@/features/admin/api/get-lesson-video';
+import { replaceLessonVideo } from '@/features/admin/api/replace-lesson-video';
+import { markVideoReady } from '@/features/admin/api/mark-video-ready';
+import { deleteLessonVideo } from '@/features/admin/api/delete-lesson-video';
 
 function useAreasQuery(options: { enabled: boolean }) {
 	return useQuery({
@@ -225,6 +229,40 @@ function useReorderLessonsMutation() {
 	});
 }
 
+function useLessonVideoQuery(lessonId: string, options: { enabled: boolean }) {
+	return useQuery({
+		queryKey: queryKeys.admin.lessonVideo(lessonId),
+		queryFn: () => getLessonVideo(lessonId),
+		enabled: options.enabled && lessonId.length > 0,
+		retry: false,
+	});
+}
+
+function useReplaceLessonVideoMutation() {
+	return useMutation({
+		mutationFn: ({
+			lessonId,
+			payload,
+		}: {
+			lessonId: string;
+			payload: Parameters<typeof replaceLessonVideo>[1];
+		}) => replaceLessonVideo(lessonId, payload),
+	});
+}
+
+function useMarkVideoReadyMutation() {
+	return useMutation({
+		mutationFn: ({ videoId }: { videoId: string }) => markVideoReady(videoId),
+	});
+}
+
+function useDeleteLessonVideoMutation() {
+	return useMutation({
+		mutationFn: ({ lessonId }: { lessonId: string }) =>
+			deleteLessonVideo(lessonId),
+	});
+}
+
 export {
 	useAreasQuery,
 	useAreaQuery,
@@ -245,4 +283,8 @@ export {
 	useUpdateLessonMutation,
 	useDeleteLessonMutation,
 	useReorderLessonsMutation,
+	useLessonVideoQuery,
+	useReplaceLessonVideoMutation,
+	useMarkVideoReadyMutation,
+	useDeleteLessonVideoMutation,
 };
