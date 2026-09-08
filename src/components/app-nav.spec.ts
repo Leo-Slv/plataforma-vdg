@@ -64,3 +64,15 @@ test('renders the profile menu trigger, closed by default', () => {
 	assert.doesNotMatch(html, />Sair</);
 	assert.doesNotMatch(html, />Editar perfil</);
 });
+
+test('closed menu markup is absent, so its "Editar perfil" link is not present either', () => {
+	const html = renderToStaticMarkup(
+		createElement(AppNav, {
+			displayName: 'Ana',
+			initials: 'AB',
+			active: 'catalog',
+		}),
+	);
+
+	assert.doesNotMatch(html, /href="\/profile"/);
+});

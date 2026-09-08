@@ -6,9 +6,11 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
-import { clearAccessToken, getUserEmail } from '@/lib/auth/access-token';
+import { getUserEmail } from '@/lib/auth/access-token';
 import { authPermissions } from '@/lib/auth/auth-permissions';
 import { decodeAccessTokenClaims, hasPermission } from '@/lib/auth/jwt-claims';
+import { performLogout } from '@/lib/auth/logout';
+import { logoutUser } from '@/features/auth/api/logout';
 
 type AppNavProps = {
 	displayName: string;
@@ -44,10 +46,7 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 	);
 
 	function handleLogout() {
-		clearAccessToken();
-		// Full page navigation, not router.push: guarantees every cached
-		// query and in-memory auth state resets, not just the URL.
-		window.location.href = appRoutes.auth.login;
+		performLogout(() => logoutUser());
 	}
 
 	return (
@@ -130,9 +129,13 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 							</div>
 						</div>
 						<div className="flex flex-col p-2">
-							<span className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-white/40">
+							<Link
+								href={appRoutes.profile.index}
+								onClick={() => setMenuOpen(false)}
+								className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-white/55 hover:bg-white/5"
+							>
 								Editar perfil
-							</span>
+							</Link>
 							<span className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-white/55">
 								Certificados
 							</span>
