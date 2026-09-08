@@ -1,15 +1,19 @@
 import { accessBadge } from '@/features/catalog/components/course-card';
+import { PreviewModuleCard } from '@/features/catalog/components/preview-module-card';
 import {
 	formatCurrencyBrl,
 	formatCurrencyBrlWithCents,
 } from '@/features/catalog/lib/format-currency-brl';
+import { formatDuration } from '@/features/catalog/lib/format-duration';
 import type { CourseCatalogItem } from '@/features/catalog/model/course-catalog';
+import type { CourseDetails } from '@/features/catalog/model/course-details';
 
 const INSTALLMENTS = 3;
 
 type CourseDetailLockedProps = {
 	course: CourseCatalogItem;
 	areaName: string | null;
+	details?: CourseDetails;
 };
 
 function PriceLine({
@@ -48,57 +52,121 @@ function PriceLine({
 	);
 }
 
-function CourseDetailLocked({ course, areaName }: CourseDetailLockedProps) {
+function PriceCard({ course }: { course: CourseCatalogItem }) {
+	return (
+		<div className="overflow-hidden rounded-[10px] border border-white/12 bg-[#101012] sm:sticky sm:top-5">
+			<div
+				className="flex h-[200px] items-center justify-center"
+				style={{
+					backgroundImage:
+						'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
+				}}
+			>
+				<span className="font-mono text-[10px] text-white/35">
+					trailer do curso
+				</span>
+			</div>
+			<div className="p-6.5">
+				<PriceLine course={course} />
+				<button
+					type="button"
+					className="mt-5.5 block w-full rounded-full bg-[#f4f4f2] py-4.25 text-center font-sans text-[15px] text-[#0a0a0b]"
+				>
+					Inscrever-se agora
+				</button>
+				<div className="mt-6.5 flex flex-col gap-3 border-t border-white/9 pt-5.5 text-[13px] font-light text-white/55">
+					<div>Acesso vitalício ao conteúdo</div>
+					{course.certificateIssued ? (
+						<div>Certificado ao concluir 100%</div>
+					) : null}
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function CourseDetailLocked({
+	course,
+	areaName,
+	details,
+}: CourseDetailLockedProps) {
 	const badge = accessBadge(course);
+	const moduleWord = course.moduleCount === 1 ? 'módulo' : 'módulos';
+	const lessonWord = course.lessonCount === 1 ? 'aula' : 'aulas';
 
 	return (
 		<div className="px-5 py-11 sm:px-10">
-			<div className="max-w-[640px]">
-				{areaName ? (
-					<div className="font-heading text-[11px] tracking-[0.18em] text-white/45 uppercase">
-						{areaName}
-					</div>
-				) : null}
-				<h1 className="mt-4 font-heading text-[40px] leading-[1.06] font-extralight tracking-tight sm:text-[52px]">
-					{course.title}
-				</h1>
-				<p className="mt-5 text-[16px] leading-[1.7] font-light text-pretty text-white/60">
-					{course.description}
-				</p>
+			<div className="grid grid-cols-1 gap-10 sm:grid-cols-[1fr_380px] sm:gap-14">
+				<div className="min-w-0">
+					{areaName ? (
+						<div className="font-heading text-[11px] tracking-[0.18em] text-white/45 uppercase">
+							{areaName}
+						</div>
+					) : null}
+					<h1 className="mt-4 font-heading text-[40px] leading-[1.06] font-extralight tracking-tight sm:text-[52px]">
+						{course.title}
+					</h1>
+					<p className="mt-5 max-w-[600px] text-[16px] leading-[1.7] font-light text-pretty text-white/60">
+						{course.description}
+					</p>
 
-				{badge ? (
-					<span className="mt-6 inline-block rounded-full bg-[#101012] px-4 py-2 font-heading text-[11px] tracking-[0.14em] text-[oklch(0.75_0.1_248)] uppercase">
-						{badge}
-					</span>
-				) : null}
-
-				<div className="mt-7 max-w-[380px] overflow-hidden rounded-[10px] border border-white/12 bg-[#101012]">
-					<div
-						className="flex h-[200px] items-center justify-center"
-						style={{
-							backgroundImage:
-								'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
-						}}
-					>
-						<span className="font-mono text-[10px] text-white/35">
-							trailer do curso
+					{badge ? (
+						<span className="mt-6 inline-block rounded-full bg-[#101012] px-4 py-2 font-heading text-[11px] tracking-[0.14em] text-[oklch(0.75_0.1_248)] uppercase">
+							{badge}
 						</span>
-					</div>
-					<div className="p-6.5">
-						<PriceLine course={course} />
-						<button
-							type="button"
-							className="mt-5.5 block w-full rounded-full bg-[#f4f4f2] py-4.25 text-center font-sans text-[15px] text-[#0a0a0b]"
-						>
-							Inscrever-se agora
-						</button>
-						<div className="mt-6.5 flex flex-col gap-3 border-t border-white/9 pt-5.5 text-[13px] font-light text-white/55">
-							<div>Acesso vitalício ao conteúdo</div>
-							{course.certificateIssued ? (
-								<div>Certificado ao concluir 100%</div>
-							) : null}
+					) : null}
+
+					<div className="mt-8.5 flex flex-wrap gap-9 border-t border-b border-white/9 py-5.5 font-sans text-[13px] font-light text-white/45">
+						<div>
+							<div className="mb-1.25 font-heading text-xl font-light text-[#f2f2f0]">
+								{course.moduleCount}
+							</div>
+							{moduleWord}
+						</div>
+						<div>
+							<div className="mb-1.25 font-heading text-xl font-light text-[#f2f2f0]">
+								{course.lessonCount}
+							</div>
+							{lessonWord}
+						</div>
+						<div>
+							<div className="mb-1.25 font-heading text-xl font-light text-[#f2f2f0]">
+								{formatDuration(course.durationSeconds)}
+							</div>
+							de vídeo
+						</div>
+						<div>
+							<div className="mb-1.25 font-heading text-xl font-light text-[#f2f2f0]">
+								{course.certificateIssued ? 'Sim' : 'Não'}
+							</div>
+							certificado
 						</div>
 					</div>
+
+					<h2 className="mt-11 font-heading text-2xl font-light">
+						Conteúdo do curso
+					</h2>
+
+					{details ? (
+						<div className="mt-6 grid grid-cols-1 gap-5.5 sm:grid-cols-2">
+							{details.modules.map((module, index) => (
+								<PreviewModuleCard
+									key={module.id}
+									module={module}
+									position={index + 1}
+									slug={course.slug}
+								/>
+							))}
+						</div>
+					) : (
+						<p className="mt-4 font-sans text-sm font-light text-white/45">
+							Carregando conteúdo…
+						</p>
+					)}
+				</div>
+
+				<div>
+					<PriceCard course={course} />
 				</div>
 			</div>
 		</div>

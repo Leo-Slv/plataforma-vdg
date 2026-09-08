@@ -50,7 +50,7 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 		: undefined;
 
 	const detailsQuery = useCourseDetailsQuery(course?.id ?? '', {
-		enabled: ready && Boolean(course?.hasAccess),
+		enabled: ready && Boolean(course),
 	});
 
 	if (!ready) {
@@ -101,7 +101,13 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 					const areaName = findPrimaryAreaName(catalogQuery.data.areas, course);
 
 					if (!course.hasAccess || detailsQuery.isError) {
-						return <CourseDetailLocked course={course} areaName={areaName} />;
+						return (
+							<CourseDetailLocked
+								course={course}
+								areaName={areaName}
+								details={detailsQuery.isSuccess ? detailsQuery.data : undefined}
+							/>
+						);
 					}
 
 					return (

@@ -57,15 +57,23 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 		: undefined;
 
 	const detailsQuery = useCourseDetailsQuery(course?.id ?? '', {
-		enabled: ready && Boolean(course?.hasAccess),
+		enabled: ready && Boolean(course),
 	});
 	const progressQuery = useCourseProgressQuery(course?.id ?? '', {
 		enabled: ready && Boolean(course?.hasAccess),
 	});
 	const registerProgressMutation = useRegisterLessonProgressMutation();
 
+	const lessonLocation = detailsQuery.data
+		? findLessonById(detailsQuery.data, lessonId)
+		: undefined;
+	const lessonIsAccessible =
+		Boolean(course?.hasAccess) || Boolean(lessonLocation?.lesson.freePreview);
+
 	const blockedFromDetails =
-		Boolean(course) && (!course!.hasAccess || detailsQuery.isError);
+		Boolean(course) &&
+		(detailsQuery.isError ||
+			(detailsQuery.isSuccess && (!lessonLocation || !lessonIsAccessible)));
 
 	useEffect(() => {
 		if (blockedFromDetails) {
@@ -207,16 +215,22 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 								<div className="px-5 py-7 sm:px-10">
 									<LessonVideoPlaceholder />
 
-									<button
-										type="button"
-										onClick={handleMarkAsWatched}
-										disabled={registerProgressMutation.isPending}
-										className="mt-5 rounded-full border border-white/20 px-6 py-3.5 font-sans text-[13px] text-[#f2f2f0] disabled:opacity-50"
-									>
-										{registerProgressMutation.isPending
-											? 'Marcando...'
-											: 'Marcar aula como assistida'}
-									</button>
+									{course.hasAccess ? (
+										<button
+											type="button"
+											onClick={handleMarkAsWatched}
+											disabled={registerProgressMutation.isPending}
+											className="mt-5 rounded-full border border-white/20 px-6 py-3.5 font-sans text-[13px] text-[#f2f2f0] disabled:opacity-50"
+										>
+											{registerProgressMutation.isPending
+												? 'Marcando...'
+												: 'Marcar aula como assistida'}
+										</button>
+									) : (
+										<span className="mt-5 inline-block rounded-full bg-[#101012] px-4 py-2 font-heading text-[11px] tracking-[0.14em] text-[oklch(0.75_0.1_248)] uppercase">
+											Aula grátis
+										</span>
+									)}
 
 									<div className="mt-7 flex items-start justify-between gap-7">
 										<div>
