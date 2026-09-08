@@ -14,9 +14,14 @@ const courseCatalogItemSchema = z.object({
 	description: z.string(),
 	thumbnailUrl: z.string().nullable(),
 	displayOrder: z.number(),
-	pricingModel: z.enum(['Free', 'Paid']),
+	pricingModel: z.enum(['Free', 'Paid', 'EnrollmentControlled']),
+	priceAmount: z.number().nullable(),
 	areaIds: z.array(z.string()),
 	hasAccess: z.boolean(),
+	moduleCount: z.number(),
+	lessonCount: z.number(),
+	durationSeconds: z.number(),
+	certificateIssued: z.boolean(),
 });
 
 const courseCatalogSchema = z.object({

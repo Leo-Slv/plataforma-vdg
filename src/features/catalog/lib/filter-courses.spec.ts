@@ -19,8 +19,13 @@ function course(overrides: Partial<CourseCatalogItem>): CourseCatalogItem {
 		thumbnailUrl: null,
 		displayOrder: 0,
 		pricingModel: 'Free',
+		priceAmount: null,
 		areaIds: ['area-1'],
 		hasAccess: true,
+		moduleCount: 3,
+		lessonCount: 9,
+		durationSeconds: 9000,
+		certificateIssued: false,
 		...overrides,
 	};
 }

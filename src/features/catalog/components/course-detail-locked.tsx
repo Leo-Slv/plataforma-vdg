@@ -1,10 +1,52 @@
 import { accessBadge } from '@/features/catalog/components/course-card';
+import {
+	formatCurrencyBrl,
+	formatCurrencyBrlWithCents,
+} from '@/features/catalog/lib/format-currency-brl';
 import type { CourseCatalogItem } from '@/features/catalog/model/course-catalog';
+
+const INSTALLMENTS = 3;
 
 type CourseDetailLockedProps = {
 	course: CourseCatalogItem;
 	areaName: string | null;
 };
+
+function PriceLine({
+	course,
+}: {
+	course: Pick<CourseCatalogItem, 'pricingModel' | 'priceAmount'>;
+}) {
+	if (course.pricingModel === 'Free') {
+		return (
+			<span className="font-heading text-[32px] font-extralight">Gratuito</span>
+		);
+	}
+
+	if (course.pricingModel === 'EnrollmentControlled') {
+		return (
+			<span className="font-heading text-[26px] font-extralight">
+				Por inscrição
+			</span>
+		);
+	}
+
+	if (course.priceAmount === null) {
+		return null;
+	}
+
+	return (
+		<div className="flex items-baseline gap-2">
+			<span className="font-heading text-[32px] font-extralight">
+				{formatCurrencyBrl(course.priceAmount)}
+			</span>
+			<span className="text-[13px] font-light text-white/45">
+				ou {INSTALLMENTS}× de{' '}
+				{formatCurrencyBrlWithCents(course.priceAmount / INSTALLMENTS)}
+			</span>
+		</div>
+	);
+}
 
 function CourseDetailLocked({ course, areaName }: CourseDetailLockedProps) {
 	const badge = accessBadge(course);
@@ -30,12 +72,15 @@ function CourseDetailLocked({ course, areaName }: CourseDetailLockedProps) {
 					</span>
 				) : null}
 
-				<button
-					type="button"
-					className="mt-7 block w-full max-w-[280px] rounded-full bg-[#f4f4f2] py-4 text-center font-sans text-[15px] text-[#0a0a0b]"
-				>
-					Inscrever-se
-				</button>
+				<div className="mt-7 max-w-[340px] rounded-[10px] border border-white/12 bg-[#101012] p-6.5">
+					<PriceLine course={course} />
+					<button
+						type="button"
+						className="mt-5.5 block w-full rounded-full bg-[#f4f4f2] py-4 text-center font-sans text-[15px] text-[#0a0a0b]"
+					>
+						Inscrever-se
+					</button>
+				</div>
 			</div>
 		</div>
 	);

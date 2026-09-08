@@ -15,8 +15,13 @@ function course(overrides: Partial<CourseCatalogItem>): CourseCatalogItem {
 		thumbnailUrl: null,
 		displayOrder: 0,
 		pricingModel: 'Free',
+		priceAmount: null,
 		areaIds: ['area-1'],
 		hasAccess: false,
+		moduleCount: 8,
+		lessonCount: 41,
+		durationSeconds: 43200,
+		certificateIssued: true,
 		...overrides,
 	};
 }
@@ -34,13 +39,41 @@ test('renders "Gratuito" for a free course', () => {
 	assert.match(html, /Discipulado/);
 });
 
-test('renders "Pago" for a paid course', () => {
+test('renders "Pago" badge and the price with installments for a paid course', () => {
 	const html = renderToStaticMarkup(
 		createElement(CourseDetailLocked, {
-			course: course({ pricingModel: 'Paid' }),
+			course: course({ pricingModel: 'Paid', priceAmount: 149 }),
 			areaName: 'Liderança',
 		}),
 	);
 
 	assert.match(html, /Pago/);
+	assert.match(html, /R\$\s?149/);
+	assert.match(html, /3× de/);
+	assert.match(html, /R\$\s?49,67/);
+});
+
+test('renders no price line for a paid course with no priceAmount set', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({ pricingModel: 'Paid', priceAmount: null }),
+			areaName: 'Liderança',
+		}),
+	);
+
+	assert.doesNotMatch(html, /R\$/);
+});
+
+test('renders "Por inscrição" for an enrollment-controlled course', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({
+				pricingModel: 'EnrollmentControlled',
+				priceAmount: null,
+			}),
+			areaName: 'Liderança',
+		}),
+	);
+
+	assert.match(html, /Por inscrição/);
 });

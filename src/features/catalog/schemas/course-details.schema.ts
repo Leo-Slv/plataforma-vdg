@@ -24,7 +24,7 @@ const courseDetailsSchema = z.object({
 	slug: z.string(),
 	description: z.string(),
 	thumbnailUrl: z.string().nullable(),
-	pricingModel: z.enum(['Free', 'Paid']),
+	pricingModel: z.enum(['Free', 'Paid', 'EnrollmentControlled']),
 	areaIds: z.array(z.string()),
 	modules: z.array(courseModuleSchema),
 });

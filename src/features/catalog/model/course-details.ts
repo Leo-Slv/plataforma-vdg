@@ -22,7 +22,7 @@ type CourseDetails = {
 	slug: string;
 	description: string;
 	thumbnailUrl: string | null;
-	pricingModel: 'Free' | 'Paid';
+	pricingModel: 'Free' | 'Paid' | 'EnrollmentControlled';
 	areaIds: string[];
 	modules: CourseModule[];
 };

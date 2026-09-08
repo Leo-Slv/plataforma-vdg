@@ -15,12 +15,21 @@ const course: CourseCatalogItem = {
 	thumbnailUrl: null,
 	displayOrder: 0,
 	pricingModel: 'Free',
+	priceAmount: null,
 	areaIds: [],
 	hasAccess: true,
+	moduleCount: 6,
+	lessonCount: 24,
+	durationSeconds: 25200,
+	certificateIssued: false,
 };
 
 test('renders the completed meta/status lines and links to the given lesson', () => {
-	const state: CourseCardState = { kind: 'completed', moduleCount: 6, lessonId: 'l1' };
+	const state: CourseCardState = {
+		kind: 'completed',
+		moduleCount: 6,
+		lessonId: 'l1',
+	};
 	const html = renderToStaticMarkup(
 		createElement(OwnedCourseCard, {
 			course,
@@ -66,7 +75,12 @@ test('renders "começar" instead of "continuar" at exactly 0%', () => {
 		lessonId: 'l1',
 	};
 	const html = renderToStaticMarkup(
-		createElement(OwnedCourseCard, { course, areaName: null, slug: 'x', state }),
+		createElement(OwnedCourseCard, {
+			course,
+			areaName: null,
+			slug: 'x',
+			state,
+		}),
 	);
 
 	assert.match(html, /0% concluído · começar/);
@@ -81,16 +95,30 @@ test('is not a link when lessonId is undefined', () => {
 		lessonId: undefined,
 	};
 	const html = renderToStaticMarkup(
-		createElement(OwnedCourseCard, { course, areaName: null, slug: 'x', state }),
+		createElement(OwnedCourseCard, {
+			course,
+			areaName: null,
+			slug: 'x',
+			state,
+		}),
 	);
 
 	assert.doesNotMatch(html, /<a /);
 });
 
 test('renders no duration-shaped text anywhere', () => {
-	const state: CourseCardState = { kind: 'completed', moduleCount: 6, lessonId: 'l1' };
+	const state: CourseCardState = {
+		kind: 'completed',
+		moduleCount: 6,
+		lessonId: 'l1',
+	};
 	const html = renderToStaticMarkup(
-		createElement(OwnedCourseCard, { course, areaName: null, slug: 'x', state }),
+		createElement(OwnedCourseCard, {
+			course,
+			areaName: null,
+			slug: 'x',
+			state,
+		}),
 	);
 
 	assert.doesNotMatch(html, /\d+:\d{2}/);

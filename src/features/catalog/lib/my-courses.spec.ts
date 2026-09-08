@@ -53,7 +53,9 @@ function makeDetails(): CourseDetails {
 	};
 }
 
-function makeCourse(overrides: Partial<CourseCatalogItem> = {}): CourseCatalogItem {
+function makeCourse(
+	overrides: Partial<CourseCatalogItem> = {},
+): CourseCatalogItem {
 	return {
 		id: 'course-1',
 		title: 'Escola de Líderes',
@@ -62,8 +64,13 @@ function makeCourse(overrides: Partial<CourseCatalogItem> = {}): CourseCatalogIt
 		thumbnailUrl: null,
 		displayOrder: 0,
 		pricingModel: 'Paid',
+		priceAmount: 149,
 		areaIds: [],
 		hasAccess: true,
+		moduleCount: 8,
+		lessonCount: 41,
+		durationSeconds: 43200,
+		certificateIssued: true,
 		...overrides,
 	};
 }
@@ -133,18 +140,29 @@ test('sortOwnedCourses orders two touched courses by recency', () => {
 	const older = entry({
 		course: makeCourse({ id: 'a', displayOrder: 0 }),
 		progress: makeProgress(20, [
-			{ lessonId: 'l1', completed: false, lastWatchedAt: '2026-09-01T10:00:00Z' },
+			{
+				lessonId: 'l1',
+				completed: false,
+				lastWatchedAt: '2026-09-01T10:00:00Z',
+			},
 		]),
 	});
 	const newer = entry({
 		course: makeCourse({ id: 'b', displayOrder: 1 }),
 		progress: makeProgress(20, [
-			{ lessonId: 'l1', completed: false, lastWatchedAt: '2026-09-03T10:00:00Z' },
+			{
+				lessonId: 'l1',
+				completed: false,
+				lastWatchedAt: '2026-09-03T10:00:00Z',
+			},
 		]),
 	});
 
 	const sorted = sortOwnedCourses([older, newer]);
-	assert.deepEqual(sorted.map((e) => e.course.id), ['b', 'a']);
+	assert.deepEqual(
+		sorted.map((e) => e.course.id),
+		['b', 'a'],
+	);
 });
 
 test('sortOwnedCourses puts a touched course before an untouched one regardless of displayOrder', () => {
@@ -152,12 +170,19 @@ test('sortOwnedCourses puts a touched course before an untouched one regardless 
 	const touched = entry({
 		course: makeCourse({ id: 'b', displayOrder: 5 }),
 		progress: makeProgress(20, [
-			{ lessonId: 'l1', completed: false, lastWatchedAt: '2026-09-03T10:00:00Z' },
+			{
+				lessonId: 'l1',
+				completed: false,
+				lastWatchedAt: '2026-09-03T10:00:00Z',
+			},
 		]),
 	});
 
 	const sorted = sortOwnedCourses([untouched, touched]);
-	assert.deepEqual(sorted.map((e) => e.course.id), ['b', 'a']);
+	assert.deepEqual(
+		sorted.map((e) => e.course.id),
+		['b', 'a'],
+	);
 });
 
 test('sortOwnedCourses orders two untouched courses by displayOrder', () => {
@@ -165,20 +190,31 @@ test('sortOwnedCourses orders two untouched courses by displayOrder', () => {
 	const second = entry({ course: makeCourse({ id: 'b', displayOrder: 1 }) });
 
 	const sorted = sortOwnedCourses([first, second]);
-	assert.deepEqual(sorted.map((e) => e.course.id), ['b', 'a']);
+	assert.deepEqual(
+		sorted.map((e) => e.course.id),
+		['b', 'a'],
+	);
 });
 
 test('pickHeroEntry picks the most recently watched among strictly in-progress entries', () => {
 	const older = entry({
 		course: makeCourse({ id: 'a' }),
 		progress: makeProgress(20, [
-			{ lessonId: 'l1', completed: false, lastWatchedAt: '2026-09-01T10:00:00Z' },
+			{
+				lessonId: 'l1',
+				completed: false,
+				lastWatchedAt: '2026-09-01T10:00:00Z',
+			},
 		]),
 	});
 	const newer = entry({
 		course: makeCourse({ id: 'b' }),
 		progress: makeProgress(60, [
-			{ lessonId: 'l1', completed: false, lastWatchedAt: '2026-09-03T10:00:00Z' },
+			{
+				lessonId: 'l1',
+				completed: false,
+				lastWatchedAt: '2026-09-03T10:00:00Z',
+			},
 		]),
 	});
 
@@ -186,8 +222,14 @@ test('pickHeroEntry picks the most recently watched among strictly in-progress e
 });
 
 test('pickHeroEntry excludes 0% and 100% entries', () => {
-	const notStarted = entry({ course: makeCourse({ id: 'a' }), progress: makeProgress(0) });
-	const completed = entry({ course: makeCourse({ id: 'b' }), progress: makeProgress(100) });
+	const notStarted = entry({
+		course: makeCourse({ id: 'a' }),
+		progress: makeProgress(0),
+	});
+	const completed = entry({
+		course: makeCourse({ id: 'b' }),
+		progress: makeProgress(100),
+	});
 
 	assert.equal(pickHeroEntry([notStarted, completed]), undefined);
 });

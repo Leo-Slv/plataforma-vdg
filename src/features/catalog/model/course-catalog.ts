@@ -12,9 +12,14 @@ type CourseCatalogItem = {
 	description: string;
 	thumbnailUrl: string | null;
 	displayOrder: number;
-	pricingModel: 'Free' | 'Paid';
+	pricingModel: 'Free' | 'Paid' | 'EnrollmentControlled';
+	priceAmount: number | null;
 	areaIds: string[];
 	hasAccess: boolean;
+	moduleCount: number;
+	lessonCount: number;
+	durationSeconds: number;
+	certificateIssued: boolean;
 };
 
 type CourseCatalog = {

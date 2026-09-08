@@ -18,8 +18,13 @@ const course: CourseCatalogItem = {
 	thumbnailUrl: null,
 	displayOrder: 0,
 	pricingModel: 'Paid',
+	priceAmount: 149,
 	areaIds: ['area-2'],
 	hasAccess: false,
+	moduleCount: 8,
+	lessonCount: 41,
+	durationSeconds: 43200,
+	certificateIssued: true,
 };
 
 const areas: AreaSummary[] = [
