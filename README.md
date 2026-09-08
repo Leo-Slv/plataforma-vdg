@@ -86,6 +86,15 @@ public/
   já usadas por outras telas (catálogo filtrado + detalhes/progresso por
   curso possuído) — nenhum endpoint novo. Sem duração ou certificado em
   lugar nenhum. Spec em `Docs/specs/catalog/my-courses.md`.
+- **Perfil** (`/profile`) — tela somente leitura: nome, e-mail e status de
+  confirmação vindos de `GET /api/auth/me` (endpoint novo no backend, fecha
+  o gap de "current user" que antes forçava o gate de autenticação a ser
+  100% client-side), e um "Sair da conta" que chama `POST /api/auth/logout`
+  de verdade (revoga o refresh token no servidor) antes de limpar o token
+  local — o mesmo fluxo agora usado pelo "Sair" do menu de perfil no
+  `AppNav`. Sem edição de nome/e-mail, troca de senha em sessão ou upload de
+  foto: nenhuma dessas ações tem endpoint no backend hoje. Spec em
+  `Docs/specs/auth/profile.md`.
 
 - **Admin — Áreas** (`/admin/areas`, `/admin/areas/new`,
   `/admin/areas/[areaId]/edit`) — lista todas as áreas (`GET /api/areas`)
