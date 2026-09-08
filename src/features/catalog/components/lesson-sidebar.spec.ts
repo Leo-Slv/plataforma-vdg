@@ -15,6 +15,8 @@ function lesson(id: string, title: string, displayOrder: number) {
 		displayOrder,
 		freePreview: false,
 		published: true,
+		videoId: null,
+		durationSeconds: null,
 	};
 }
 
@@ -25,6 +27,9 @@ const details: CourseDetails = {
 	description: '',
 	thumbnailUrl: null,
 	pricingModel: 'Paid',
+	priceAmount: 149,
+	hasAccess: true,
+	certificateIssued: false,
 	areaIds: [],
 	modules: [
 		{

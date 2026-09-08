@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 
 import { CourseDetailLocked } from '@/features/catalog/components/course-detail-locked';
 import type { CourseCatalogItem } from '@/features/catalog/model/course-catalog';
+import type { CourseDetails } from '@/features/catalog/model/course-details';
 
 function course(overrides: Partial<CourseCatalogItem>): CourseCatalogItem {
 	return {
@@ -95,4 +96,83 @@ test('renders the certificate benefit line only when the course issues one', () 
 	assert.match(withCertificate, /Certificado ao concluir 100%/);
 	assert.doesNotMatch(withoutCertificate, /Certificado ao concluir 100%/);
 	assert.match(withoutCertificate, /Acesso vitalício ao conteúdo/);
+});
+
+test('shows "Carregando conteúdo…" when details have not loaded yet', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({}),
+			areaName: null,
+		}),
+	);
+
+	assert.match(html, /Carregando conteúdo…/);
+});
+
+test('renders one preview card per module once details load', () => {
+	const details: CourseDetails = {
+		id: 'course-1',
+		title: 'Escola de Líderes',
+		slug: 'escola-de-lideres',
+		description: '',
+		thumbnailUrl: null,
+		pricingModel: 'Paid',
+		priceAmount: 149,
+		hasAccess: false,
+		certificateIssued: true,
+		areaIds: [],
+		modules: [
+			{
+				id: 'module-1',
+				title: 'Chamado e caráter',
+				description: '',
+				displayOrder: 1,
+				published: true,
+				lessons: [
+					{
+						id: 'l1',
+						title: 'O caráter do líder',
+						description: '',
+						displayOrder: 1,
+						freePreview: true,
+						published: true,
+						videoId: 'v1',
+						durationSeconds: 4800,
+					},
+				],
+			},
+			{
+				id: 'module-2',
+				title: 'Doutrina essencial',
+				description: '',
+				displayOrder: 2,
+				published: true,
+				lessons: [
+					{
+						id: 'l2',
+						title: 'Fundamentos da fé',
+						description: '',
+						displayOrder: 1,
+						freePreview: false,
+						published: true,
+						videoId: null,
+						durationSeconds: null,
+					},
+				],
+			},
+		],
+	};
+
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({}),
+			areaName: null,
+			details,
+		}),
+	);
+
+	assert.match(html, /Chamado e caráter/);
+	assert.match(html, /Doutrina essencial/);
+	assert.match(html, /Assistir aula grátis/);
+	assert.match(html, /Bloqueado/);
 });

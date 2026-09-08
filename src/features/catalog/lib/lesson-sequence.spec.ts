@@ -17,6 +17,8 @@ function lesson(id: string, displayOrder: number) {
 		displayOrder,
 		freePreview: false,
 		published: true,
+		videoId: null,
+		durationSeconds: null,
 	};
 }
 
@@ -27,6 +29,9 @@ const details: CourseDetails = {
 	description: '',
 	thumbnailUrl: null,
 	pricingModel: 'Paid',
+	priceAmount: 149,
+	hasAccess: true,
+	certificateIssued: false,
 	areaIds: [],
 	modules: [
 		{
@@ -76,7 +81,7 @@ test('findNextLessonId crosses into the following module', () => {
 	assert.equal(findNextLessonId(details, 'l2'), 'l3');
 });
 
-test('findNextLessonId returns undefined for the course\'s last lesson', () => {
+test("findNextLessonId returns undefined for the course's last lesson", () => {
 	assert.equal(findNextLessonId(details, 'l3'), undefined);
 });
 

@@ -20,6 +20,8 @@ const module1: CourseModule = {
 			displayOrder: 1,
 			freePreview: false,
 			published: true,
+			videoId: null,
+			durationSeconds: null,
 		},
 		{
 			id: 'l2',
@@ -28,6 +30,8 @@ const module1: CourseModule = {
 			displayOrder: 2,
 			freePreview: false,
 			published: true,
+			videoId: null,
+			durationSeconds: null,
 		},
 	],
 };
@@ -54,10 +58,7 @@ test('links to its first lesson when it has lessons', () => {
 		}),
 	);
 
-	assert.match(
-		html,
-		/<a[^>]*href="\/courses\/escola-de-lideres\/lessons\/l1"/,
-	);
+	assert.match(html, /<a[^>]*href="\/courses\/escola-de-lideres\/lessons\/l1"/);
 });
 
 test('is not a link when the module has no lessons', () => {

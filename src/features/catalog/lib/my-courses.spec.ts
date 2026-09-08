@@ -20,6 +20,8 @@ function lesson(id: string, displayOrder: number, title = `Lesson ${id}`) {
 		displayOrder,
 		freePreview: false,
 		published: true,
+		videoId: null,
+		durationSeconds: null,
 	};
 }
 
@@ -31,6 +33,9 @@ function makeDetails(): CourseDetails {
 		description: '',
 		thumbnailUrl: null,
 		pricingModel: 'Paid',
+		priceAmount: 149,
+		hasAccess: true,
+		certificateIssued: false,
 		areaIds: [],
 		modules: [
 			{
