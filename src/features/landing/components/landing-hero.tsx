@@ -10,7 +10,7 @@ type LandingHeroProps = {
 
 function LandingHero({ stats }: LandingHeroProps) {
 	return (
-		<section className="relative overflow-hidden px-5 py-11 sm:px-11 sm:py-26">
+		<section className="relative overflow-hidden px-5 pt-7 pb-11 sm:px-11 sm:pt-14 sm:pb-26">
 			<Image
 				src="/brand/viver-da-graca-mark.png"
 				alt=""
