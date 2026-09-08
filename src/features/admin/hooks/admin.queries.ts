@@ -24,6 +24,9 @@ import { getLessonVideo } from '@/features/admin/api/get-lesson-video';
 import { replaceLessonVideo } from '@/features/admin/api/replace-lesson-video';
 import { markVideoReady } from '@/features/admin/api/mark-video-ready';
 import { deleteLessonVideo } from '@/features/admin/api/delete-lesson-video';
+import { getUsers } from '@/features/admin/api/get-users';
+import { createUser } from '@/features/admin/api/create-user';
+import { getUserAreaAccess } from '@/features/admin/api/get-user-area-access';
 
 function useAreasQuery(options: { enabled: boolean }) {
 	return useQuery({
@@ -263,6 +266,33 @@ function useDeleteLessonVideoMutation() {
 	});
 }
 
+function useUsersQuery(
+	page: number,
+	pageSize: number,
+	search: string,
+	options: { enabled: boolean },
+) {
+	return useQuery({
+		queryKey: queryKeys.admin.users(page, pageSize, search),
+		queryFn: () => getUsers(page, pageSize, search),
+		enabled: options.enabled,
+	});
+}
+
+function useCreateUserMutation() {
+	return useMutation({
+		mutationFn: createUser,
+	});
+}
+
+function useUserAreaAccessQuery(userId: string, options: { enabled: boolean }) {
+	return useQuery({
+		queryKey: queryKeys.admin.userAreaAccess(userId),
+		queryFn: () => getUserAreaAccess(userId),
+		enabled: options.enabled && userId.length > 0,
+	});
+}
+
 export {
 	useAreasQuery,
 	useAreaQuery,
@@ -287,4 +317,7 @@ export {
 	useReplaceLessonVideoMutation,
 	useMarkVideoReadyMutation,
 	useDeleteLessonVideoMutation,
+	useUsersQuery,
+	useCreateUserMutation,
+	useUserAreaAccessQuery,
 };

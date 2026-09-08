@@ -30,6 +30,7 @@ const appRoutes = {
 		courseModules: (courseId: string) => `/admin/courses/${courseId}/modules`,
 		lessonEdit: (courseId: string, moduleId: string, lessonId: string) =>
 			`/admin/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/edit`,
+		users: '/admin/users',
 	},
 } as const;
 
