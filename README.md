@@ -138,9 +138,28 @@ public/
   "Status" com esse valor, e o e-mail passou a ser uma segunda linha sob
   o nome do usuário. "Convidar usuário" cria a conta na hora
   (`POST /api/users`, senha mínima de 12 caracteres) — sem fluxo de
-  convite por e-mail nem atribuição de papel na criação (isso fica para
-  a tela `1r`, ainda não especificada). Linhas não navegam para lugar
-  nenhum. Spec em `Docs/specs/admin/users-list.md`.
+  convite por e-mail nem atribuição de papel na criação. Linhas navegam
+  para a tela de editar acesso (abaixo). Spec em
+  `Docs/specs/admin/users-list.md`.
+- **Admin — Editar acesso do usuário** (`/admin/users/[userId]/edit`) —
+  papel (só leitura — não existe endpoint para listar papéis nem
+  descobrir o id de um papel, então os endpoints de atribuir/remover
+  papel existem mas não têm como ser chamados de uma UI), toggle por
+  área liberada, painel de "Cursos pagos concedidos"
+  (`GET /api/access/requests/users/{userId}/granted`, resolvido para
+  título via a lista de cursos já carregada) com "+ Conceder acesso a um
+  curso pago" (`POST /api/access/requests/grant`, dispara na hora, não
+  entra no "Salvar"), e status da conta (Ativa/Bloqueada, um toggle — o
+  botão "Bloquear usuário" do mockup foi removido por editar o mesmo
+  campo). Não existe endpoint em lote para conceder/revogar área, então
+  os toggles de área e o status ficam em estado local até "Salvar
+  alterações", que compara com o que foi carregado e dispara só as
+  chamadas necessárias. Toda ação aqui (`UsersController`,
+  `AreasController`'s user-area routes, `AccessRequestsController`'s
+  grant route) cai na mesma claim `users.manage` da tela — conferido no
+  código do backend antes de supor o contrário, então não precisou de
+  uma segunda permissão como a tela de aula. Spec em
+  `Docs/specs/admin/user-access-edit.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.

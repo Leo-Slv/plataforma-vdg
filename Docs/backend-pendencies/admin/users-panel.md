@@ -199,6 +199,28 @@ new "Painel admin — CRUDs de entidades" mockup group.
   real performance concern if this list ever grows a much larger page
   size or an "export all" view.
 
+## 9. No endpoint to list roles or discover a role's id
+
+- **Mockup expects** (`1r`): "Papel" is drawn as a dropdown, implying the
+  admin can pick from the set of existing roles and reassign a user.
+- **Backend today**: pendency 1's resolution added
+  `POST/DELETE /api/users/{id}/roles/{roleId}` — real routes, but both
+  take a `roleId` (`Guid`) the frontend has no way to ever obtain. There
+  is no `RolesController`, no `GET /api/roles`, and `UserResponse.RoleNames`
+  returns names only (no paired ids). Role ids are also not fixed/
+  well-known — `CourseCoreDatabaseSeeder` generates the seeded `Admin`
+  role's id with `Guid.NewGuid()` at seed time, so it can't be hardcoded
+  client-side either.
+- **What's needed**: a `GET /api/roles` (or similar) returning
+  `{ id, name }` pairs, so a role picker has something to populate itself
+  and a value to submit.
+- **Workaround shipped**: `Docs/specs/admin/user-access-edit.md` renders
+  "Papel" read-only (`RoleNames` joined, or "Sem papel") — no dropdown,
+  no assign/remove wired up at all despite the routes existing.
+- **Severity**: Feature gap — the write path is real and unblocked the
+  moment a read/list path exists; until then it's simply unusable from a
+  UI.
+
 ## What's already real
 
 - `POST /api/users` (create), `PUT /api/users/{id}` (update, including the

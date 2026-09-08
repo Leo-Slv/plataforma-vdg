@@ -47,7 +47,7 @@ revisit once its blocking gap(s) close on the CourseCore side.
 | Curso → Módulos e aulas (`1o`) | [admin/course-modules-lessons.md](admin/course-modules-lessons.md) | **Built** — see `Docs/specs/admin/course-modules.md`. |
 | Aula — criar/editar (`1p`) | [admin/lesson-editor.md](admin/lesson-editor.md) | **Built** — see `Docs/specs/admin/lesson-editor.md`. Module reassignment and direct order editing stay unbuilt (no backing endpoint); video registration ships as a YouTube-link form, not an upload. |
 | Usuários — lista (`1q`) | [admin/users-panel.md](admin/users-panel.md) | **Built** — see `Docs/specs/admin/users-list.md`. Role read, area-grant read, aggregate counts, and search are all wired; no batch endpoint exists yet for area grants across multiple users (pendency 8), so the list fetches per row instead. |
-| Usuário — editar acesso (`1r`) | [admin/users-panel.md](admin/users-panel.md) | Not specced yet — role assign/remove, area grant/revoke, blocking an account, and paid-course access grants are all real on the backend (pendencies 1, 2, 6) but have no screen built against them. |
+| Usuário — editar acesso (`1r`) | [admin/users-panel.md](admin/users-panel.md) | **Built** — see `Docs/specs/admin/user-access-edit.md`. Area grant/revoke, account status, and paid-course grants are wired; role assignment stays out of scope (pendency 9 — no endpoint lists roles or exposes a role's id, so the write routes from pendency 1 are unusable from a UI). |
 
 New screens get their own file here as part of the standard spec workflow
 (see `CLAUDE.md`, "Implementation Workflow") — add a row above when one is
