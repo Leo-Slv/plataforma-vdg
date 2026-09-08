@@ -37,7 +37,7 @@ function PriceLine({
 
 	return (
 		<div className="flex items-baseline gap-2">
-			<span className="font-heading text-[32px] font-extralight">
+			<span className="font-heading text-[38px] font-extralight">
 				{formatCurrencyBrl(course.priceAmount)}
 			</span>
 			<span className="text-[13px] font-light text-white/45">
@@ -72,14 +72,33 @@ function CourseDetailLocked({ course, areaName }: CourseDetailLockedProps) {
 					</span>
 				) : null}
 
-				<div className="mt-7 max-w-[340px] rounded-[10px] border border-white/12 bg-[#101012] p-6.5">
-					<PriceLine course={course} />
-					<button
-						type="button"
-						className="mt-5.5 block w-full rounded-full bg-[#f4f4f2] py-4 text-center font-sans text-[15px] text-[#0a0a0b]"
+				<div className="mt-7 max-w-[380px] overflow-hidden rounded-[10px] border border-white/12 bg-[#101012]">
+					<div
+						className="flex h-[200px] items-center justify-center"
+						style={{
+							backgroundImage:
+								'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
+						}}
 					>
-						Inscrever-se
-					</button>
+						<span className="font-mono text-[10px] text-white/35">
+							trailer do curso
+						</span>
+					</div>
+					<div className="p-6.5">
+						<PriceLine course={course} />
+						<button
+							type="button"
+							className="mt-5.5 block w-full rounded-full bg-[#f4f4f2] py-4.25 text-center font-sans text-[15px] text-[#0a0a0b]"
+						>
+							Inscrever-se agora
+						</button>
+						<div className="mt-6.5 flex flex-col gap-3 border-t border-white/9 pt-5.5 text-[13px] font-light text-white/55">
+							<div>Acesso vitalício ao conteúdo</div>
+							{course.certificateIssued ? (
+								<div>Certificado ao concluir 100%</div>
+							) : null}
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

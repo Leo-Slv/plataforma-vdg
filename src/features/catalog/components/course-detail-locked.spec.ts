@@ -77,3 +77,22 @@ test('renders "Por inscrição" for an enrollment-controlled course', () => {
 
 	assert.match(html, /Por inscrição/);
 });
+
+test('renders the certificate benefit line only when the course issues one', () => {
+	const withCertificate = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({ certificateIssued: true }),
+			areaName: null,
+		}),
+	);
+	const withoutCertificate = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({ certificateIssued: false }),
+			areaName: null,
+		}),
+	);
+
+	assert.match(withCertificate, /Certificado ao concluir 100%/);
+	assert.doesNotMatch(withoutCertificate, /Certificado ao concluir 100%/);
+	assert.match(withoutCertificate, /Acesso vitalício ao conteúdo/);
+});
