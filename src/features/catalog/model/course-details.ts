@@ -5,6 +5,8 @@ type Lesson = {
 	displayOrder: number;
 	freePreview: boolean;
 	published: boolean;
+	videoId: string | null;
+	durationSeconds: number | null;
 };
 
 type CourseModule = {
@@ -23,6 +25,9 @@ type CourseDetails = {
 	description: string;
 	thumbnailUrl: string | null;
 	pricingModel: 'Free' | 'Paid' | 'EnrollmentControlled';
+	priceAmount: number | null;
+	hasAccess: boolean;
+	certificateIssued: boolean;
 	areaIds: string[];
 	modules: CourseModule[];
 };

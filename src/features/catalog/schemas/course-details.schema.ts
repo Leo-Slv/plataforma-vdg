@@ -7,6 +7,8 @@ const lessonSchema = z.object({
 	displayOrder: z.number(),
 	freePreview: z.boolean(),
 	published: z.boolean(),
+	videoId: z.string().nullable(),
+	durationSeconds: z.number().nullable(),
 });
 
 const courseModuleSchema = z.object({
@@ -25,6 +27,9 @@ const courseDetailsSchema = z.object({
 	description: z.string(),
 	thumbnailUrl: z.string().nullable(),
 	pricingModel: z.enum(['Free', 'Paid', 'EnrollmentControlled']),
+	priceAmount: z.number().nullable(),
+	hasAccess: z.boolean(),
+	certificateIssued: z.boolean(),
 	areaIds: z.array(z.string()),
 	modules: z.array(courseModuleSchema),
 });
