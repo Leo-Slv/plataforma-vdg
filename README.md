@@ -97,9 +97,21 @@ public/
   status, trocar Publicado/Rascunho dispara uma chamada separada para
   `.../publish` ou `.../unpublish` depois do PUT principal. "Excluir
   curso" despublica, mesma lógica de "Excluir área". "Gerenciar
-  módulos →" fica inerte — o backend nem tem como *ler* módulos/aulas
-  de um curso ainda, só criar/editar/remover às cegas. Spec em
+  módulos →" linka para a tela de módulos. Spec em
   `Docs/specs/admin/course-form.md`.
+- **Admin — Módulos e aulas** (`/admin/courses/[courseId]/modules`) —
+  lista os módulos de um curso (`GET /api/courses/{id}/modules`, um
+  endpoint que não existia quando a tela de curso foi feita) com suas
+  aulas aninhadas; cria/edita/exclui/reordena módulo e aula por modais
+  simples (sem rota própria) e setas ↑↓ no lugar do arrastar do mockup
+  (sem biblioteca de drag-and-drop no projeto). Excluir módulo fica
+  desabilitado enquanto ele tiver aulas (o backend rejeitaria com 409);
+  excluir aula não dá pra prever (progresso de aluno não aparece na
+  listagem), então o 409 vira um erro inline na própria aula. Vídeo de
+  aula aparece só como status (tem/não tem, duração) — anexar/trocar
+  vídeo fica para uma tela de edição de aula futura (mockup `1p`), que
+  ainda não foi especificada. Spec em
+  `Docs/specs/admin/course-modules.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.

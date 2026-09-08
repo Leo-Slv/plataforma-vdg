@@ -60,9 +60,19 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
   personal access to the course), so it finds the course by id in the
   already-fetched admin course list instead. Publishing/unpublishing is
   a separate call from the field update, since `PUT /api/courses/{id}`
-  carries no `Published` field. See `Docs/specs/admin/areas-list.md`,
-  `Docs/specs/admin/area-form.md`, `Docs/specs/admin/courses-panel.md`,
-  and `Docs/specs/admin/course-form.md`.
+  carries no `Published` field. Also
+  `/admin/courses/[courseId]/modules` (`CourseModulesPage`) — module/
+  lesson CRUD + reorder via up/down buttons (no drag-and-drop
+  dependency), using a small bespoke `AdminModal` for create/edit
+  forms rather than the shadcn `Dialog` primitive (that one's styled
+  for the light `popover` tokens, unused anywhere else in this dark
+  admin section). Module delete is disabled client-side when it still
+  has lessons (a 409 the frontend can predict from data it already
+  has); lesson delete isn't — recorded progress isn't visible in the
+  list response, so that 409 surfaces as an inline error instead. See
+  `Docs/specs/admin/areas-list.md`, `Docs/specs/admin/area-form.md`,
+  `Docs/specs/admin/courses-panel.md`, `Docs/specs/admin/course-form.md`,
+  and `Docs/specs/admin/course-modules.md`.
 
 `src/components/app-nav.tsx` is the shared top nav for every
 authenticated (non-auth-flow) page — first used by `catalog/`, reused

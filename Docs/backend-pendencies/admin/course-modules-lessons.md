@@ -114,7 +114,7 @@ the new "Painel admin — CRUDs de entidades" mockup group.
   YouTube videos stay access-controlled the same way any other lesson
   video is.
 
-## 4. No admin-facing endpoint to read a course's modules/lessons
+## 4. No admin-facing endpoint to read a course's modules/lessons — CLOSED
 
 - **Mockup expects**: artboard `1n`'s "Conteúdo" panel shows "8 módulos ·
   41 aulas" — a live count — plus the "Gerenciar módulos →" link into
@@ -143,6 +143,21 @@ the new "Painel admin — CRUDs de entidades" mockup group.
   become Blocking for `1o` whenever that screen gets built, for the same
   reason pendency 1 was originally blocking here — no read endpoint,
   nothing to render.
+- **Resolved (2026-09-08)**: added `GET /api/courses/{courseId}/modules`
+  on `CourseModulesController`, behind `ManageCourses` — new
+  `ListCourseModulesUseCase` loads the course via
+  `ICourseRepository.FindDetailsByIdAsync` and does **not** call
+  `CourseAccessService`, so an admin with `ManageCourses` but no personal
+  enrollment in the course gets the full module/lesson tree instead of a
+  403. Reuses the existing `CourseModuleOutput.FromModule(module,
+  videoInfoByLessonId, hasAccess: true)` overload (same one
+  `GetCourseDetailsUseCase` uses for the student-facing endpoint) with
+  `hasAccess` hardcoded `true` — an admin's response always includes each
+  lesson's video info (`VideoId`/`DurationSeconds`) regardless of
+  `FreePreview`, unlike the gated student view. Modules ordered by
+  `DisplayOrder`. This also gives artboard `1n`'s "X módulos · Y aulas"
+  count a real source (`Modules.Count` / sum of `Lessons.Count`) and
+  unblocks `1o`'s module/lesson tree whenever that screen gets specced.
 
 ## What's already real
 
