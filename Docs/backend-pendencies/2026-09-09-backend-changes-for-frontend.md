@@ -169,6 +169,12 @@ that endpoint still matters for every other provider).
 **Not supported, by decision**: an "unlinked" video (no lesson) — every
 video the API returns is always attached to exactly one lesson.
 
+**Frontend follow-up (2026-09-09)**: implemented at `/admin/videos` —
+see `Docs/backend-pendencies/admin/videos-panel.md`'s own "Frontend
+follow-up" section for how the missing lesson/course title on
+`VideoResponse` is resolved client-side, and why the mockup's "Vincular
+vídeo" button was dropped.
+
 ## 7. Testimonials — student self-service submission
 
 **`POST /api/testimonials/mine`** (new, any authenticated user, **not**

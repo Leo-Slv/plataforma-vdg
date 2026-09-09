@@ -12,8 +12,19 @@ const videoSchema = z.object({
 	durationSeconds: z.number(),
 	sizeBytes: z.number(),
 	status: z.string(),
+	visibility: z.enum(['Active', 'Unlisted']),
+	youTubeVideoId: z.string().nullable(),
+	youTubeUrl: z.string().nullable(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
 });
 
-export { videoSchema };
+const pagedVideosSchema = z.object({
+	items: z.array(videoSchema),
+	page: z.number(),
+	pageSize: z.number(),
+	totalItems: z.number(),
+	totalPages: z.number(),
+});
+
+export { videoSchema, pagedVideosSchema };

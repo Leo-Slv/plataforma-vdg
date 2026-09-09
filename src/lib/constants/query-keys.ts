@@ -33,6 +33,8 @@ const queryKeys = {
 			['admin', 'courses', courseId, 'modules'] as const,
 		lessonVideo: (lessonId: string) =>
 			['admin', 'lessons', lessonId, 'video'] as const,
+		videos: (page: number, pageSize: number) =>
+			['admin', 'videos', page, pageSize] as const,
 		users: (page: number, pageSize: number, search: string) =>
 			['admin', 'users', page, pageSize, search] as const,
 		userAreaAccess: (userId: string) =>

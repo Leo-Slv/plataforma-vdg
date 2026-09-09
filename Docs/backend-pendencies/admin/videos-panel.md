@@ -118,3 +118,38 @@ invariant that several other flows (playback, progress, certificates)
 depend on. Building the admin "Vídeos" screen itself is now unblocked
 whenever it gets a spec — that's frontend work, not tracked further
 here.
+
+## Frontend follow-up (2026-09-09)
+
+Built without a dedicated spec doc (same lighter-weight pass as the
+other 2026-09-09 backend-changes items) — `/admin/videos`
+(`VideosPanelPage`), added as a real "Vídeos" sidebar destination
+(`AdminSidebar` already drew it, inert, since it was speculatively added
+before this screen existed).
+
+- **No lesson/course title on `VideoResponse`.** The mockup's "Aula
+  vinculada" column ("Escola de Líderes · Aula 03") needs data
+  `GET /api/videos` doesn't return — only `LessonId`. Rather than one
+  request per video (rejected for the same reason pendency 1's own
+  workaround was rejected: unbounded, system-wide), the page walks the
+  already-available admin course list and fetches each course's modules
+  once (`useAllCourseModulesQueries`, bounded by *course* count, not
+  video count) and resolves a `lessonId → {courseTitle, lessonTitle,
+  modulePosition}` lookup client-side
+  (`lib/build-lesson-lookup.ts`). A lesson not yet resolved (lookup
+  still loading) shows "…"; one genuinely not found (data inconsistency)
+  shows "—". Lesson numbering ("Aula 03") is module-scoped, matching the
+  "Ordem no módulo" convention the lesson editor already uses elsewhere
+  in this admin section — not a whole-course sequential count.
+- **"Vincular vídeo" button dropped.** The mockup draws a top-right
+  action to register a video from this screen, but every video requires
+  a lesson (pendency 3's own won't-implement decision) and this table
+  has no lesson-selection context to attach one to — video
+  registration stays lesson-editor-only (`LessonVideoPanel`'s existing
+  "Adicionar vídeo"/"Substituir vídeo" flow). Adding a "pick a course,
+  then a module, then a lesson, then paste a YouTube id" flow here would
+  just duplicate that screen's own form for no real gain.
+- **Visibility toggle is inline per row** (`POST .../activate` /
+  `POST .../unlist`), not a separate edit screen — there's no "video
+  detail" page to navigate to for this table's own rows, unlike
+  courses/areas/users which toggle status from within their edit form.

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQueries, useQuery } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/constants/query-keys';
 import { getRoles } from '@/features/admin/api/get-roles';
@@ -28,6 +28,9 @@ import { getLessonVideo } from '@/features/admin/api/get-lesson-video';
 import { replaceLessonVideo } from '@/features/admin/api/replace-lesson-video';
 import { markVideoReady } from '@/features/admin/api/mark-video-ready';
 import { deleteLessonVideo } from '@/features/admin/api/delete-lesson-video';
+import { getVideos } from '@/features/admin/api/get-videos';
+import { activateVideo } from '@/features/admin/api/activate-video';
+import { unlistVideo } from '@/features/admin/api/unlist-video';
 import { getUsers } from '@/features/admin/api/get-users';
 import { createUser } from '@/features/admin/api/create-user';
 import { getUserAreaAccess } from '@/features/admin/api/get-user-area-access';
@@ -314,6 +317,43 @@ function useDeleteLessonVideoMutation() {
 	});
 }
 
+function useVideosQuery(
+	page: number,
+	pageSize: number,
+	options: { enabled: boolean },
+) {
+	return useQuery({
+		queryKey: queryKeys.admin.videos(page, pageSize),
+		queryFn: () => getVideos(page, pageSize),
+		enabled: options.enabled,
+	});
+}
+
+function useActivateVideoMutation() {
+	return useMutation({
+		mutationFn: activateVideo,
+	});
+}
+
+function useUnlistVideoMutation() {
+	return useMutation({
+		mutationFn: unlistVideo,
+	});
+}
+
+function useAllCourseModulesQueries(
+	courseIds: string[],
+	options: { enabled: boolean },
+) {
+	return useQueries({
+		queries: courseIds.map((courseId) => ({
+			queryKey: queryKeys.admin.courseModules(courseId),
+			queryFn: () => getCourseModules(courseId),
+			enabled: options.enabled,
+		})),
+	});
+}
+
 function useUsersQuery(
 	page: number,
 	pageSize: number,
@@ -422,6 +462,10 @@ export {
 	useReplaceLessonVideoMutation,
 	useMarkVideoReadyMutation,
 	useDeleteLessonVideoMutation,
+	useVideosQuery,
+	useActivateVideoMutation,
+	useUnlistVideoMutation,
+	useAllCourseModulesQueries,
 	useUsersQuery,
 	useCreateUserMutation,
 	useUserAreaAccessQuery,
