@@ -86,6 +86,45 @@ test('renders "começar" instead of "continuar" at exactly 0%', () => {
 	assert.match(html, /0% concluído · começar/);
 });
 
+test('links to a testimonial submission for the completed course when finished', () => {
+	const state: CourseCardState = {
+		kind: 'completed',
+		moduleCount: 6,
+		lessonId: 'l1',
+	};
+	const html = renderToStaticMarkup(
+		createElement(OwnedCourseCard, {
+			course,
+			areaName: 'Discipulado',
+			slug: 'fundamentos-da-fe',
+			state,
+		}),
+	);
+
+	assert.match(html, /Deixar um depoimento/);
+	assert.match(html, /<a[^>]*href="\/testimonials\/new\?courseId=course-1"/);
+});
+
+test('does not link to a testimonial submission for an in-progress course', () => {
+	const state: CourseCardState = {
+		kind: 'active',
+		percent: 66,
+		modulePosition: 2,
+		lessonTitle: 'A nova identidade',
+		lessonId: 'l2',
+	};
+	const html = renderToStaticMarkup(
+		createElement(OwnedCourseCard, {
+			course,
+			areaName: 'Discipulado',
+			slug: 'fundamentos-da-fe',
+			state,
+		}),
+	);
+
+	assert.doesNotMatch(html, /Deixar um depoimento/);
+});
+
 test('is not a link when lessonId is undefined', () => {
 	const state: CourseCardState = {
 		kind: 'active',

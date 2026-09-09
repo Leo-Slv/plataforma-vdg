@@ -191,6 +191,21 @@ still `ManageCourses`-gated — build the admin moderation view against
 that, filtering/badging by `submittedByUserId != null` if you want to
 flag self-submitted entries.
 
+**Frontend follow-up (2026-09-09)**: implemented as a new `testimonials`
+feature slice (`src/features/testimonials/`, mapping to this backend
+module the same way `auth`/`catalog`/`admin` map to theirs), reachable at
+`/testimonials/new?courseId=` — a new "Deixar um depoimento" link on a
+completed course's card in `/my-courses` (mockup `1zb`). The author
+name/avatar preview and the read-only "Curso" field come from
+`GET /api/auth/me` and `GET /api/courses/{courseId}` respectively, not
+submitted by the form — matches the backend filling those in
+server-side. The mockup's "Você pode enviar um depoimento por curso
+concluído" caption is left as encouragement copy, not an enforced rule
+(`SubmitTestimonialUseCase` doesn't check completion or dedupe by
+course), since the frontend has no way to enforce a rule the backend
+doesn't. The admin moderation view (flagging `submittedByUserId != null`)
+is not built — out of scope for this item.
+
 ---
 
 ## Nothing left blocked

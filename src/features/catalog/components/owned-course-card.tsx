@@ -16,9 +16,18 @@ function moduleCountLabel(moduleCount: number) {
 	return moduleCount === 1 ? '1 módulo' : `${moduleCount} módulos`;
 }
 
-function OwnedCourseCard({ course, areaName, slug, state }: OwnedCourseCardProps) {
+function OwnedCourseCard({
+	course,
+	areaName,
+	slug,
+	state,
+}: OwnedCourseCardProps) {
 	const percent =
-		state.kind === 'completed' ? 100 : state.kind === 'active' ? state.percent : null;
+		state.kind === 'completed'
+			? 100
+			: state.kind === 'active'
+				? state.percent
+				: null;
 	const lessonId = state.kind === 'loading' ? undefined : state.lessonId;
 
 	const content = (
@@ -90,17 +99,24 @@ function OwnedCourseCard({ course, areaName, slug, state }: OwnedCourseCardProps
 		</>
 	);
 
-	if (!lessonId) {
-		return <div className="text-[#f2f2f0]">{content}</div>;
-	}
-
 	return (
-		<Link
-			href={appRoutes.courses.lesson(slug, lessonId)}
-			className="block text-[#f2f2f0]"
-		>
-			{content}
-		</Link>
+		<div className="text-[#f2f2f0]">
+			{lessonId ? (
+				<Link href={appRoutes.courses.lesson(slug, lessonId)} className="block">
+					{content}
+				</Link>
+			) : (
+				content
+			)}
+			{state.kind === 'completed' ? (
+				<Link
+					href={appRoutes.testimonials.new(course.id)}
+					className="mt-1.5 inline-block font-sans text-[11.5px] font-light text-white/40 underline underline-offset-2"
+				>
+					Deixar um depoimento
+				</Link>
+			) : null}
+		</div>
 	);
 }
 

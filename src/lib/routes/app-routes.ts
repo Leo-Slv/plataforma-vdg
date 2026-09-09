@@ -15,6 +15,9 @@ const appRoutes = {
 	myCourses: {
 		index: '/my-courses',
 	},
+	testimonials: {
+		new: (courseId: string) => `/testimonials/new?courseId=${courseId}`,
+	},
 	profile: {
 		index: '/profile',
 	},
