@@ -51,6 +51,32 @@ const area: Area = {
 	updatedAt: '2026-01-01T00:00:00Z',
 };
 
+test('prefers metadata.displayName over local entity lookup', () => {
+	const entry = buildEntry({
+		action: 'CoursePublished',
+		entityName: 'Course',
+		entityId: 'course-1',
+		metadata: { displayName: 'Curso de Batismo' },
+	});
+	assert.equal(
+		resolveAuditLabel(entry, [], []),
+		'CoursePublished · Curso de Batismo',
+	);
+});
+
+test('renders a relationship action displayName as-is', () => {
+	const entry = buildEntry({
+		action: 'UserAreaAccessGranted',
+		entityName: 'User',
+		entityId: 'user-1',
+		metadata: { displayName: 'ana.souza@email.com → Liderança' },
+	});
+	assert.equal(
+		resolveAuditLabel(entry, [], []),
+		'UserAreaAccessGranted · ana.souza@email.com → Liderança',
+	);
+});
+
 test('resolves a Course entity to its title', () => {
 	const entry = buildEntry({ entityName: 'Course', entityId: 'course-1' });
 	assert.equal(

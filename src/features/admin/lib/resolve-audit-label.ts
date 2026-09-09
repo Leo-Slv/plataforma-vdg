@@ -3,17 +3,24 @@ import type { Course } from '@/features/admin/model/course';
 import type { Area } from '@/features/admin/model/area';
 
 /**
- * The backend's audit log stores only ids (see
- * Docs/backend-pendencies/admin/courses-panel.md, pendency 4) — this
- * resolves a display name only when the referenced entity is already
- * loaded on this page (courses, areas), falling back to a short id
- * otherwise. Best-effort by design, not an attempt at full coverage.
+ * As of 2026-09-09 the backend includes a human-readable `displayName` in
+ * `metadata` for most action types (see
+ * Docs/backend-pendencies/2026-09-09-backend-changes-for-frontend.md, #3).
+ * Not covered: the 9 Auth-module actions and the secondary
+ * UserTokenVersionIncremented/UserSessionsRevoked entries — those still
+ * fall back to a locally-resolved title (courses, areas already loaded on
+ * this page) or, failing that, a short id.
  */
 function resolveAuditLabel(
 	entry: AuditLog,
 	courses: Course[],
 	areas: Area[],
 ): string {
+	const displayName = entry.metadata.displayName;
+	if (displayName) {
+		return `${entry.action} · ${displayName}`;
+	}
+
 	if (entry.entityName === 'Course' && entry.entityId) {
 		const course = courses.find((item) => item.id === entry.entityId);
 		if (course) {
