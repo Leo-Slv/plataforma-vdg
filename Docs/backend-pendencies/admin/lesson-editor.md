@@ -43,6 +43,15 @@ hosting decision). This file covers the gaps left once `1p` itself
   its own current module is a no-op (200, no audit log). Records a new
   `AuditLogActionNames.LessonMoved` audit entry with `fromModuleId`/
   `toModuleId`/`displayName`.
+- **Frontend follow-up (2026-09-09)**: `1p`'s "Módulo" field is now a real
+  dropdown (`AdminSelect`, listing every module of the current course) with
+  a "Mover aula para este módulo" button that only appears once a different
+  module is selected. On success it invalidates the course-modules query
+  and navigates back to the modules list (the lesson's URL is keyed by its
+  *old* moduleId, so staying on the same route would be stale). A `409`
+  (target module at the lessons cap) renders a specific message; anything
+  else falls back to the generic error copy already used elsewhere on this
+  page.
 
 ## 2. No endpoint to set a lesson's display order directly — CLOSED (won't implement)
 

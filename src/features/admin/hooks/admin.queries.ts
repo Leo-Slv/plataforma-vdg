@@ -19,6 +19,7 @@ import { reorderCourseModules } from '@/features/admin/api/reorder-course-module
 import { createLesson } from '@/features/admin/api/create-lesson';
 import { updateLesson } from '@/features/admin/api/update-lesson';
 import { deleteLesson } from '@/features/admin/api/delete-lesson';
+import { moveLesson } from '@/features/admin/api/move-lesson';
 import { reorderLessons } from '@/features/admin/api/reorder-lessons';
 import { getLessonVideo } from '@/features/admin/api/get-lesson-video';
 import { replaceLessonVideo } from '@/features/admin/api/replace-lesson-video';
@@ -224,6 +225,22 @@ function useDeleteLessonMutation() {
 	});
 }
 
+function useMoveLessonMutation() {
+	return useMutation({
+		mutationFn: ({
+			courseId,
+			moduleId,
+			lessonId,
+			targetModuleId,
+		}: {
+			courseId: string;
+			moduleId: string;
+			lessonId: string;
+			targetModuleId: string;
+		}) => moveLesson(courseId, moduleId, lessonId, targetModuleId),
+	});
+}
+
 function useReorderLessonsMutation() {
 	return useMutation({
 		mutationFn: ({
@@ -371,6 +388,7 @@ export {
 	useCreateLessonMutation,
 	useUpdateLessonMutation,
 	useDeleteLessonMutation,
+	useMoveLessonMutation,
 	useReorderLessonsMutation,
 	useLessonVideoQuery,
 	useReplaceLessonVideoMutation,

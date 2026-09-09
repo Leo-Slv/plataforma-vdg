@@ -18,6 +18,7 @@ import {
 	useCourseModulesQuery,
 	useUpdateLessonMutation,
 	useDeleteLessonMutation,
+	useMoveLessonMutation,
 	useLessonVideoQuery,
 	useReplaceLessonVideoMutation,
 	useMarkVideoReadyMutation,
@@ -25,6 +26,7 @@ import {
 } from '@/features/admin/hooks/admin.queries';
 import { AdminSidebar } from '@/features/admin/components/admin-sidebar';
 import { AdminField } from '@/features/admin/components/admin-field';
+import { AdminSelect } from '@/features/admin/components/admin-select';
 import { AdminTextareaField } from '@/features/admin/components/admin-textarea-field';
 import { StatusToggle } from '@/features/admin/components/status-toggle';
 import { LessonVideoPanel } from '@/features/admin/components/lesson-video-panel';
@@ -65,6 +67,7 @@ function LessonEditorPage({
 
 	const updateLessonMutation = useUpdateLessonMutation();
 	const deleteLessonMutation = useDeleteLessonMutation();
+	const moveLessonMutation = useMoveLessonMutation();
 	const replaceVideoMutation = useReplaceLessonVideoMutation();
 	const markVideoReadyMutation = useMarkVideoReadyMutation();
 	const deleteVideoMutation = useDeleteLessonVideoMutation();
@@ -73,13 +76,12 @@ function LessonEditorPage({
 	const [deleteError, setDeleteError] = useState<string | null>(null);
 	const [videoModal, setVideoModal] = useState<'add' | 'replace' | null>(null);
 	const [videoError, setVideoError] = useState<string | null>(null);
+	const [targetModuleId, setTargetModuleId] = useState(moduleId);
+	const [moveError, setMoveError] = useState<string | null>(null);
 
 	const course = coursesQuery.data?.find((item) => item.id === courseId);
 	const courseModule = modulesQuery.data?.find((item) => item.id === moduleId);
 	const lesson = courseModule?.lessons.find((item) => item.id === lessonId);
-	const modulePosition = modulesQuery.data?.findIndex(
-		(item) => item.id === moduleId,
-	);
 	const lessonPosition = courseModule?.lessons.findIndex(
 		(item) => item.id === lessonId,
 	);
@@ -95,6 +97,10 @@ function LessonEditorPage({
 				}
 			: undefined,
 	});
+
+	useEffect(() => {
+		setTargetModuleId(moduleId);
+	}, [moduleId]);
 
 	useEffect(() => {
 		const unauthorized =
@@ -155,6 +161,29 @@ function LessonEditorPage({
 					setDeleteError(
 						isApiError(error) && error.status === 409
 							? 'Esta aula tem progresso registrado por algum aluno e não pode ser excluída.'
+							: GENERIC_ERROR_MESSAGE,
+					);
+				},
+			},
+		);
+	}
+
+	function handleMoveLesson() {
+		if (targetModuleId === moduleId) {
+			return;
+		}
+		setMoveError(null);
+		moveLessonMutation.mutate(
+			{ courseId, moduleId, lessonId, targetModuleId },
+			{
+				onSuccess: () => {
+					invalidateModules();
+					router.push(appRoutes.admin.courseModules(courseId));
+				},
+				onError: (error) => {
+					setMoveError(
+						isApiError(error) && error.status === 409
+							? 'O módulo de destino já atingiu o limite de aulas.'
 							: GENERIC_ERROR_MESSAGE,
 					);
 				},
@@ -305,13 +334,34 @@ function LessonEditorPage({
 								{...form.register('title')}
 							/>
 							<div>
-								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">
-									Módulo
-								</div>
-								<div className="rounded-md border border-white/12 bg-[#141416] px-4 py-3.25 font-sans text-[14px] font-light text-[#f2f2f0]">
-									Módulo {String((modulePosition ?? 0) + 1).padStart(2, '0')} —{' '}
-									{courseModule?.title}
-								</div>
+								<AdminSelect
+									label="Módulo"
+									value={targetModuleId}
+									onChange={(event) => setTargetModuleId(event.target.value)}
+								>
+									{modulesQuery.data?.map((item, index) => (
+										<option key={item.id} value={item.id}>
+											Módulo {String(index + 1).padStart(2, '0')} — {item.title}
+										</option>
+									))}
+								</AdminSelect>
+								{targetModuleId !== moduleId ? (
+									<button
+										type="button"
+										onClick={handleMoveLesson}
+										disabled={moveLessonMutation.isPending}
+										className="mt-2.5 rounded-full border border-white/18 px-4 py-2 font-sans text-[12.5px] text-white/70 disabled:opacity-60"
+									>
+										{moveLessonMutation.isPending
+											? 'Movendo...'
+											: 'Mover aula para este módulo'}
+									</button>
+								) : null}
+								{moveError ? (
+									<p className="mt-2 text-[12px] text-[oklch(0.704_0.191_22.216)]">
+										{moveError}
+									</p>
+								) : null}
 							</div>
 							<AdminTextareaField
 								label="Descrição / transcrição"
