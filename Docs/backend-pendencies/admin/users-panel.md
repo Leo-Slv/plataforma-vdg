@@ -176,7 +176,7 @@ new "Painel admin — CRUDs de entidades" mockup group.
   accepted as-is — no richer status model built. The dropdown should just
   render as a toggle.
 
-## 8. No batch endpoint to list area grants for multiple users at once
+## 8. No batch endpoint to list area grants for multiple users at once — CLOSED
 
 - **Mockup expects** (`1q`): an "Áreas liberadas" column per row in a
   potentially large user table.
@@ -198,8 +198,26 @@ new "Painel admin — CRUDs de entidades" mockup group.
 - **Severity**: Cosmetic today (page sizes are small); would become a
   real performance concern if this list ever grows a much larger page
   size or an "export all" view.
+- **Resolved (2026-09-09)**: took the second option — `UserOutput`/
+  `UserResponse` gained `AreaNames` (`IReadOnlyCollection<string>`),
+  folded into both `GET /api/users` (list) and `GET /api/users/{userId}`
+  (single), same shape/pattern as `RoleNames`. New
+  `IAreaRepository.FindGrantedAreaNamesByUserIdsAsync` mirrors
+  `IRoleRepository.FindRoleNamesByUserIdsAsync` exactly (one batched
+  `GroupBy(UserId)` query, no N+1 regardless of page size — this closes
+  the "would become a real performance concern" risk permanently, not
+  just for today's ≤20-row pages). `CanView` is the "granted" signal
+  (matches `RevokeUserAreaAccessUseCase.Revoke()`, which sets it `false`
+  — a revoked grant is naturally excluded); only active areas are
+  considered, and no `StartsAt`/`ExpiresAt` time-window filtering, both
+  consistent with the existing single-user
+  `GET /api/access/user-area/{userId}`. No schema change, no migration
+  — this is a read-side aggregation over existing tables. The frontend's
+  per-row `GET /api/access/user-area/{userId}` workaround can be dropped
+  once it picks up `areaNames` from the users list/detail response
+  directly — that's frontend work, not tracked further here.
 
-## 9. No endpoint to list roles or discover a role's id
+## 9. No endpoint to list roles or discover a role's id — CLOSED
 
 - **Mockup expects** (`1r`): "Papel" is drawn as a dropdown, implying the
   admin can pick from the set of existing roles and reassign a user.
@@ -220,6 +238,14 @@ new "Painel admin — CRUDs de entidades" mockup group.
 - **Severity**: Feature gap — the write path is real and unblocked the
   moment a read/list path exists; until then it's simply unusable from a
   UI.
+- **Resolved (2026-09-09)**: `GET /api/roles` (new `RolesController`,
+  `ListRolesUseCase`), same `ManageUsers` policy already gating
+  `POST/DELETE /api/users/{id}/roles/{roleId}` on `UsersController` — no
+  new policy introduced. Returns `{ id, name }` pairs for active roles
+  only (mirrors `ListAreasUseCase`'s "filter in the use case, not the
+  repository" convention), ordered by name — a role picker now has both
+  something to populate itself with and a real id to submit against the
+  already-existing write routes.
 
 ## What's already real
 

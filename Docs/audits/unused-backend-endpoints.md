@@ -206,6 +206,18 @@ implemented route yet — is tracked separately; see
 - `POST /api/testimonials/{testimonialId}/publish` — publish toggle.
 - `POST /api/testimonials/{testimonialId}/unpublish` — unpublish toggle.
 
+## Addendum (2026-09-09)
+
+While closing `unimplemented-mockup-screens.md`'s `1zb` row, found that
+none of the five testimonials endpoints above actually let a *student*
+submit their own testimonial — `POST /api/testimonials` requires
+`ManageCourses` (admin-only). Added a new endpoint not covered by this
+snapshot's inventory: `POST /api/testimonials/mine` (any authenticated
+user, `AuthorName`/`AvatarUrl` derived server-side from the caller's own
+profile — not free text). This is additive, not a correction to the
+66-action inventory above, which stays accurate for what it audited at
+the time.
+
 ## Takeaway
 
 The biggest unbuilt clusters, by endpoint volume: the full access-request

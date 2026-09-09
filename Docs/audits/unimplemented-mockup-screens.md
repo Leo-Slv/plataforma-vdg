@@ -67,9 +67,9 @@ not a standalone route — correctly so, it's a nav element, not a screen.
 | Label | Screen | Status |
 |---|---|---|
 | `1i` | Checkout — Pix/cartão | **Not implemented, deliberately.** Per `Docs/backend-pendencies/README.md`: no payment/checkout endpoint exists at all — an explicit backend non-goal, not a missing field. Nothing to build against until that changes on the CourseCore side. |
-| `1zb` | Enviar depoimento | **Not implemented.** Only the read side exists (`GET /api/testimonials/public`, rendered by `testimonials-section.tsx` on the landing page). The full admin CRUD + this submission form are unbuilt — see `unused-backend-endpoints.md`'s testimonials cluster (5 endpoints: list/create/update/publish/unpublish). No spec or backend-pendency doc exists yet for this screen. |
-| `1zc` | Painel admin — vídeos | **Investigated and skipped, 2026-09-09** — see [`Docs/backend-pendencies/admin/videos-panel.md`](../backend-pendencies/admin/videos-panel.md). Blocking: no `GET /api/videos` collection endpoint exists (every video query is lesson-scoped), compounded by three domain-model mismatches (no YouTube-id field, no "unlinked video" state, no "Ativo/Não listado" visibility status). Same treatment as checkout (`1i`) — not built until the backend exposes a real listing. |
-| `1zd` | Painel admin — auditoria | **Not implemented.** No `/admin/audit` route or spec, even though `GET /api/audit-logs` already works and is called elsewhere per `unused-backend-endpoints.md`'s "already consumed" list — wait, that endpoint is actually already wired into the frontend (used by `Docs/specs/admin/courses-panel.md`'s side panel), but there is no dedicated full-page audit screen matching this artboard's "own panel" design. |
+| `1zb` | Enviar depoimento | **Backend gap closed (2026-09-09), frontend form still unbuilt.** The admin CRUD cluster (list/create/update/publish/unpublish, all `ManageCourses`-gated) was already real, but none of those five endpoints work for a *student* submitting their own testimonial — `POST /api/testimonials` was admin-only. New self-service `POST /api/testimonials/mine` (any authenticated user, no `ManageCourses`) closes that: `AuthorName`/`AvatarUrl` are derived server-side from the caller's own profile (not free text, to prevent impersonation), `Quote` + optional `CourseId` are the only inputs, always created unpublished pending admin moderation. New `Testimonial.SubmittedByUserId` lets admin distinguish self-submitted from admin-authored entries. Building this mockup's form itself is still frontend work — no spec exists yet. |
+| `1zc` | Painel admin — vídeos | **Backend gap closed (2026-09-09), frontend screen still unbuilt.** See [`Docs/backend-pendencies/admin/videos-panel.md`](../backend-pendencies/admin/videos-panel.md) — `GET /api/videos` (paginated, not lesson-scoped) now exists, YouTube id/URL are derived response fields, and a real `Active`/`Unlisted` visibility field with `Publish`/`Unpublish`-style toggle endpoints closes the third gap. "Unlinked video" stays a won't-implement decision. Building the screen itself is still frontend work — no spec exists yet. |
+| `1zd` | Painel admin — auditoria | **Not implemented (frontend only).** No `/admin/audit` route or spec. `GET /api/audit-logs` already works and is already wired into the frontend elsewhere (used by `Docs/specs/admin/courses-panel.md`'s side panel), but there is no dedicated full-page audit screen matching this artboard's "own panel" design. Nothing to do backend-side — this is purely a presentation-layer exercise reusing an existing, already-real data source. |
 
 Everything else maps 1:1 to a working route: `1a/1c/1d/1e/1f/1g/1h/1j`
 directly; `1k/1l/1m/1n/1o/1p/1q/1r` (all admin CRUD) are fully built with
@@ -89,17 +89,20 @@ though they were, in fact, already built (`src/app/admin/areas/*`,
 
 ## Takeaway
 
-Combined with the backend-endpoint audit, two natural next builds stand
-out, in priority order:
+As of 2026-09-09, every backend gap in this file is closed except the
+deliberate checkout non-goal. Three natural next frontend builds, in
+priority order — none blocked on CourseCore anymore:
 
-1. **`1zb` Enviar depoimento** (+ admin testimonials CRUD) — mockup exists,
-   all 5 backend endpoints exist, nothing blocking a full spec-to-ship pass.
+1. **`1zb` Enviar depoimento** — mockup exists, self-service
+   `POST /api/testimonials/mine` now exists alongside the already-real
+   admin CRUD cluster; nothing blocking a full spec-to-ship pass.
 2. **`1zd` Painel admin — auditoria** — backend endpoint already live and
    already partially surfaced elsewhere; a dedicated screen is mostly a
    presentation-layer exercise reusing an existing data source.
+3. **`1zc` Painel admin — vídeos** — `GET /api/videos` and the three
+   compounding model gaps are all resolved per
+   `Docs/backend-pendencies/admin/videos-panel.md`; the screen itself
+   just needs a spec.
 
-`1i` (checkout) and `1zc` (admin videos panel) both stay out of scope until
-CourseCore closes their respective blocking gaps (a payment endpoint;
-a `GET /api/videos` collection endpoint plus the domain-model mismatches
-in `Docs/backend-pendencies/admin/videos-panel.md`) — both are backend
-decisions, not frontend ones.
+`1i` (checkout) stays out of scope — no payment/checkout endpoint exists
+at all, an explicit backend non-goal, not a missing field.

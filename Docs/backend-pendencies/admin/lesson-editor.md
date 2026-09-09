@@ -6,7 +6,7 @@ lesson CRUD, per-lesson video GET/PUT/DELETE, and the YouTube-link video
 hosting decision). This file covers the gaps left once `1p` itself
 (`Docs/specs/admin/lesson-editor.md`) got specced in detail.
 
-## 1. No endpoint to move a lesson to a different module
+## 1. No endpoint to move a lesson to a different module — CLOSED
 
 - **Mockup expects**: `1p`'s "Módulo" field is drawn as a dropdown
   (`▾` affordance), implying a lesson can be reassigned to another module
@@ -26,8 +26,25 @@ hosting decision). This file covers the gaps left once `1p` itself
 - **Workaround shipped**: `lesson-editor.md` renders "Módulo" read-only,
   no dropdown.
 - **Severity**: Feature gap.
+- **Resolved (2026-09-09)**: took the dedicated-endpoint option —
+  `PUT /api/courses/{courseId}/modules/{moduleId}/lessons/{lessonId}/move`
+  (new `MoveLessonUseCase`), body `{ TargetModuleId }`, same `ManageCourses`
+  policy as the rest of `LessonsController`. The moved lesson is appended
+  to the end of the target module's order (`ListByModuleIdAsync` → max + 1,
+  same "no manual ordering on creation" convention `CreateLessonUseCase`
+  already uses) — no unique-index rewrite needed since it's always an
+  append, never an insert. Guards: target module must belong to the
+  *same course* as the lesson's current module (400 otherwise — the
+  mockup's dropdown only ever lists modules within one course, and a
+  cross-course move isn't safe given course-scoped
+  video/progress/certificate assumptions elsewhere); target module must
+  not already be at `CourseValidationLimits.MaxLessonsPerModule` (409
+  otherwise, same guard `CreateLessonUseCase` applies); moving a lesson to
+  its own current module is a no-op (200, no audit log). Records a new
+  `AuditLogActionNames.LessonMoved` audit entry with `fromModuleId`/
+  `toModuleId`/`displayName`.
 
-## 2. No endpoint to set a lesson's display order directly
+## 2. No endpoint to set a lesson's display order directly — CLOSED (won't implement)
 
 - **Mockup expects**: `1p`'s "Ordem no módulo" field is drawn as a plain
   value (just "2"), which reads as editable alongside the rest of the form.
@@ -45,8 +62,14 @@ hosting decision). This file covers the gaps left once `1p` itself
 - **Severity**: Cosmetic — the mockup's field reads as informational once
   you can't submit a bare number without also specifying the rest of the
   module's order.
+- **Decision (2026-09-09)**: won't implement a dedicated set-order
+  endpoint — list-based reorder (`PUT .../lessons/reorder`, already real)
+  stays the only mechanism, per this pendency's own analysis ("arguably
+  the safer design," avoiding the unique `(ModuleId, DisplayOrder)`
+  index-rewrite dance for a rarely-needed single-item operation).
+  "Ordem no módulo" keeps rendering read-only.
 
-## 3. Registered (YouTube-hosted) videos never leave "Processing" on their own
+## 3. Registered (YouTube-hosted) videos never leave "Processing" on their own — CLOSED
 
 - **Mockup expects**: `1p`'s video panel shows "processado" as soon as a
   video is attached — no separate "waiting for processing" step is drawn.
@@ -70,6 +93,18 @@ hosting decision). This file covers the gaps left once `1p` itself
   instead of firing it eagerly.
 - **Severity**: Cosmetic, given the workaround — would become a real gap
   the moment a non-instant provider is added.
+- **Resolved (2026-09-09)**: `CreateVideoUseCase` and
+  `ReplaceLessonVideoUseCase` (both branches: new video and update-in-place)
+  now call `video.MarkAsReady()` automatically right after
+  `Video.Create`/before persisting, whenever
+  `StorageProvider == VideoStorageProvider.YouTube` and
+  `DurationSeconds > 0` — the admin already supplies the duration when
+  registering a YouTube link, so there's nothing left to wait for. No
+  domain change (`MarkAsReady()` already existed as a plain, idempotent
+  status flip). The frontend's existing `POST /ready` follow-up call
+  becomes redundant but harmless for YouTube going forward (removing it
+  is frontend work, not tracked further here); it remains the only path
+  to `Ready` for every other provider, unchanged.
 
 ## What's already real
 

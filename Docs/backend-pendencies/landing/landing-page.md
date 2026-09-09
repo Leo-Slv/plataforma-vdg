@@ -2,7 +2,7 @@
 
 Spec: [`Docs/specs/landing/landing-page.md`](../../specs/landing/landing-page.md)
 
-## 4. `PublicFeaturedCourseResponse` has no pricing, duration, lesson-count, or area fields
+## 4. `PublicFeaturedCourseResponse` has no pricing, duration, lesson-count, or area fields — CLOSED
 
 - **Mockup expects** (`1a`'s "Comece por aqui" cards): a price badge
   ("Gratuito" / "R$ 149"), a duration + lesson-count line ("24 aulas ·
@@ -35,6 +35,37 @@ Spec: [`Docs/specs/landing/landing-page.md`](../../specs/landing/landing-page.md
   identity/images without this; the cost is that "Comece por aqui"
   can't become a fully data-driven "top 3 published courses" section
   until this is closed.
+- **Resolved (2026-09-09)**: `PublicFeaturedCourseResponse`/
+  `PublicFeaturedCourseOutput` gained `PricingModel` (string), `PriceAmount`
+  (`decimal?`), `ModuleCount`, `LessonCount`, `DurationSeconds`, and
+  `AreaName` (`string?`, the lowest-`DisplayOrder` *active* area among the
+  course's `AreaIds`, `null` if none are active). No schema change, no new
+  repository method, no migration — `GetPublicCatalogSummaryUseCase` now
+  also takes `IVideoRepository` and, for the (deduped) union of
+  `FeaturedCourses` + `HighlightedCourse`, batch-calls the already-existing
+  `ICourseRepository.ListContentSummariesAsync` +
+  `IVideoRepository.ListDurationSecondsByLessonIdsAsync` — the exact same
+  pattern `ListAvailableCoursesUseCase` already uses for the authenticated
+  catalog, so no N+1 regardless of how many featured/highlighted courses
+  there are. `PricingModel`/`PriceAmount` were already public-safe (per
+  this pendency's own note, and precedent: `CourseCatalogItemOutput` already
+  exposes both on the authenticated `/api/courses/available`). This also
+  enriches `HighlightedCourse` (pendency 2) for free, since it reuses the
+  same output type. The "Comece por aqui" cards and the "Formação em
+  destaque" panel can now be fully data-driven; whether the frontend
+  actually switches off the hardcoded editorial copy is a frontend decision
+  from here.
+- **Frontend follow-up (2026-09-09)**: `FeaturedCourseCard` now renders
+  price/duration/module-lesson counts/area from `PublicFeaturedCourse`
+  when a live match exists (slug match against the curated `featuredCourses`
+  picks), falling back to the editorial copy only when there's no live
+  match (API down, or the curated pick isn't actually published/featured
+  yet). `FeaturedFormationSection` (the "Formação em destaque" panel) now
+  renders the highlighted course's real stats/area/price/description
+  instead of hardcoded copy — only the section eyebrow and CTA labels stay
+  editorial, since there's no backend concept for those. The curated
+  `statusLabel` per pick ("Turmas novas todo mês", etc.) also stays
+  editorial — no backend equivalent.
 
 ## 1. No public/anonymous catalog or stats endpoint — CLOSED
 
