@@ -68,7 +68,7 @@ not a standalone route — correctly so, it's a nav element, not a screen.
 |---|---|---|
 | `1i` | Checkout — Pix/cartão | **Not implemented, deliberately.** Per `Docs/backend-pendencies/README.md`: no payment/checkout endpoint exists at all — an explicit backend non-goal, not a missing field. Nothing to build against until that changes on the CourseCore side. |
 | `1zb` | Enviar depoimento | **Not implemented.** Only the read side exists (`GET /api/testimonials/public`, rendered by `testimonials-section.tsx` on the landing page). The full admin CRUD + this submission form are unbuilt — see `unused-backend-endpoints.md`'s testimonials cluster (5 endpoints: list/create/update/publish/unpublish). No spec or backend-pendency doc exists yet for this screen. |
-| `1zc` | Painel admin — vídeos | **Not implemented.** No `/admin/videos` route, no spec, no pendency entry. The backend has `GET/PUT/DELETE /api/videos/lessons/{lessonId}` (already used per-lesson from the lesson editor) plus a standalone `POST /api/videos` — a dedicated videos *panel* (cross-lesson list/management) has no frontend counterpart at all. |
+| `1zc` | Painel admin — vídeos | **Investigated and skipped, 2026-09-09** — see [`Docs/backend-pendencies/admin/videos-panel.md`](../backend-pendencies/admin/videos-panel.md). Blocking: no `GET /api/videos` collection endpoint exists (every video query is lesson-scoped), compounded by three domain-model mismatches (no YouTube-id field, no "unlinked video" state, no "Ativo/Não listado" visibility status). Same treatment as checkout (`1i`) — not built until the backend exposes a real listing. |
 | `1zd` | Painel admin — auditoria | **Not implemented.** No `/admin/audit` route or spec, even though `GET /api/audit-logs` already works and is called elsewhere per `unused-backend-endpoints.md`'s "already consumed" list — wait, that endpoint is actually already wired into the frontend (used by `Docs/specs/admin/courses-panel.md`'s side panel), but there is no dedicated full-page audit screen matching this artboard's "own panel" design. |
 
 Everything else maps 1:1 to a working route: `1a/1c/1d/1e/1f/1g/1h/1j`
@@ -79,19 +79,17 @@ matching specs under `Docs/specs/admin/`; `1s` ships as the global
 
 ## Documentation staleness found during this pass
 
-`Docs/backend-pendencies/README.md`'s "Skipped screens" table still marks
-`1k`, `1l`, `1m`, `1n` as "backend gap resolved as of the 2026-09-07
-snapshot — should be revisited" even though they were, in fact, already
-built (`src/app/admin/areas/*`, `src/app/admin/courses/*`, plus specs
-`areas-list.md`, `area-form.md`, `courses-panel.md`, `course-form.md` all
-exist). The sibling rows for `1o/1p/1q/1r` were correctly updated to say
-"Built" when those shipped — `1k/1l/1m/1n`'s rows were just never touched
-afterward. Worth a follow-up edit to that table; not corrected here since
-it's out of scope for this audit pass.
+`Docs/backend-pendencies/README.md`'s "Skipped screens" table used to mark
+`1k`, `1l`, `1m`, `1n` as "backend gap resolved — should be revisited" even
+though they were, in fact, already built (`src/app/admin/areas/*`,
+`src/app/admin/courses/*`, plus specs `areas-list.md`, `area-form.md`,
+`courses-panel.md`, `course-form.md` all exist). Fixed as part of the
+2026-09-09 pass (all four rows now say "Built", matching the sibling
+`1o/1p/1q/1r` rows).
 
 ## Takeaway
 
-Combined with the backend-endpoint audit, three natural next builds stand
+Combined with the backend-endpoint audit, two natural next builds stand
 out, in priority order:
 
 1. **`1zb` Enviar depoimento** (+ admin testimonials CRUD) — mockup exists,
@@ -99,12 +97,9 @@ out, in priority order:
 2. **`1zd` Painel admin — auditoria** — backend endpoint already live and
    already partially surfaced elsewhere; a dedicated screen is mostly a
    presentation-layer exercise reusing an existing data source.
-3. **`1zc` Painel admin — vídeos** — backend mostly there
-   (`GET/PUT/DELETE .../videos/lessons/{lessonId}`, plus standalone
-   `POST /api/videos`), but likely needs backend-pendency scoping first: no
-   endpoint lists videos independent of a lesson today, so a cross-lesson
-   "videos panel" may need a new list endpoint before it can show more than
-   one row at a time.
 
-`1i` (checkout) stays out of scope until CourseCore adds a payment endpoint
-— that's a backend decision, not a frontend one.
+`1i` (checkout) and `1zc` (admin videos panel) both stay out of scope until
+CourseCore closes their respective blocking gaps (a payment endpoint;
+a `GET /api/videos` collection endpoint plus the domain-model mismatches
+in `Docs/backend-pendencies/admin/videos-panel.md`) — both are backend
+decisions, not frontend ones.
