@@ -216,6 +216,14 @@ new "Painel admin — CRUDs de entidades" mockup group.
   per-row `GET /api/access/user-area/{userId}` workaround can be dropped
   once it picks up `areaNames` from the users list/detail response
   directly — that's frontend work, not tracked further here.
+- **Frontend follow-up (2026-09-09)**: dropped the per-row
+  `useUserAreaAccessQuery`/`UserAreaChips` workaround from `UsersTable` —
+  it now renders `AreaChips` straight off `user.areaNames` (one field
+  already on the page's own `GET /api/users` response), so a page of rows
+  costs the one list request instead of one request per row. The
+  single-user `useUserAreaAccessQuery` call stays on the user detail/edit
+  page, since editing individual grants still needs area-id-level data
+  the batched `areaNames` (names only) can't provide.
 
 ## 9. No endpoint to list roles or discover a role's id — CLOSED
 
@@ -246,6 +254,13 @@ new "Painel admin — CRUDs de entidades" mockup group.
   repository" convention), ordered by name — a role picker now has both
   something to populate itself with and a real id to submit against the
   already-existing write routes.
+- **Frontend follow-up (2026-09-09)**: `1r`'s "Papel" field on the user
+  edit page is now a real multi-toggle list (`RoleAccessToggleList`,
+  mirrors the existing `AreaAccessToggleList` pattern) instead of the
+  read-only joined-names text. "Salvar alterações" diffs the pending role
+  ids against the roles matching the user's current `roleNames` and calls
+  `POST`/`DELETE /api/users/{userId}/roles/{roleId}` for each change,
+  batched alongside the existing area-grant and active-status saves.
 
 ## What's already real
 

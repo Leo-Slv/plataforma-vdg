@@ -4,18 +4,16 @@ import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
 import { formatRoleNames } from '@/features/admin/lib/format-role-names';
 import { formatDateBr } from '@/features/admin/lib/format-date-br';
-import { UserAreaChips } from '@/features/admin/components/user-area-chips';
+import { AreaChips } from '@/features/admin/components/area-chips';
 import type { User } from '@/features/admin/model/user';
-import type { Area } from '@/features/admin/model/area';
 
 type UsersTableProps = {
 	users: User[];
-	areas: Area[];
 };
 
 const COLUMNS = 'grid-cols-[2fr_1fr_1.6fr_1fr_1fr]';
 
-function UsersTable({ users, areas }: UsersTableProps) {
+function UsersTable({ users }: UsersTableProps) {
 	if (users.length === 0) {
 		return (
 			<p className="py-12 text-center font-sans text-sm font-light text-white/45">
@@ -59,10 +57,9 @@ function UsersTable({ users, areas }: UsersTableProps) {
 					<span className="text-white/55">
 						{formatRoleNames(user.roleNames)}
 					</span>
-					<UserAreaChips
-						userId={user.id}
-						roleNames={user.roleNames}
-						areas={areas}
+					<AreaChips
+						status={user.roleNames.includes('Admin') ? 'admin' : 'ready'}
+						names={user.areaNames}
 					/>
 					<span
 						className={cn(

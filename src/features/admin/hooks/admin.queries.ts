@@ -1,6 +1,9 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/constants/query-keys';
+import { getRoles } from '@/features/admin/api/get-roles';
+import { assignUserRole } from '@/features/admin/api/assign-user-role';
+import { removeUserRole } from '@/features/admin/api/remove-user-role';
 import { getAreas } from '@/features/admin/api/get-areas';
 import { getArea } from '@/features/admin/api/get-area';
 import { createArea } from '@/features/admin/api/create-area';
@@ -34,6 +37,28 @@ import { grantUserAreaAccess } from '@/features/admin/api/grant-user-area-access
 import { revokeUserAreaAccess } from '@/features/admin/api/revoke-user-area-access';
 import { getGrantedCourseAccess } from '@/features/admin/api/get-granted-course-access';
 import { grantCourseAccess } from '@/features/admin/api/grant-course-access';
+
+function useRolesQuery(options: { enabled: boolean }) {
+	return useQuery({
+		queryKey: queryKeys.admin.roles,
+		queryFn: getRoles,
+		enabled: options.enabled,
+	});
+}
+
+function useAssignUserRoleMutation() {
+	return useMutation({
+		mutationFn: ({ userId, roleId }: { userId: string; roleId: string }) =>
+			assignUserRole(userId, roleId),
+	});
+}
+
+function useRemoveUserRoleMutation() {
+	return useMutation({
+		mutationFn: ({ userId, roleId }: { userId: string; roleId: string }) =>
+			removeUserRole(userId, roleId),
+	});
+}
 
 function useAreasQuery(options: { enabled: boolean }) {
 	return useQuery({
@@ -370,6 +395,9 @@ function useGrantCourseAccessMutation() {
 }
 
 export {
+	useRolesQuery,
+	useAssignUserRoleMutation,
+	useRemoveUserRoleMutation,
 	useAreasQuery,
 	useAreaQuery,
 	useCreateAreaMutation,

@@ -13,6 +13,9 @@ import { LoadingScreen } from '@/components/loading-screen';
 import {
 	useUserQuery,
 	useUpdateUserMutation,
+	useRolesQuery,
+	useAssignUserRoleMutation,
+	useRemoveUserRoleMutation,
 	useAreasQuery,
 	useUserAreaAccessQuery,
 	useGrantUserAreaAccessMutation,
@@ -24,9 +27,9 @@ import {
 import { AdminSidebar } from '@/features/admin/components/admin-sidebar';
 import { StatusToggle } from '@/features/admin/components/status-toggle';
 import { AreaAccessToggleList } from '@/features/admin/components/area-access-toggle-list';
+import { RoleAccessToggleList } from '@/features/admin/components/role-access-toggle-list';
 import { GrantedCoursesPanel } from '@/features/admin/components/granted-courses-panel';
 import { GrantCourseAccessModal } from '@/features/admin/components/grant-course-access-modal';
-import { formatRoleNames } from '@/features/admin/lib/format-role-names';
 
 const GENERIC_ERROR_MESSAGE =
 	'Não foi possível concluir a ação. Tente novamente.';
@@ -41,6 +44,7 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 	const ready = useRequirePermission(authPermissions.manageUsers);
 
 	const userQuery = useUserQuery(userId, { enabled: ready });
+	const rolesQuery = useRolesQuery({ enabled: ready });
 	const areasQuery = useAreasQuery({ enabled: ready });
 	const areaAccessQuery = useUserAreaAccessQuery(userId, { enabled: ready });
 	const grantedCoursesQuery = useGrantedCourseAccessQuery(userId, {
@@ -49,11 +53,16 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 	const coursesQuery = useCoursesQuery({ enabled: ready });
 
 	const updateUserMutation = useUpdateUserMutation();
+	const assignRoleMutation = useAssignUserRoleMutation();
+	const removeRoleMutation = useRemoveUserRoleMutation();
 	const grantAreaMutation = useGrantUserAreaAccessMutation();
 	const revokeAreaMutation = useRevokeUserAreaAccessMutation();
 	const grantCourseMutation = useGrantCourseAccessMutation();
 
 	const [pendingAreaIds, setPendingAreaIds] = useState<Set<string> | null>(
+		null,
+	);
+	const [pendingRoleIds, setPendingRoleIds] = useState<Set<string> | null>(
 		null,
 	);
 	const [pendingActive, setPendingActive] = useState<boolean | null>(null);
@@ -70,6 +79,16 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 			);
 		}
 	}, [areaAccessQuery.data, pendingAreaIds]);
+
+	useEffect(() => {
+		if (userQuery.data && rolesQuery.data && pendingRoleIds === null) {
+			const assignedIds = rolesQuery.data
+				.filter((role) => userQuery.data.roleNames.includes(role.name))
+				.map((role) => role.id);
+			// eslint-disable-next-line react-hooks/set-state-in-effect
+			setPendingRoleIds(new Set(assignedIds));
+		}
+	}, [userQuery.data, rolesQuery.data, pendingRoleIds]);
 
 	useEffect(() => {
 		if (userQuery.data && pendingActive === null) {
@@ -106,8 +125,25 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 		});
 	}
 
+	function toggleRole(roleId: string) {
+		setPendingRoleIds((current) => {
+			const next = new Set(current ?? []);
+			if (next.has(roleId)) {
+				next.delete(roleId);
+			} else {
+				next.add(roleId);
+			}
+			return next;
+		});
+	}
+
 	async function handleSave() {
-		if (!userQuery.data || pendingAreaIds === null || pendingActive === null) {
+		if (
+			!userQuery.data ||
+			pendingAreaIds === null ||
+			pendingRoleIds === null ||
+			pendingActive === null
+		) {
 			return;
 		}
 
@@ -124,12 +160,30 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 			(areaId) => !pendingAreaIds.has(areaId),
 		);
 
+		const loadedRoleIds = new Set(
+			(rolesQuery.data ?? [])
+				.filter((role) => userQuery.data.roleNames.includes(role.name))
+				.map((role) => role.id),
+		);
+		const toAssign = [...pendingRoleIds].filter(
+			(roleId) => !loadedRoleIds.has(roleId),
+		);
+		const toUnassign = [...loadedRoleIds].filter(
+			(roleId) => !pendingRoleIds.has(roleId),
+		);
+
 		const tasks: Promise<unknown>[] = [
 			...toGrant.map((areaId) =>
 				grantAreaMutation.mutateAsync({ userId, areaId }),
 			),
 			...toRevoke.map((areaId) =>
 				revokeAreaMutation.mutateAsync({ userId, areaId }),
+			),
+			...toAssign.map((roleId) =>
+				assignRoleMutation.mutateAsync({ userId, roleId }),
+			),
+			...toUnassign.map((roleId) =>
+				removeRoleMutation.mutateAsync({ userId, roleId }),
 			),
 		];
 
@@ -212,7 +266,11 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 	}
 
 	const isLoading =
-		!userLoaded || areasQuery.isPending || areaAccessQuery.isPending;
+		!userLoaded ||
+		rolesQuery.isPending ||
+		areasQuery.isPending ||
+		areaAccessQuery.isPending;
+	const roles = rolesQuery.data ?? [];
 	const areas = areasQuery.data ?? [];
 	const courses = coursesQuery.data ?? [];
 	const grantedCourseIds = (grantedCoursesQuery.data ?? []).map(
@@ -274,9 +332,11 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">
 									Papel
 								</div>
-								<div className="rounded-md border border-white/12 bg-[#141416] px-4 py-3.25 font-sans text-[14px] font-light text-[#f2f2f0]">
-									{formatRoleNames(userQuery.data?.roleNames ?? [])}
-								</div>
+								<RoleAccessToggleList
+									roles={roles}
+									pendingRoleIds={pendingRoleIds ?? new Set()}
+									onToggle={toggleRole}
+								/>
 							</div>
 							<div>
 								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">

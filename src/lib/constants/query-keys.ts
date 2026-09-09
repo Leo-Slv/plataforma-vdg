@@ -23,6 +23,7 @@ const queryKeys = {
 		testimonials: ['landing', 'testimonials'] as const,
 	},
 	admin: {
+		roles: ['admin', 'roles'] as const,
 		areas: ['admin', 'areas'] as const,
 		area: (areaId: string) => ['admin', 'areas', areaId] as const,
 		courses: ['admin', 'courses'] as const,

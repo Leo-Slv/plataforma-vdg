@@ -7,6 +7,7 @@ const userSchema = z.object({
 	active: z.boolean(),
 	emailVerifiedAt: z.string().nullable(),
 	roleNames: z.array(z.string()),
+	areaNames: z.array(z.string()),
 	createdAt: z.string(),
 	updatedAt: z.string(),
 });

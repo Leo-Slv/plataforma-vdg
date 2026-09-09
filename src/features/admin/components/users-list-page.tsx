@@ -10,7 +10,6 @@ import { appRoutes } from '@/lib/routes/app-routes';
 import { isApiError } from '@/lib/http/api-error';
 import { LoadingScreen } from '@/components/loading-screen';
 import {
-	useAreasQuery,
 	useUsersQuery,
 	useCreateUserMutation,
 } from '@/features/admin/hooks/admin.queries';
@@ -48,7 +47,6 @@ function UsersListPage() {
 	const usersQuery = useUsersQuery(page, PAGE_SIZE, debouncedSearch, {
 		enabled: ready,
 	});
-	const areasQuery = useAreasQuery({ enabled: ready });
 	const createUserMutation = useCreateUserMutation();
 
 	useEffect(() => {
@@ -84,7 +82,6 @@ function UsersListPage() {
 		return <LoadingScreen />;
 	}
 
-	const areas = areasQuery.data ?? [];
 	const users = usersQuery.data?.page.items ?? [];
 	const totalPages = usersQuery.data?.page.totalPages ?? 1;
 
@@ -145,7 +142,7 @@ function UsersListPage() {
 						)
 					) : (
 						<>
-							<UsersTable users={users} areas={areas} />
+							<UsersTable users={users} />
 							{users.length > 0 ? (
 								<PaginationControls
 									page={page}
