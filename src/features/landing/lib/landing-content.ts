@@ -75,8 +75,6 @@ const footerContent = {
 
 const featuredFormationCopy = {
 	eyebrow: 'Formação em destaque',
-	description:
-		'8 módulos, mentoria em grupo e certificado ao final. Turma limitada, com encontros presenciais mensais.',
 	primaryCtaLabel: 'Inscrever-se',
 	secondaryCtaLabel: 'Saiba mais →',
 } as const;

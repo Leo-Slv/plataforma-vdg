@@ -34,11 +34,7 @@ function FeaturedCoursesSection({ liveCourses }: FeaturedCoursesSectionProps) {
 						<FeaturedCourseCard
 							key={course.slug}
 							course={course}
-							live={
-								match
-									? { slug: match.slug, thumbnailUrl: match.thumbnailUrl }
-									: undefined
-							}
+							live={match}
 						/>
 					);
 				})}

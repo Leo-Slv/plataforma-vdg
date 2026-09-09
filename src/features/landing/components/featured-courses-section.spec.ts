@@ -41,6 +41,12 @@ test('links a card to the course detail route when a live course matches its slu
 					slug: matchedSlug,
 					description: '',
 					thumbnailUrl: null,
+					pricingModel: 'Free',
+					priceAmount: null,
+					moduleCount: 6,
+					lessonCount: 24,
+					durationSeconds: 25200,
+					areaName: 'Discipulado',
 				},
 			],
 		}),
@@ -49,4 +55,31 @@ test('links a card to the course detail route when a live course matches its slu
 		html,
 		new RegExp(`href="${appRoutes.courses.detail(matchedSlug)}"`),
 	);
+});
+
+test('renders live stats/price/area instead of the editorial fallback when matched', () => {
+	const matchedSlug = featuredCourses[0].slug;
+	const html = renderToStaticMarkup(
+		createElement(FeaturedCoursesSection, {
+			liveCourses: [
+				{
+					id: 'course-1',
+					title: featuredCourses[0].title,
+					slug: matchedSlug,
+					description: '',
+					thumbnailUrl: null,
+					pricingModel: 'Paid',
+					priceAmount: 89,
+					moduleCount: 11,
+					lessonCount: 42,
+					durationSeconds: 3600,
+					areaName: 'Família',
+				},
+			],
+		}),
+	);
+	assert.match(html, /11 módulos/);
+	assert.match(html, /42 aulas/);
+	assert.match(html, /Família/);
+	assert.match(html, /R\$\s?89/);
 });

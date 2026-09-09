@@ -6,6 +6,12 @@ const publicFeaturedCourseSchema = z.object({
 	slug: z.string(),
 	description: z.string(),
 	thumbnailUrl: z.string().nullable(),
+	pricingModel: z.enum(['Free', 'Paid', 'EnrollmentControlled']),
+	priceAmount: z.number().nullable(),
+	moduleCount: z.number(),
+	lessonCount: z.number(),
+	durationSeconds: z.number(),
+	areaName: z.string().nullable(),
 });
 
 const publicAreaSummarySchema = z.object({
