@@ -109,6 +109,25 @@ Mirrors [`Docs/specs/auth/profile.md`](../../specs/auth/profile.md).
   on `CurrentUserResponse`. New migration `AddUserPhoneAndAvatarUrl` (two
   nullable columns, no backfill).
 
+## Frontend follow-up (2026-09-09)
+
+All four pendencies above are now implemented — see the revised
+[`Docs/specs/auth/profile.md`](../../specs/auth/profile.md). Summary:
+
+- `/profile` renders an editable name/phone/avatar-URL form
+  (`PUT /api/auth/me`) and a separate password-change form
+  (`POST /api/auth/change-password`); email stays read-only.
+- A successful password change is treated as a full logout (brief
+  in-page message, then clear local auth state and hard-navigate to
+  `/login`) — the backend's `IncrementTokenVersion` + `RevokeActiveByUserIdAsync`
+  invalidate the *current* session's access token too, not just other
+  devices'.
+- Avatar renders as an image (`avatarUrl`) when set, falling back to the
+  existing initials-circle treatment otherwise — this is scoped to the
+  profile page itself; `AppNav`'s avatar circle still always shows
+  initials (extending it would mean fetching `GET /api/auth/me` on every
+  authenticated page just for the nav, which wasn't judged worth it here).
+
 ## Resolved
 
 - **`GET /api/auth/me`** — the screen's one working data source.

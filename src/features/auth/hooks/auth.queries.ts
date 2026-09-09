@@ -6,6 +6,8 @@ import { loginUser } from '@/features/auth/api/login';
 import { confirmEmail } from '@/features/auth/api/confirm-email';
 import { resendConfirmation } from '@/features/auth/api/resend-confirmation';
 import { getCurrentUser } from '@/features/auth/api/get-current-user';
+import { updateProfile } from '@/features/auth/api/update-profile';
+import { changePassword } from '@/features/auth/api/change-password';
 import { logoutUser } from '@/features/auth/api/logout';
 
 function useRegisterMutation() {
@@ -46,6 +48,18 @@ function useLogoutMutation() {
 	});
 }
 
+function useUpdateProfileMutation() {
+	return useMutation({
+		mutationFn: updateProfile,
+	});
+}
+
+function useChangePasswordMutation() {
+	return useMutation({
+		mutationFn: changePassword,
+	});
+}
+
 export {
 	useRegisterMutation,
 	useLoginMutation,
@@ -53,4 +67,6 @@ export {
 	useResendConfirmationMutation,
 	useCurrentUserQuery,
 	useLogoutMutation,
+	useUpdateProfileMutation,
+	useChangePasswordMutation,
 };
