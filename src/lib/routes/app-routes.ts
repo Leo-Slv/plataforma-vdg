@@ -42,6 +42,7 @@ const appRoutes = {
 		videos: '/admin/videos',
 		videoEdit: (videoId: string, lessonId: string) =>
 			`/admin/videos/${videoId}?lessonId=${lessonId}`,
+		testimonials: '/admin/testimonials',
 	},
 } as const;
 

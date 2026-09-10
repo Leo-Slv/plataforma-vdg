@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
 
 type AdminSidebarProps = {
-	active: 'areas' | 'courses' | 'users' | 'videos' | 'audit';
+	active: 'areas' | 'courses' | 'users' | 'videos' | 'audit' | 'testimonials';
 	areasSummary?: { name: string; courseCount: number }[];
 };
 
@@ -15,6 +15,11 @@ const NAV_ITEMS = [
 	{ label: 'Usuários', key: 'users', href: appRoutes.admin.users },
 	{ label: 'Vídeos', key: 'videos', href: appRoutes.admin.videos },
 	{ label: 'Auditoria', key: 'audit', href: appRoutes.admin.audit },
+	{
+		label: 'Depoimentos',
+		key: 'testimonials',
+		href: appRoutes.admin.testimonials,
+	},
 ] as const;
 
 function AdminSidebar({ active, areasSummary }: AdminSidebarProps) {

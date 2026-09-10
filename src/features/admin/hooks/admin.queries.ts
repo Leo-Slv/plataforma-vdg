@@ -41,6 +41,9 @@ import { grantUserAreaAccess } from '@/features/admin/api/grant-user-area-access
 import { revokeUserAreaAccess } from '@/features/admin/api/revoke-user-area-access';
 import { getGrantedCourseAccess } from '@/features/admin/api/get-granted-course-access';
 import { grantCourseAccess } from '@/features/admin/api/grant-course-access';
+import { getTestimonials } from '@/features/admin/api/get-testimonials';
+import { publishTestimonial } from '@/features/admin/api/publish-testimonial';
+import { unpublishTestimonial } from '@/features/admin/api/unpublish-testimonial';
 
 function useRolesQuery(options: { enabled: boolean }) {
 	return useQuery({
@@ -455,6 +458,26 @@ function useGrantCourseAccessMutation() {
 	});
 }
 
+function useTestimonialsQuery(options: { enabled: boolean }) {
+	return useQuery({
+		queryKey: queryKeys.admin.testimonials,
+		queryFn: getTestimonials,
+		enabled: options.enabled,
+	});
+}
+
+function usePublishTestimonialMutation() {
+	return useMutation({
+		mutationFn: publishTestimonial,
+	});
+}
+
+function useUnpublishTestimonialMutation() {
+	return useMutation({
+		mutationFn: unpublishTestimonial,
+	});
+}
+
 export {
 	useRolesQuery,
 	useAssignUserRoleMutation,
@@ -498,4 +521,7 @@ export {
 	useRevokeUserAreaAccessMutation,
 	useGrantedCourseAccessQuery,
 	useGrantCourseAccessMutation,
+	useTestimonialsQuery,
+	usePublishTestimonialMutation,
+	useUnpublishTestimonialMutation,
 };

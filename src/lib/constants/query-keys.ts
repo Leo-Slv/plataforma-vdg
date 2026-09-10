@@ -42,6 +42,7 @@ const queryKeys = {
 		user: (userId: string) => ['admin', 'users', userId] as const,
 		grantedCourseAccess: (userId: string) =>
 			['admin', 'users', userId, 'granted-courses'] as const,
+		testimonials: ['admin', 'testimonials'] as const,
 	},
 } as const;
 

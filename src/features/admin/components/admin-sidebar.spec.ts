@@ -16,6 +16,7 @@ test('links every nav item to its real route', () => {
 	assert.match(html, new RegExp(`href="${appRoutes.admin.users}"`));
 	assert.match(html, new RegExp(`href="${appRoutes.admin.videos}"`));
 	assert.match(html, new RegExp(`href="${appRoutes.admin.audit}"`));
+	assert.match(html, new RegExp(`href="${appRoutes.admin.testimonials}"`));
 });
 
 test('links "Voltar à plataforma" back to the catalog', () => {
