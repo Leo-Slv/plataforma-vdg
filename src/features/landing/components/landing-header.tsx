@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { appRoutes } from '@/lib/routes/app-routes';
 import { ThemeToggle } from '@/components/theme-toggle';
 
-const navItems = ['Cursos', 'Áreas', 'Sobre a escola'];
-
 function LandingHeader() {
 	return (
 		<header className="flex items-center justify-between border-b border-foreground/8 px-5 py-4 sm:px-11 sm:py-5">
@@ -21,12 +19,6 @@ function LandingHeader() {
 					Viver da Graça
 				</span>
 			</div>
-
-			<nav className="hidden items-center gap-8 text-[13px] text-foreground/62 sm:flex">
-				{navItems.map((item) => (
-					<span key={item}>{item}</span>
-				))}
-			</nav>
 
 			<div className="flex items-center gap-3">
 				<ThemeToggle />
