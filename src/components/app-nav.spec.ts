@@ -76,3 +76,15 @@ test('closed menu markup is absent, so its "Editar perfil" link is not present e
 
 	assert.doesNotMatch(html, /href="\/profile"/);
 });
+
+test('does not render "Painel admin" for a user with no admin permission claims', () => {
+	const html = renderToStaticMarkup(
+		createElement(AppNav, {
+			displayName: 'Ana',
+			initials: 'AB',
+			active: 'catalog',
+		}),
+	);
+
+	assert.doesNotMatch(html, />Painel admin</);
+});

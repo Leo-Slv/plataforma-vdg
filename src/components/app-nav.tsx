@@ -83,6 +83,14 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 						Meus cursos
 					</Link>
 					<span className="text-white/50">Certificados</span>
+					{canSeeAdminPanel ? (
+						<Link
+							href={appRoutes.admin.courses}
+							className="pb-0.5 text-white/50"
+						>
+							Painel admin
+						</Link>
+					) : null}
 				</nav>
 			</div>
 
@@ -139,15 +147,6 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 							<span className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-white/55">
 								Certificados
 							</span>
-							{canSeeAdminPanel ? (
-								<Link
-									href={appRoutes.admin.courses}
-									onClick={() => setMenuOpen(false)}
-									className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-white/55 hover:bg-white/5"
-								>
-									Painel admin
-								</Link>
-							) : null}
 						</div>
 						<div className="border-t border-white/8 p-2">
 							<button
