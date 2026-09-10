@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
+import { appRoutes } from '@/lib/routes/app-routes';
 import { AuditLogPanel } from '@/features/admin/components/audit-log-panel';
 
 const noop = () => {};
@@ -27,11 +28,22 @@ test('renders the given entries with their labels and relative times', () => {
 	assert.match(html, /ontem/);
 });
 
-test('renders an empty-state message when there are no entries', () => {
+test('links to the full audit screen when there are entries', () => {
+	const html = renderToStaticMarkup(
+		createElement(AuditLogPanel, {
+			status: 'ready',
+			entries: [{ id: '1', label: 'CoursePublished', relativeTime: 'há 2h' }],
+		}),
+	);
+	assert.match(html, new RegExp(`href="${appRoutes.admin.audit}"`));
+});
+
+test('renders an empty-state message when there are no entries, with no link', () => {
 	const html = renderToStaticMarkup(
 		createElement(AuditLogPanel, { status: 'ready', entries: [] }),
 	);
 	assert.match(html, /Nenhuma ação registrada ainda\./);
+	assert.doesNotMatch(html, /<a /);
 });
 
 test('renders the permission-denied message', () => {

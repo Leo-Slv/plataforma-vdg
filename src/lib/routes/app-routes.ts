@@ -27,6 +27,7 @@ const appRoutes = {
 			`/courses/${slug}/lessons/${lessonId}`,
 	},
 	admin: {
+		audit: '/admin/audit',
 		areas: '/admin/areas',
 		areaNew: '/admin/areas/new',
 		areaEdit: (areaId: string) => `/admin/areas/${areaId}/edit`,

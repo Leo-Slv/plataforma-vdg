@@ -390,6 +390,20 @@ function useUserQuery(userId: string, options: { enabled: boolean }) {
 	});
 }
 
+function useUsersByIdsQueries(
+	userIds: string[],
+	options: { enabled: boolean },
+) {
+	return useQueries({
+		queries: userIds.map((userId) => ({
+			queryKey: queryKeys.admin.user(userId),
+			queryFn: () => getUser(userId),
+			enabled: options.enabled,
+			retry: false,
+		})),
+	});
+}
+
 function useUpdateUserMutation() {
 	return useMutation({
 		mutationFn: ({
@@ -470,6 +484,7 @@ export {
 	useCreateUserMutation,
 	useUserAreaAccessQuery,
 	useUserQuery,
+	useUsersByIdsQueries,
 	useUpdateUserMutation,
 	useGrantUserAreaAccessMutation,
 	useRevokeUserAreaAccessMutation,
