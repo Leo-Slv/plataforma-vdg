@@ -3,11 +3,10 @@ import type { Course } from '@/features/admin/model/course';
 import type { Area } from '@/features/admin/model/area';
 
 /**
- * Same resolution order as resolve-audit-label.ts, but for a dedicated
- * "Detalhe" column that already has its own "Ação" column next to it —
- * returns just the detail, no `{action} ·` prefix. Kept as a separate
- * function rather than reusing/changing resolve-audit-label.ts, which
- * the embedded /admin/courses preview still relies on as-is.
+ * The backend's audit log stores only ids — this resolves a display
+ * name only when the referenced entity is already loaded on this page
+ * (courses, areas), falling back to a short id otherwise. Best-effort
+ * by design, not an attempt at full coverage.
  */
 function resolveAuditDetail(
 	entry: AuditLog,

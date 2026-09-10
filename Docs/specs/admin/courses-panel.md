@@ -11,6 +11,15 @@ list covering every status (published + draft), with real per-area
 context and a recent-activity panel — the first screen in the admin
 panel with two independent data sources composed on one page.
 
+**Update (2026-09-10)**: the "Últimas ações auditadas" panel described
+below was removed from this screen once `Docs/specs/admin/audit-log-panel.md`
+shipped a dedicated `/admin/audit` screen with the full, paginated
+history — a 3-row glance duplicating part of a real screen that now
+exists stopped earning its place on this page. The rest of this spec
+(course list, "Áreas ativas" sidebar) is otherwise still accurate; the
+audit-panel sections below are kept as a historical record of what
+shipped between 2026-09-07 and 2026-09-10, not as current behavior.
+
 ## Source
 
 Design reference: artboard `1k` ("Painel admin — cursos e áreas") in

@@ -12,14 +12,10 @@ import { isApiError } from '@/lib/http/api-error';
 import { LoadingScreen } from '@/components/loading-screen';
 import {
 	useAreasQuery,
-	useAuditLogsQuery,
 	useCoursesQuery,
 } from '@/features/admin/hooks/admin.queries';
-import { resolveAuditLabel } from '@/features/admin/lib/resolve-audit-label';
-import { formatRelativeTime } from '@/features/admin/lib/format-relative-time';
 import { AdminSidebar } from '@/features/admin/components/admin-sidebar';
 import { CoursesTable } from '@/features/admin/components/courses-table';
-import { AuditLogPanel } from '@/features/admin/components/audit-log-panel';
 
 function CoursesPanelPage() {
 	const router = useRouter();
@@ -27,13 +23,9 @@ function CoursesPanelPage() {
 
 	const claims = decodeAccessTokenClaims();
 	const canViewAreas = hasPermission(claims, authPermissions.manageAreas);
-	const canViewAudit = hasPermission(claims, authPermissions.readAudit);
 
 	const coursesQuery = useCoursesQuery({ enabled: ready });
 	const areasQuery = useAreasQuery({ enabled: ready && canViewAreas });
-	const auditQuery = useAuditLogsQuery(1, 3, {
-		enabled: ready && canViewAudit,
-	});
 
 	useEffect(() => {
 		if (
@@ -107,32 +99,6 @@ function CoursesPanelPage() {
 						<CoursesTable courses={courses} areas={areas} />
 					)}
 				</div>
-
-				{canViewAudit ? (
-					auditQuery.isPending ? (
-						<div className="mt-8.5 rounded-md border border-white/10 bg-[#101012] px-6 py-5.5">
-							<p className="font-sans text-[12.5px] font-light text-white/40">
-								Carregando ações auditadas…
-							</p>
-						</div>
-					) : auditQuery.isError ? (
-						<AuditLogPanel
-							status="error"
-							onRetry={() => auditQuery.refetch()}
-						/>
-					) : (
-						<AuditLogPanel
-							status="ready"
-							entries={auditQuery.data.items.map((entry) => ({
-								id: entry.id,
-								label: resolveAuditLabel(entry, courses, areas),
-								relativeTime: formatRelativeTime(entry.createdAt, new Date()),
-							}))}
-						/>
-					)
-				) : (
-					<AuditLogPanel status="forbidden" />
-				)}
 			</div>
 		</div>
 	);

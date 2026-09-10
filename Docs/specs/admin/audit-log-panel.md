@@ -10,6 +10,17 @@ built (paginated) to back that preview; this spec builds `1zd`, the real
 full-history screen it was always meant to support, reachable from the
 sidebar.
 
+**Update (2026-09-10, same day)**: once this screen shipped, the
+`/admin/courses` embedded preview (`AuditLogPanel`) was removed
+entirely — a 3-row glance duplicating part of a real full-history
+screen that now exists stopped earning its place on that page. The
+"Ver tudo →" link this spec originally added to that widget went with
+it. `lib/resolve-audit-label.ts` (the preview's own resolution helper)
+was deleted alongside it; `lib/resolve-audit-detail.ts` (this screen's
+own, prefix-free sibling, described below) is the only survivor of that
+resolution logic. References below to "the embedded preview" describe
+history, not current behavior.
+
 ## Source
 
 Design reference: artboard `1zd` ("Painel admin — auditoria") in
