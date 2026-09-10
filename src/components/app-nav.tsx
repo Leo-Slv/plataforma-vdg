@@ -11,6 +11,7 @@ import { authPermissions } from '@/lib/auth/auth-permissions';
 import { decodeAccessTokenClaims, hasPermission } from '@/lib/auth/jwt-claims';
 import { performLogout } from '@/lib/auth/logout';
 import { logoutUser } from '@/features/auth/api/logout';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type AppNavProps = {
 	displayName: string;
@@ -50,7 +51,7 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 	}
 
 	return (
-		<header className="relative flex items-center justify-between border-b border-white/8 px-5 py-4.5 sm:px-10">
+		<header className="relative flex items-center justify-between border-b border-foreground/8 px-5 py-4.5 sm:px-10">
 			<div className="flex items-center gap-8.5">
 				<Image
 					src="/brand/viver-da-graca-mark.png"
@@ -65,8 +66,8 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 						className={cn(
 							'pb-0.5',
 							active === 'catalog'
-								? 'border-b border-[#f2f2f0] text-[#f2f2f0]'
-								: 'text-white/50',
+								? 'border-b border-foreground text-foreground'
+								: 'text-foreground/50',
 						)}
 					>
 						Catálogo
@@ -76,17 +77,17 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 						className={cn(
 							'pb-0.5',
 							active === 'my-courses'
-								? 'border-b border-[#f2f2f0] text-[#f2f2f0]'
-								: 'text-white/50',
+								? 'border-b border-foreground text-foreground'
+								: 'text-foreground/50',
 						)}
 					>
 						Meus cursos
 					</Link>
-					<span className="text-white/50">Certificados</span>
+					<span className="text-foreground/50">Certificados</span>
 					{canSeeAdminPanel ? (
 						<Link
 							href={appRoutes.admin.courses}
-							className="pb-0.5 text-white/50"
+							className="pb-0.5 text-foreground/50"
 						>
 							Painel admin
 						</Link>
@@ -96,16 +97,17 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 
 			<div className="flex items-center gap-3.5">
 				{displayName ? (
-					<span className="hidden font-sans text-xs font-light text-white/45 sm:inline">
+					<span className="hidden font-sans text-xs font-light text-foreground/45 sm:inline">
 						{displayName}
 					</span>
 				) : null}
+				<ThemeToggle />
 				<button
 					type="button"
 					onClick={() => setMenuOpen((current) => !current)}
 					aria-haspopup="menu"
 					aria-expanded={menuOpen}
-					className="flex size-7.5 items-center justify-center rounded-full bg-[#22222a] font-heading text-xs"
+					className="flex size-7.5 items-center justify-center rounded-full bg-surface-3 font-heading text-xs"
 				>
 					{initials}
 				</button>
@@ -119,18 +121,18 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 					/>
 					<div
 						role="menu"
-						className="absolute top-[calc(100%+8px)] right-5 z-50 w-[260px] overflow-hidden rounded-[10px] border border-white/10 bg-[#141416] shadow-[0_12px_30px_rgba(0,0,0,0.5)] sm:right-10"
+						className="absolute top-[calc(100%+8px)] right-5 z-50 w-[260px] overflow-hidden rounded-[10px] border border-foreground/10 bg-surface-2 shadow-[0_12px_30px_rgba(0,0,0,0.5)] sm:right-10"
 					>
-						<div className="flex items-center gap-3 border-b border-white/8 p-4.5">
-							<span className="flex size-9.5 flex-none items-center justify-center rounded-full bg-[#22222a] font-heading text-xs">
+						<div className="flex items-center gap-3 border-b border-foreground/8 p-4.5">
+							<span className="flex size-9.5 flex-none items-center justify-center rounded-full bg-surface-3 font-heading text-xs">
 								{initials}
 							</span>
 							<div className="min-w-0">
-								<div className="truncate font-sans text-[13.5px] text-[#f2f2f0]">
+								<div className="truncate font-sans text-[13.5px] text-foreground">
 									{displayName}
 								</div>
 								{email ? (
-									<div className="truncate font-sans text-[11.5px] font-light text-white/42">
+									<div className="truncate font-sans text-[11.5px] font-light text-foreground/42">
 										{email}
 									</div>
 								) : null}
@@ -140,19 +142,19 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 							<Link
 								href={appRoutes.profile.index}
 								onClick={() => setMenuOpen(false)}
-								className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-white/55 hover:bg-white/5"
+								className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-foreground/55 hover:bg-foreground/5"
 							>
 								Editar perfil
 							</Link>
-							<span className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-white/55">
+							<span className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-foreground/55">
 								Certificados
 							</span>
 						</div>
-						<div className="border-t border-white/8 p-2">
+						<div className="border-t border-foreground/8 p-2">
 							<button
 								type="button"
 								onClick={handleLogout}
-								className="w-full rounded-md px-2.5 py-2.75 text-left font-sans text-[13.5px] text-white/70 hover:bg-white/5"
+								className="w-full rounded-md px-2.5 py-2.75 text-left font-sans text-[13.5px] text-foreground/70 hover:bg-foreground/5"
 							>
 								Sair
 							</button>
