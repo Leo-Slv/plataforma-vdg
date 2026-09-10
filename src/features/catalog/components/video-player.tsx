@@ -17,10 +17,10 @@ function VideoMessage({ children }: { children: string }) {
 			className="relative flex aspect-video items-center justify-center overflow-hidden rounded-lg bg-black"
 			style={{
 				backgroundImage:
-					'repeating-linear-gradient(135deg, #141417 0 10px, #1a1a1e 10px 20px)',
+					'repeating-linear-gradient(135deg, var(--surface-2) 0 10px, var(--stripe-2) 10px 20px)',
 			}}
 		>
-			<span className="font-sans text-[13px] font-light text-white/45">
+			<span className="font-sans text-[13px] font-light text-foreground/45">
 				{children}
 			</span>
 		</div>

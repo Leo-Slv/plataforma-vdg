@@ -30,7 +30,7 @@ function CoverImage({ src, alt = '', className }: CoverImageProps) {
 				className={cn('absolute inset-0', className)}
 				style={{
 					backgroundImage:
-						'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
+						'repeating-linear-gradient(135deg, var(--stripe-1) 0 8px, var(--stripe-2) 8px 16px)',
 				}}
 			/>
 		);

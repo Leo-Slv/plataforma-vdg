@@ -14,7 +14,7 @@ type AccentColorPickerProps = {
 function AccentColorPicker({ value, onChange }: AccentColorPickerProps) {
 	return (
 		<div>
-			<span className="mb-2.25 block font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">
+			<span className="mb-2.25 block font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
 				Cor de destaque
 			</span>
 			<div className="flex gap-2.5">
@@ -29,7 +29,7 @@ function AccentColorPicker({ value, onChange }: AccentColorPickerProps) {
 						className={cn(
 							'size-7.5 rounded-full',
 							value === option.value
-								? 'border-2 border-[#f2f2f0]'
+								? 'border-2 border-foreground'
 								: 'border-2 border-transparent',
 						)}
 					/>

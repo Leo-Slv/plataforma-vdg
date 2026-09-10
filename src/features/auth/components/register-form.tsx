@@ -139,13 +139,13 @@ function RegisterForm() {
 			{formError ? (
 				<div
 					role="alert"
-					className="rounded-md border border-white/12 bg-[#101012] px-4 py-3 text-[13px] font-light text-white/70"
+					className="rounded-md border border-foreground/12 bg-surface px-4 py-3 text-[13px] font-light text-foreground/70"
 				>
 					{formError}
 				</div>
 			) : null}
 
-			<p className="text-[12.5px] font-light text-white/42">
+			<p className="text-[12.5px] font-light text-foreground/42">
 				Ao criar a conta você aceita os{' '}
 				<a href="#" className="underline">
 					termos de uso
@@ -156,7 +156,7 @@ function RegisterForm() {
 			<button
 				type="submit"
 				disabled={submitDisabled}
-				className="mt-1 rounded-full bg-[#f4f4f2] py-4.25 text-center text-[15px] text-[#0a0a0b] disabled:opacity-50"
+				className="mt-1 rounded-full bg-foreground py-4.25 text-center text-[15px] text-background disabled:opacity-50"
 			>
 				{mutation.isPending ? 'Criando conta...' : 'Criar conta'}
 			</button>

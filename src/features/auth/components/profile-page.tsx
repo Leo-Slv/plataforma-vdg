@@ -145,11 +145,11 @@ function ProfilePage() {
 	}
 
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-[#0a0a0b] px-5 py-11 text-[#f2f2f0] sm:px-6">
+		<div className="flex min-h-screen items-center justify-center bg-background px-5 py-11 text-foreground sm:px-6">
 			<div className="w-full max-w-[560px] px-6 pt-9 pb-8 sm:px-0">
 				<Link
 					href={appRoutes.catalog.index}
-					className="font-sans text-[13px] font-light text-white/50"
+					className="font-sans text-[13px] font-light text-foreground/50"
 				>
 					← Voltar
 				</Link>
@@ -165,7 +165,7 @@ function ProfilePage() {
 							onError={() => setAvatarFailed(true)}
 						/>
 					) : (
-						<span className="flex size-14 flex-none items-center justify-center rounded-full bg-[#22222a] font-heading text-lg">
+						<span className="flex size-14 flex-none items-center justify-center rounded-full bg-surface-3 font-heading text-lg">
 							{initials}
 						</span>
 					)}
@@ -174,20 +174,20 @@ function ProfilePage() {
 					</h1>
 				</div>
 
-				<div className="mt-7.5 rounded-lg border border-white/12 bg-[#101012] p-5">
-					<div className="font-heading text-[10px] tracking-[0.16em] text-white/40 uppercase">
+				<div className="mt-7.5 rounded-lg border border-foreground/12 bg-surface p-5">
+					<div className="font-heading text-[10px] tracking-[0.16em] text-foreground/40 uppercase">
 						Dados da conta
 					</div>
 
 					{currentUserQuery.isError ? (
 						<div className="mt-4 flex flex-col items-start gap-3">
-							<p className="font-sans text-[13.5px] font-light text-white/55">
+							<p className="font-sans text-[13.5px] font-light text-foreground/55">
 								Não foi possível carregar seus dados agora.
 							</p>
 							<button
 								type="button"
 								onClick={() => currentUserQuery.refetch()}
-								className="rounded-full border border-white/20 px-4 py-2 font-sans text-[12.5px] text-[#f2f2f0]"
+								className="rounded-full border border-foreground/20 px-4 py-2 font-sans text-[12.5px] text-foreground"
 							>
 								Tentar novamente
 							</button>
@@ -207,17 +207,17 @@ function ProfilePage() {
 							/>
 
 							<div>
-								<div className="mb-2.25 font-heading text-[11px] tracking-[0.14em] text-white/45 uppercase">
+								<div className="mb-2.25 font-heading text-[11px] tracking-[0.14em] text-foreground/45 uppercase">
 									E-mail
 								</div>
-								<div className="flex items-center gap-2 border-b border-white/10 py-3 font-sans text-[15px] font-light text-white/50">
+								<div className="flex items-center gap-2 border-b border-foreground/10 py-3 font-sans text-[15px] font-light text-foreground/50">
 									<span className="truncate">{user?.email ?? '…'}</span>
 									{user ? (
 										<span
 											className={
 												user.emailVerifiedAt
 													? 'font-heading text-[9.5px] tracking-[0.12em] text-[oklch(0.75_0.1_248)] uppercase'
-													: 'font-heading text-[9.5px] tracking-[0.12em] text-white/40 uppercase'
+													: 'font-heading text-[9.5px] tracking-[0.12em] text-foreground/40 uppercase'
 											}
 										>
 											{user.emailVerifiedAt ? 'Confirmado' : 'Pendente'}
@@ -244,7 +244,7 @@ function ProfilePage() {
 									error={profileForm.formState.errors.avatarUrl?.message}
 									{...profileForm.register('avatarUrl')}
 								/>
-								<p className="mt-2 text-[11.5px] font-light text-white/35">
+								<p className="mt-2 text-[11.5px] font-light text-foreground/35">
 									Use o link direto do arquivo de imagem (terminando em .jpg,
 									.png etc.), não o link de uma página.
 								</p>
@@ -253,7 +253,7 @@ function ProfilePage() {
 							{profileError ? (
 								<div
 									role="alert"
-									className="rounded-md border border-white/12 bg-[#141416] px-4 py-3 text-[13px] font-light text-white/70"
+									className="rounded-md border border-foreground/12 bg-surface-2 px-4 py-3 text-[13px] font-light text-foreground/70"
 								>
 									{profileError}
 								</div>
@@ -263,7 +263,7 @@ function ProfilePage() {
 								<button
 									type="submit"
 									disabled={updateProfileMutation.isPending}
-									className="rounded-full bg-[#f4f4f2] px-6 py-3.25 font-sans text-[13.5px] text-[#0a0a0b] disabled:opacity-60"
+									className="rounded-full bg-foreground px-6 py-3.25 font-sans text-[13.5px] text-background disabled:opacity-60"
 								>
 									{updateProfileMutation.isPending
 										? 'Salvando...'
@@ -279,13 +279,13 @@ function ProfilePage() {
 					)}
 				</div>
 
-				<div className="mt-5 rounded-lg border border-white/12 bg-[#101012] p-5">
-					<div className="font-heading text-[10px] tracking-[0.16em] text-white/40 uppercase">
+				<div className="mt-5 rounded-lg border border-foreground/12 bg-surface p-5">
+					<div className="font-heading text-[10px] tracking-[0.16em] text-foreground/40 uppercase">
 						Alterar senha
 					</div>
 
 					{passwordChanged ? (
-						<p className="mt-4 font-sans text-[13.5px] font-light text-white/60">
+						<p className="mt-4 font-sans text-[13.5px] font-light text-foreground/60">
 							{PASSWORD_CHANGED_MESSAGE}
 						</p>
 					) : (
@@ -315,7 +315,7 @@ function ProfilePage() {
 							{passwordError ? (
 								<div
 									role="alert"
-									className="rounded-md border border-white/12 bg-[#141416] px-4 py-3 text-[13px] font-light text-white/70"
+									className="rounded-md border border-foreground/12 bg-surface-2 px-4 py-3 text-[13px] font-light text-foreground/70"
 								>
 									{passwordError}
 								</div>
@@ -324,7 +324,7 @@ function ProfilePage() {
 							<button
 								type="submit"
 								disabled={changePasswordMutation.isPending}
-								className="rounded-full border border-white/20 px-6 py-3.25 font-sans text-[13.5px] text-[#f2f2f0] disabled:opacity-60"
+								className="rounded-full border border-foreground/20 px-6 py-3.25 font-sans text-[13.5px] text-foreground disabled:opacity-60"
 							>
 								{changePasswordMutation.isPending
 									? 'Alterando...'
@@ -338,7 +338,7 @@ function ProfilePage() {
 					type="button"
 					onClick={handleLogout}
 					disabled={logoutMutation.isPending}
-					className="mt-6 font-sans text-[13px] font-light text-white/50 underline underline-offset-4 disabled:opacity-50"
+					className="mt-6 font-sans text-[13px] font-light text-foreground/50 underline underline-offset-4 disabled:opacity-50"
 				>
 					{logoutMutation.isPending ? 'Saindo...' : 'Sair da conta'}
 				</button>

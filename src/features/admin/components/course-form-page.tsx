@@ -218,9 +218,9 @@ function CourseFormPage(props: CourseFormPageProps) {
 
 	if (props.mode === 'edit' && coursesQuery.isPending) {
 		return (
-			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-[#0a0a0b] text-[#f2f2f0]">
+			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
 				<AdminSidebar active="courses" />
-				<p className="py-16 text-center font-sans text-sm font-light text-white/50">
+				<p className="py-16 text-center font-sans text-sm font-light text-foreground/50">
 					Carregando curso…
 				</p>
 			</div>
@@ -229,16 +229,16 @@ function CourseFormPage(props: CourseFormPageProps) {
 
 	if (props.mode === 'edit' && !coursesQuery.isPending && !course) {
 		return (
-			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-[#0a0a0b] text-[#f2f2f0]">
+			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
 				<AdminSidebar active="courses" />
 				<div className="flex flex-col items-center justify-center gap-4 text-center">
-					<p className="font-sans text-sm font-light text-white/60">
+					<p className="font-sans text-sm font-light text-foreground/60">
 						Curso não encontrado.
 					</p>
 					<button
 						type="button"
 						onClick={goToList}
-						className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+						className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 					>
 						Voltar para cursos
 					</button>
@@ -276,7 +276,7 @@ function CourseFormPage(props: CourseFormPageProps) {
 				};
 
 	return (
-		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-[#0a0a0b] text-[#f2f2f0]">
+		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
 			<AdminSidebar active="courses" />
 			<CourseForm
 				mode={props.mode}

@@ -141,16 +141,16 @@ function VideoEditPage({ videoId }: VideoEditPageProps) {
 
 	if (notFound || !lessonId) {
 		return (
-			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-[#0a0a0b] text-[#f2f2f0]">
+			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
 				<AdminSidebar active="videos" />
 				<div className="flex flex-col items-center justify-center gap-4 text-center">
-					<p className="font-sans text-sm font-light text-white/60">
+					<p className="font-sans text-sm font-light text-foreground/60">
 						Vídeo não encontrado.
 					</p>
 					<button
 						type="button"
 						onClick={goToList}
-						className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+						className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 					>
 						Voltar para vídeos
 					</button>
@@ -178,7 +178,7 @@ function VideoEditPage({ videoId }: VideoEditPageProps) {
 	const isSaving = activateMutation.isPending || unlistMutation.isPending;
 
 	return (
-		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-[#0a0a0b] text-[#f2f2f0]">
+		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
 			<AdminSidebar active="videos" />
 
 			<div className="mx-auto w-full max-w-[560px] p-8.5">
@@ -186,7 +186,7 @@ function VideoEditPage({ videoId }: VideoEditPageProps) {
 					<button
 						type="button"
 						onClick={goToList}
-						className="font-sans text-[20px] font-light text-white/50"
+						className="font-sans text-[20px] font-light text-foreground/50"
 						aria-label="Voltar para vídeos"
 					>
 						←
@@ -197,39 +197,39 @@ function VideoEditPage({ videoId }: VideoEditPageProps) {
 				</div>
 
 				{isLoading || !video ? (
-					<p className="mt-16 py-16 text-center font-sans text-sm font-light text-white/50">
+					<p className="mt-16 py-16 text-center font-sans text-sm font-light text-foreground/50">
 						Carregando…
 					</p>
 				) : (
 					<>
-						<div className="mt-6.5 flex aspect-video items-center justify-center rounded-md border border-white/10 bg-[#101012] font-mono text-[11px] text-white/35">
+						<div className="mt-6.5 flex aspect-video items-center justify-center rounded-md border border-foreground/10 bg-surface font-mono text-[11px] text-foreground/35">
 							youtube.com/embed/{video.youTubeVideoId ?? video.storageKey}
 						</div>
 
 						<div className="mt-6.5 flex flex-col gap-4.5">
 							<div>
-								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">
+								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
 									ID do YouTube
 								</div>
-								<div className="rounded-md border border-white/12 bg-[#141416] px-4 py-3.25 font-mono text-[14px] text-[#f2f2f0]">
+								<div className="rounded-md border border-foreground/12 bg-surface-2 px-4 py-3.25 font-mono text-[14px] text-foreground">
 									{video.youTubeVideoId ?? video.storageKey}
 								</div>
 							</div>
 
 							<div>
-								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">
+								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
 									Aula vinculada
 								</div>
-								<div className="rounded-md border border-white/12 bg-[#141416] px-4 py-3.25 font-sans text-[14px] font-light text-[#f2f2f0]">
+								<div className="rounded-md border border-foreground/12 bg-surface-2 px-4 py-3.25 font-sans text-[14px] font-light text-foreground">
 									{lessonLabel}
 								</div>
 							</div>
 
 							<div>
-								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">
+								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
 									Duração
 								</div>
-								<div className="rounded-md border border-white/12 bg-[#141416] px-4 py-3.25 font-sans text-[14px] font-light text-[#f2f2f0]">
+								<div className="rounded-md border border-foreground/12 bg-surface-2 px-4 py-3.25 font-sans text-[14px] font-light text-foreground">
 									{Math.floor(video.durationSeconds / 60)}min
 								</div>
 							</div>
@@ -250,7 +250,7 @@ function VideoEditPage({ videoId }: VideoEditPageProps) {
 								type="button"
 								onClick={handleSave}
 								disabled={isSaving}
-								className="mt-1.5 rounded-full bg-[#f4f4f2] py-3.5 text-center font-sans text-[13.5px] text-[#0a0a0b] disabled:opacity-60"
+								className="mt-1.5 rounded-full bg-foreground py-3.5 text-center font-sans text-[13.5px] text-background disabled:opacity-60"
 							>
 								{isSaving ? 'Salvando...' : 'Salvar alterações'}
 							</button>

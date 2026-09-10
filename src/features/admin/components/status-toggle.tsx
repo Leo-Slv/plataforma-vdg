@@ -10,8 +10,8 @@ type StatusToggleProps = {
 
 function StatusToggle({ label, checked, onChange }: StatusToggleProps) {
 	return (
-		<div className="flex items-center justify-between rounded-md border border-white/10 p-5">
-			<span className="font-sans text-[13.5px] font-light text-[#f2f2f0]">
+		<div className="flex items-center justify-between rounded-md border border-foreground/10 p-5">
+			<span className="font-sans text-[13.5px] font-light text-foreground">
 				{label}
 			</span>
 			<button
@@ -23,10 +23,10 @@ function StatusToggle({ label, checked, onChange }: StatusToggleProps) {
 					'flex h-5.5 w-9.5 items-center rounded-full p-0.5 transition-colors',
 					checked
 						? 'justify-end bg-[oklch(0.62_0.1_248)]'
-						: 'justify-start bg-white/15',
+						: 'justify-start bg-foreground/15',
 				)}
 			>
-				<span className="size-4.5 rounded-full bg-white" />
+				<span className="size-4.5 rounded-full bg-foreground" />
 			</button>
 		</div>
 	);

@@ -35,7 +35,7 @@ function GrantCourseAccessModal({
 				className="flex flex-col gap-4.5"
 			>
 				{eligibleCourses.length === 0 ? (
-					<p className="font-sans text-[13px] font-light text-white/50">
+					<p className="font-sans text-[13px] font-light text-foreground/50">
 						Não há cursos pagos elegíveis para conceder no momento.
 					</p>
 				) : (
@@ -62,14 +62,14 @@ function GrantCourseAccessModal({
 					<button
 						type="button"
 						onClick={onClose}
-						className="rounded-full border border-white/18 px-5 py-3 font-sans text-[13px] text-white/60"
+						className="rounded-full border border-foreground/18 px-5 py-3 font-sans text-[13px] text-foreground/60"
 					>
 						Cancelar
 					</button>
 					<button
 						type="submit"
 						disabled={isSubmitting || !courseId}
-						className="rounded-full bg-[#f4f4f2] px-5.5 py-3.25 font-sans text-[13px] text-[#0a0a0b] disabled:opacity-60"
+						className="rounded-full bg-foreground px-5.5 py-3.25 font-sans text-[13px] text-background disabled:opacity-60"
 					>
 						{isSubmitting ? 'Concedendo...' : 'Conceder acesso'}
 					</button>

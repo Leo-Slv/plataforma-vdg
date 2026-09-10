@@ -36,7 +36,7 @@ function AccessBadge({
 
 	if (course.pricingModel !== 'Free' && course.priceAmount !== null) {
 		return (
-			<span className="absolute top-2.5 left-2.5 rounded-full bg-[#f4f4f2] px-2.25 py-1.25 font-heading text-[9.5px] tracking-[0.14em] whitespace-nowrap text-[#0a0a0b] uppercase">
+			<span className="absolute top-2.5 left-2.5 rounded-full bg-foreground px-2.25 py-1.25 font-heading text-[9.5px] tracking-[0.14em] whitespace-nowrap text-background uppercase">
 				{formatCurrencyBrl(course.priceAmount)}
 			</span>
 		);
@@ -49,7 +49,7 @@ function AccessBadge({
 	}
 
 	return (
-		<span className="absolute top-2.5 left-2.5 rounded-full bg-[#0a0a0b]/85 px-2.25 py-1.25 font-heading text-[9.5px] tracking-[0.14em] whitespace-nowrap text-[oklch(0.75_0.1_248)] uppercase">
+		<span className="absolute top-2.5 left-2.5 rounded-full bg-background/85 px-2.25 py-1.25 font-heading text-[9.5px] tracking-[0.14em] whitespace-nowrap text-[oklch(0.75_0.1_248)] uppercase">
 			{badge}
 		</span>
 	);
@@ -60,7 +60,7 @@ function CourseCard({ course, area }: CourseCardProps) {
 		<Link
 			href={appRoutes.courses.detail(course.slug)}
 			className={cn(
-				'block w-[340px] flex-none text-[#f2f2f0]',
+				'block w-[340px] flex-none text-foreground',
 				!course.hasAccess && 'opacity-55',
 			)}
 		>
@@ -79,11 +79,11 @@ function CourseCard({ course, area }: CourseCardProps) {
 				/>
 				<div className="min-w-0 flex-1">
 					<div className="font-heading text-[15.5px]">{course.title}</div>
-					<div className="mt-1.75 line-clamp-2 text-[12.5px] leading-[1.6] font-light text-white/45">
+					<div className="mt-1.75 line-clamp-2 text-[12.5px] leading-[1.6] font-light text-foreground/45">
 						{area.name} · {course.description}
 					</div>
 				</div>
-				<span aria-hidden className="px-0.5 pt-0.5 text-[15px] text-white/35">
+				<span aria-hidden className="px-0.5 pt-0.5 text-[15px] text-foreground/35">
 					⋮
 				</span>
 			</div>

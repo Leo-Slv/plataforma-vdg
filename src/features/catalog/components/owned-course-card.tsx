@@ -36,16 +36,16 @@ function OwnedCourseCard({
 				className="relative aspect-video overflow-hidden rounded-[10px]"
 				style={{
 					backgroundImage:
-						'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
+						'repeating-linear-gradient(135deg, var(--stripe-1) 0 8px, var(--stripe-2) 8px 16px)',
 				}}
 			>
 				{state.kind === 'completed' ? (
-					<span className="absolute right-2.5 bottom-2.25 rounded bg-[#0a0a0b]/85 px-1.75 py-1 font-sans text-[11.5px] font-medium whitespace-nowrap text-[#f2f2f0]">
+					<span className="absolute right-2.5 bottom-2.25 rounded bg-background/85 px-1.75 py-1 font-sans text-[11.5px] font-medium whitespace-nowrap text-foreground">
 						{moduleCountLabel(state.moduleCount)}
 					</span>
 				) : null}
 				{percent !== null ? (
-					<span className="absolute inset-x-0 bottom-0 block h-1 bg-white/28">
+					<span className="absolute inset-x-0 bottom-0 block h-1 bg-foreground/28">
 						<span
 							className="block h-1 bg-[oklch(0.72_0.1_248)]"
 							style={{ width: `${percent}%` }}
@@ -65,12 +65,12 @@ function OwnedCourseCard({
 				<div className="min-w-0 flex-1">
 					<div className="font-heading text-[15.5px]">{course.title}</div>
 					{state.kind === 'completed' ? (
-						<div className="mt-1.75 text-[12.5px] leading-[1.6] font-light text-white/45">
+						<div className="mt-1.75 text-[12.5px] leading-[1.6] font-light text-foreground/45">
 							{areaName ? `${areaName} · ` : ''}
 							{moduleCountLabel(state.moduleCount)}
 						</div>
 					) : state.kind === 'active' ? (
-						<div className="mt-1.75 text-[12.5px] leading-[1.6] font-light text-white/45">
+						<div className="mt-1.75 text-[12.5px] leading-[1.6] font-light text-foreground/45">
 							{areaName ? `${areaName} · ` : ''}
 							Módulo {String(state.modulePosition).padStart(2, '0')}
 							{state.lessonTitle ? (
@@ -92,7 +92,7 @@ function OwnedCourseCard({
 						</div>
 					) : null}
 				</div>
-				<span aria-hidden className="px-0.5 pt-0.5 text-[15px] text-white/35">
+				<span aria-hidden className="px-0.5 pt-0.5 text-[15px] text-foreground/35">
 					⋮
 				</span>
 			</div>
@@ -100,7 +100,7 @@ function OwnedCourseCard({
 	);
 
 	return (
-		<div className="text-[#f2f2f0]">
+		<div className="text-foreground">
 			{lessonId ? (
 				<Link href={appRoutes.courses.lesson(slug, lessonId)} className="block">
 					{content}
@@ -111,7 +111,7 @@ function OwnedCourseCard({
 			{state.kind === 'completed' ? (
 				<Link
 					href={appRoutes.testimonials.new(course.id)}
-					className="mt-1.5 inline-block font-sans text-[11.5px] font-light text-white/40 underline underline-offset-2"
+					className="mt-1.5 inline-block font-sans text-[11.5px] font-light text-foreground/40 underline underline-offset-2"
 				>
 					Deixar um depoimento
 				</Link>

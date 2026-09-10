@@ -42,7 +42,7 @@ function AuditLogTable({
 }: AuditLogTableProps) {
 	if (entries.length === 0) {
 		return (
-			<p className="py-12 text-center font-sans text-sm font-light text-white/45">
+			<p className="py-12 text-center font-sans text-sm font-light text-foreground/45">
 				Nenhuma ação registrada ainda.
 			</p>
 		);
@@ -54,7 +54,7 @@ function AuditLogTable({
 		<div>
 			<div
 				className={cn(
-					'grid gap-4 border-b border-white/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase',
+					'grid gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
 					COLUMNS,
 				)}
 			>
@@ -68,7 +68,7 @@ function AuditLogTable({
 				<div
 					key={entry.id}
 					className={cn(
-						'grid items-center gap-4 border-b border-white/7 py-4 font-sans text-[13px] text-white/75',
+						'grid items-center gap-4 border-b border-foreground/7 py-4 font-sans text-[13px] text-foreground/75',
 						COLUMNS,
 					)}
 				>
@@ -77,16 +77,16 @@ function AuditLogTable({
 							'font-mono text-[12.5px]',
 							auditActionTone(entry.action) === 'destructive'
 								? 'text-[oklch(0.65_0.16_25)]'
-								: 'text-white/70',
+								: 'text-foreground/70',
 						)}
 					>
 						{entry.action}
 					</span>
-					<span className="text-white/55">
+					<span className="text-foreground/55">
 						{resolveAuditDetail(entry, courses, areas)}
 					</span>
 					<span>{userLabel(entry, userEmailById, userLookupReady)}</span>
-					<span className="text-white/40">
+					<span className="text-foreground/40">
 						{formatRelativeTime(entry.createdAt, now)}
 					</span>
 				</div>

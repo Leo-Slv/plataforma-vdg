@@ -47,23 +47,23 @@ function CatalogPage() {
 	const initials = getInitials(getUserName());
 
 	return (
-		<div className="min-h-screen bg-[#0a0a0b] text-[#f2f2f0]">
+		<div className="min-h-screen bg-background text-foreground">
 			<AppNav displayName={displayName} initials={initials} active="catalog" />
 
 			{query.isPending ? (
-				<p className="px-5 py-16 text-center font-sans text-sm font-light text-white/50 sm:px-10">
+				<p className="px-5 py-16 text-center font-sans text-sm font-light text-foreground/50 sm:px-10">
 					Carregando catálogo…
 				</p>
 			) : query.isError ? (
 				isApiError(query.error) && query.error.status === 401 ? null : (
 					<div className="flex flex-col items-center gap-4 px-5 py-16 text-center sm:px-10">
-						<p className="font-sans text-sm font-light text-white/60">
+						<p className="font-sans text-sm font-light text-foreground/60">
 							Não foi possível carregar o catálogo agora.
 						</p>
 						<button
 							type="button"
 							onClick={() => query.refetch()}
-							className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+							className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 						>
 							Tentar novamente
 						</button>
@@ -93,7 +93,7 @@ function CatalogPage() {
 
 							if (groups.length === 0) {
 								return (
-									<p className="py-12 text-center font-sans text-sm font-light text-white/45">
+									<p className="py-12 text-center font-sans text-sm font-light text-foreground/45">
 										Nenhum curso encontrado.
 									</p>
 								);

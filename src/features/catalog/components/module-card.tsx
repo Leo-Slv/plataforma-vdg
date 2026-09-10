@@ -21,7 +21,7 @@ function ModuleCard({ module, position, slug }: ModuleCardProps) {
 				className="aspect-video"
 				style={{
 					backgroundImage:
-						'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
+						'repeating-linear-gradient(135deg, var(--stripe-1) 0 8px, var(--stripe-2) 8px 16px)',
 				}}
 			/>
 			<div className="p-5">
@@ -31,7 +31,7 @@ function ModuleCard({ module, position, slug }: ModuleCardProps) {
 				<h3 className="mt-3 font-heading text-[18px] font-normal">
 					{module.title}
 				</h3>
-				<p className="mt-2.25 text-[13px] leading-[1.5] font-light text-white/45">
+				<p className="mt-2.25 text-[13px] leading-[1.5] font-light text-foreground/45">
 					{module.description}
 				</p>
 			</div>
@@ -40,7 +40,7 @@ function ModuleCard({ module, position, slug }: ModuleCardProps) {
 
 	if (!firstLessonId) {
 		return (
-			<div className="overflow-hidden rounded-[10px] border border-white/10 bg-[#101012] text-[#f2f2f0]">
+			<div className="overflow-hidden rounded-[10px] border border-foreground/10 bg-surface text-foreground">
 				{content}
 			</div>
 		);
@@ -49,7 +49,7 @@ function ModuleCard({ module, position, slug }: ModuleCardProps) {
 	return (
 		<Link
 			href={appRoutes.courses.lesson(slug, firstLessonId)}
-			className="block overflow-hidden rounded-[10px] border border-white/10 bg-[#101012] text-[#f2f2f0]"
+			className="block overflow-hidden rounded-[10px] border border-foreground/10 bg-surface text-foreground"
 		>
 			{content}
 		</Link>

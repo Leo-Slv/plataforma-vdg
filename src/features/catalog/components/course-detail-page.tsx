@@ -61,24 +61,24 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 	const initials = getInitials(getUserName());
 
 	return (
-		<div className="min-h-screen bg-[#0a0a0b] text-[#f2f2f0]">
+		<div className="min-h-screen bg-background text-foreground">
 			<AppNav displayName={displayName} initials={initials} active="catalog" />
 
 			{catalogQuery.isPending ? (
-				<p className="px-5 py-16 text-center font-sans text-sm font-light text-white/50 sm:px-10">
+				<p className="px-5 py-16 text-center font-sans text-sm font-light text-foreground/50 sm:px-10">
 					Carregando…
 				</p>
 			) : catalogQuery.isError ? (
 				isApiError(catalogQuery.error) &&
 				catalogQuery.error.status === 401 ? null : (
 					<div className="flex flex-col items-center gap-4 px-5 py-16 text-center sm:px-10">
-						<p className="font-sans text-sm font-light text-white/60">
+						<p className="font-sans text-sm font-light text-foreground/60">
 							Não foi possível carregar este curso agora.
 						</p>
 						<button
 							type="button"
 							onClick={() => catalogQuery.refetch()}
-							className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+							className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 						>
 							Tentar novamente
 						</button>
@@ -86,12 +86,12 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 				)
 			) : !course ? (
 				<div className="flex flex-col items-center gap-4 px-5 py-16 text-center sm:px-10">
-					<p className="font-sans text-sm font-light text-white/60">
+					<p className="font-sans text-sm font-light text-foreground/60">
 						Curso não encontrado.
 					</p>
 					<Link
 						href={appRoutes.catalog.index}
-						className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+						className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 					>
 						Voltar ao catálogo
 					</Link>

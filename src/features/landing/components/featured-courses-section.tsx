@@ -12,10 +12,10 @@ type FeaturedCoursesSectionProps = {
 function FeaturedCoursesSection({ liveCourses }: FeaturedCoursesSectionProps) {
 	return (
 		<section className="px-5 pb-11 sm:px-11 sm:pb-22">
-			<div className="flex items-baseline justify-between border-b border-white/8 pb-3.5 font-heading text-[13px] tracking-[0.16em] text-white/40 uppercase sm:hidden">
+			<div className="flex items-baseline justify-between border-b border-foreground/8 pb-3.5 font-heading text-[13px] tracking-[0.16em] text-foreground/40 uppercase sm:hidden">
 				Comece por aqui
 			</div>
-			<div className="hidden items-baseline justify-between border-b border-white/8 pb-5 sm:flex">
+			<div className="hidden items-baseline justify-between border-b border-foreground/8 pb-5 sm:flex">
 				<h2 className="font-heading text-[26px] font-light">Comece por aqui</h2>
 				<Link
 					href={appRoutes.catalog.index}

@@ -30,9 +30,9 @@ function AdminModal({ title, onClose, children }: AdminModalProps) {
 				aria-modal="true"
 				aria-label={title}
 				onClick={(event) => event.stopPropagation()}
-				className="w-full max-w-md rounded-lg border border-white/12 bg-[#141416] p-6.5"
+				className="w-full max-w-md rounded-lg border border-foreground/12 bg-surface-2 p-6.5"
 			>
-				<h2 className="font-heading text-[20px] font-light text-[#f2f2f0]">
+				<h2 className="font-heading text-[20px] font-light text-foreground">
 					{title}
 				</h2>
 				<div className="mt-5.5">{children}</div>

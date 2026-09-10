@@ -23,7 +23,7 @@ function TestimonialQuoteField({
 		<div>
 			<label
 				htmlFor={fieldId}
-				className="mb-2.25 block font-heading text-[11px] tracking-[0.14em] text-white/45 uppercase"
+				className="mb-2.25 block font-heading text-[11px] tracking-[0.14em] text-foreground/45 uppercase"
 			>
 				{label}
 			</label>
@@ -31,7 +31,7 @@ function TestimonialQuoteField({
 				id={fieldId}
 				rows={5}
 				className={cn(
-					'w-full resize-none rounded-lg border border-white/18 bg-transparent px-3.5 py-3.5 font-sans text-[15px] leading-[1.6] font-light text-[#f2f2f0] outline-none placeholder:text-white/35 focus:border-[oklch(0.62_0.1_248)]',
+					'w-full resize-none rounded-lg border border-foreground/18 bg-transparent px-3.5 py-3.5 font-sans text-[15px] leading-[1.6] font-light text-foreground outline-none placeholder:text-foreground/35 focus:border-[oklch(0.62_0.1_248)]',
 					className,
 				)}
 				aria-invalid={Boolean(error)}

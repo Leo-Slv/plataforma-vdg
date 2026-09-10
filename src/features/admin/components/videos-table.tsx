@@ -28,7 +28,7 @@ function lessonLabel(
 function VideosTable({ videos, lessonLookup, lookupReady }: VideosTableProps) {
 	if (videos.length === 0) {
 		return (
-			<p className="py-12 text-center font-sans text-sm font-light text-white/45">
+			<p className="py-12 text-center font-sans text-sm font-light text-foreground/45">
 				Nenhum vídeo cadastrado.
 			</p>
 		);
@@ -38,7 +38,7 @@ function VideosTable({ videos, lessonLookup, lookupReady }: VideosTableProps) {
 		<div>
 			<div
 				className={cn(
-					'grid gap-4 border-b border-white/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase',
+					'grid gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
 					COLUMNS,
 				)}
 			>
@@ -56,33 +56,33 @@ function VideosTable({ videos, lessonLookup, lookupReady }: VideosTableProps) {
 						key={video.id}
 						href={appRoutes.admin.videoEdit(video.id, video.lessonId)}
 						className={cn(
-							'grid items-center gap-4 border-b border-white/7 py-4.5 font-sans text-[13.5px] text-white/75 hover:bg-white/3',
+							'grid items-center gap-4 border-b border-foreground/7 py-4.5 font-sans text-[13.5px] text-foreground/75 hover:bg-foreground/3',
 							COLUMNS,
 						)}
 					>
 						<div>
 							{video.youTubeVideoId ? (
 								<>
-									<div className="font-mono text-[13.5px] text-[#f2f2f0]">
+									<div className="font-mono text-[13.5px] text-foreground">
 										{video.youTubeVideoId}
 									</div>
-									<div className="mt-1 font-sans text-[11px] font-light text-white/35">
+									<div className="mt-1 font-sans text-[11px] font-light text-foreground/35">
 										youtube.com/watch?v={video.youTubeVideoId}
 									</div>
 								</>
 							) : (
-								<div className="font-mono text-[13px] text-white/50">
+								<div className="font-mono text-[13px] text-foreground/50">
 									{video.storageProvider}: {video.storageKey}
 								</div>
 							)}
 						</div>
-						<span className="text-white/55">
+						<span className="text-foreground/55">
 							{lessonLabel(video, lessonLookup, lookupReady)}
 						</span>
 						<span>{Math.floor(video.durationSeconds / 60)}min</span>
 						<span
 							className={cn(
-								isActive ? 'text-[oklch(0.75_0.1_248)]' : 'text-white/45',
+								isActive ? 'text-[oklch(0.75_0.1_248)]' : 'text-foreground/45',
 							)}
 						>
 							{isActive ? 'Ativo' : 'Não listado'}

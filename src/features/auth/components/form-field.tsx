@@ -23,15 +23,15 @@ function FormField({
 		<div>
 			<label
 				htmlFor={fieldId}
-				className="mb-2.25 block font-heading text-[11px] tracking-[0.14em] text-white/45 uppercase"
+				className="mb-2.25 block font-heading text-[11px] tracking-[0.14em] text-foreground/45 uppercase"
 			>
 				{label}
 			</label>
 			<input
 				id={fieldId}
 				className={cn(
-					'w-full border-0 border-b border-white/18 bg-transparent py-3 font-sans text-[15px] font-light text-[#f2f2f0] outline-none placeholder:text-white/30 focus:border-[oklch(0.62_0.1_248)]',
-					'autofill:shadow-[0_0_0px_1000px_#0a0a0b_inset] autofill:[-webkit-text-fill-color:#f2f2f0] autofill:[transition:background-color_9999s_ease-in-out_0s]',
+					'w-full border-0 border-b border-foreground/18 bg-transparent py-3 font-sans text-[15px] font-light text-foreground outline-none placeholder:text-foreground/30 focus:border-[oklch(0.62_0.1_248)]',
+					'autofill:shadow-[0_0_0px_1000px_var(--background)_inset] autofill:[-webkit-text-fill-color:var(--foreground)] autofill:[transition:background-color_9999s_ease-in-out_0s]',
 					className,
 				)}
 				aria-invalid={Boolean(error)}

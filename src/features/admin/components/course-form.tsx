@@ -55,7 +55,7 @@ function CourseForm({
 		<form onSubmit={form.handleSubmit(onSubmit)} noValidate className="p-8.5">
 			<div className="flex items-end justify-between">
 				<div>
-					<div className="font-sans text-xs font-light text-white/40">
+					<div className="font-sans text-xs font-light text-foreground/40">
 						Cursos / {mode === 'create' ? 'Novo curso' : 'Editar'}
 					</div>
 					<h1 className="mt-3 font-heading text-[34px] font-extralight">
@@ -68,7 +68,7 @@ function CourseForm({
 							href={previewHref}
 							target="_blank"
 							rel="noreferrer"
-							className="rounded-full border border-white/18 px-5 py-3 font-sans text-[13px] text-white/60"
+							className="rounded-full border border-foreground/18 px-5 py-3 font-sans text-[13px] text-foreground/60"
 						>
 							Pré-visualizar
 						</a>
@@ -76,14 +76,14 @@ function CourseForm({
 					<button
 						type="button"
 						onClick={onCancel}
-						className="rounded-full border border-white/18 px-5 py-3 font-sans text-[13px] text-white/60"
+						className="rounded-full border border-foreground/18 px-5 py-3 font-sans text-[13px] text-foreground/60"
 					>
 						Cancelar
 					</button>
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						className="rounded-full bg-[#f4f4f2] px-5.5 py-3.25 font-sans text-[13px] text-[#0a0a0b] disabled:opacity-60"
+						className="rounded-full bg-foreground px-5.5 py-3.25 font-sans text-[13px] text-background disabled:opacity-60"
 					>
 						{mode === 'create'
 							? isSubmitting
@@ -99,7 +99,7 @@ function CourseForm({
 			{submitError ? (
 				<div
 					role="alert"
-					className="mt-6 rounded-md border border-white/12 bg-[#101012] px-4 py-3 text-[13px] font-light text-white/70"
+					className="mt-6 rounded-md border border-foreground/12 bg-surface px-4 py-3 text-[13px] font-light text-foreground/70"
 				>
 					{submitError}
 				</div>
@@ -114,10 +114,10 @@ function CourseForm({
 					/>
 
 					<div>
-						<span className="mb-2.25 block font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">
+						<span className="mb-2.25 block font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
 							Slug
 						</span>
-						<div className="w-full rounded-md border border-white/10 bg-[#101012] px-4 py-3.25 font-mono text-[13px] text-white/50">
+						<div className="w-full rounded-md border border-foreground/10 bg-surface px-4 py-3.25 font-mono text-[13px] text-foreground/50">
 							/{slug || '—'}
 						</div>
 					</div>
@@ -135,7 +135,7 @@ function CourseForm({
 							error={form.formState.errors.thumbnailUrl?.message}
 							{...form.register('thumbnailUrl')}
 						/>
-						<p className="mt-2 text-[11.5px] font-light text-white/35">
+						<p className="mt-2 text-[11.5px] font-light text-foreground/35">
 							Use o link direto do arquivo de imagem (terminando em .jpg, .png
 							etc.), não o link de uma página.
 						</p>
@@ -204,8 +204,8 @@ function CourseForm({
 					/>
 
 					{mode === 'edit' && modulesHref ? (
-						<div className="border-t border-white/8 pt-4.5">
-							<span className="font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">
+						<div className="border-t border-foreground/8 pt-4.5">
+							<span className="font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
 								Conteúdo
 							</span>
 							<Link

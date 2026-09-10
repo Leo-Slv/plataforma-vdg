@@ -28,27 +28,27 @@ function CourseDetailOwned({
 		<div className="px-5 py-11 sm:px-10">
 			<div className="max-w-[720px]">
 				{areaName ? (
-					<div className="font-heading text-[11px] tracking-[0.18em] text-white/45 uppercase">
+					<div className="font-heading text-[11px] tracking-[0.18em] text-foreground/45 uppercase">
 						{areaName}
 					</div>
 				) : null}
 				<h1 className="mt-4 font-heading text-[40px] leading-[1.06] font-extralight tracking-tight sm:text-[52px]">
 					{title}
 				</h1>
-				<p className="mt-5 max-w-[600px] text-[16px] leading-[1.7] font-light text-pretty text-white/60">
+				<p className="mt-5 max-w-[600px] text-[16px] leading-[1.7] font-light text-pretty text-foreground/60">
 					{description}
 				</p>
 
 				{details ? (
-					<div className="mt-8.5 flex gap-9 border-t border-b border-white/9 py-5.5 font-sans text-[13px] font-light text-white/45">
+					<div className="mt-8.5 flex gap-9 border-t border-b border-foreground/9 py-5.5 font-sans text-[13px] font-light text-foreground/45">
 						<div>
-							<div className="mb-1.25 font-heading text-xl font-light text-[#f2f2f0]">
+							<div className="mb-1.25 font-heading text-xl font-light text-foreground">
 								{modules.length}
 							</div>
 							{moduleWord}
 						</div>
 						<div>
-							<div className="mb-1.25 font-heading text-xl font-light text-[#f2f2f0]">
+							<div className="mb-1.25 font-heading text-xl font-light text-foreground">
 								{lessonCount}
 							</div>
 							{lessonWord}
@@ -72,7 +72,7 @@ function CourseDetailOwned({
 						))}
 					</div>
 				) : (
-					<p className="mt-4 font-sans text-sm font-light text-white/45">
+					<p className="mt-4 font-sans text-sm font-light text-foreground/45">
 						Carregando conteúdo…
 					</p>
 				)}

@@ -26,7 +26,7 @@ function PreviewModuleCard({ module, position, slug }: PreviewModuleCardProps) {
 	return (
 		<div
 			className={cn(
-				'overflow-hidden rounded-[10px] border border-white/10 bg-[#101012] text-[#f2f2f0]',
+				'overflow-hidden rounded-[10px] border border-foreground/10 bg-surface text-foreground',
 				!hasFreeLesson && 'opacity-60',
 			)}
 		>
@@ -34,14 +34,14 @@ function PreviewModuleCard({ module, position, slug }: PreviewModuleCardProps) {
 				className="aspect-video"
 				style={{
 					backgroundImage:
-						'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
+						'repeating-linear-gradient(135deg, var(--stripe-1) 0 8px, var(--stripe-2) 8px 16px)',
 				}}
 			/>
 			<div className="p-5">
 				<div
 					className={cn(
 						'font-heading text-[10px] tracking-[0.14em] uppercase',
-						hasFreeLesson ? 'text-[oklch(0.75_0.1_248)]' : 'text-white/45',
+						hasFreeLesson ? 'text-[oklch(0.75_0.1_248)]' : 'text-foreground/45',
 					)}
 				>
 					Módulo {label} · {lessonCount} {lessonWord}
@@ -49,7 +49,7 @@ function PreviewModuleCard({ module, position, slug }: PreviewModuleCardProps) {
 				<h3 className="mt-3 font-heading text-[18px] font-normal">
 					{module.title}
 				</h3>
-				<div className="mt-2.25 text-[13px] leading-[1.5] font-light text-white/45">
+				<div className="mt-2.25 text-[13px] leading-[1.5] font-light text-foreground/45">
 					{hasFreeLesson
 						? `${formatDuration(knownDurationSeconds)} · ${freeLessons.length} ${freeLessons.length === 1 ? 'aula grátis' : 'aulas grátis'}`
 						: 'Requer inscrição'}
@@ -58,12 +58,12 @@ function PreviewModuleCard({ module, position, slug }: PreviewModuleCardProps) {
 				{hasFreeLesson && firstFreeLessonId ? (
 					<Link
 						href={appRoutes.courses.lesson(slug, firstFreeLessonId)}
-						className="mt-5 block rounded-full bg-[#f4f4f2] py-3.25 text-center font-sans text-[13px] text-[#0a0a0b]"
+						className="mt-5 block rounded-full bg-foreground py-3.25 text-center font-sans text-[13px] text-background"
 					>
 						Assistir aula grátis
 					</Link>
 				) : (
-					<span className="mt-5 block rounded-full border border-white/14 py-3.25 text-center font-sans text-[13px] text-white/50">
+					<span className="mt-5 block rounded-full border border-foreground/14 py-3.25 text-center font-sans text-[13px] text-foreground/50">
 						Bloqueado
 					</span>
 				)}

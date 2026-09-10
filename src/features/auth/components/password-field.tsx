@@ -34,7 +34,7 @@ function PasswordField({
 			<div className="mb-2.25 flex items-center justify-between">
 				<label
 					htmlFor={fieldId}
-					className="font-heading text-[11px] tracking-[0.14em] text-white/45 uppercase"
+					className="font-heading text-[11px] tracking-[0.14em] text-foreground/45 uppercase"
 				>
 					{label}
 				</label>
@@ -42,7 +42,7 @@ function PasswordField({
 			</div>
 			<div
 				className={cn(
-					'flex items-center justify-between border-b border-white/18 py-3 has-focus-within:border-[oklch(0.62_0.1_248)]',
+					'flex items-center justify-between border-b border-foreground/18 py-3 has-focus-within:border-[oklch(0.62_0.1_248)]',
 				)}
 			>
 				<input
@@ -50,8 +50,8 @@ function PasswordField({
 					type={visible ? 'text' : 'password'}
 					value={value}
 					className={cn(
-						'w-full border-0 bg-transparent font-sans text-[15px] font-light tracking-[0.2em] text-[#f2f2f0] outline-none',
-						'autofill:shadow-[0_0_0px_1000px_#0a0a0b_inset] autofill:[-webkit-text-fill-color:#f2f2f0] autofill:[transition:background-color_9999s_ease-in-out_0s]',
+						'w-full border-0 bg-transparent font-sans text-[15px] font-light tracking-[0.2em] text-foreground outline-none',
+						'autofill:shadow-[0_0_0px_1000px_var(--background)_inset] autofill:[-webkit-text-fill-color:var(--foreground)] autofill:[transition:background-color_9999s_ease-in-out_0s]',
 						className,
 					)}
 					aria-invalid={Boolean(error)}
@@ -61,7 +61,7 @@ function PasswordField({
 					type="button"
 					onClick={() => setVisible((current) => !current)}
 					aria-label={visible ? 'Ocultar senha' : 'Mostrar senha'}
-					className="shrink-0 text-white/40"
+					className="shrink-0 text-foreground/40"
 				>
 					{visible ? (
 						<EyeOff className="size-4.5" aria-hidden />
@@ -80,7 +80,7 @@ function PasswordField({
 								'h-0.5 flex-1 rounded-full',
 								index < filledSegments
 									? 'bg-[oklch(0.62_0.1_248)]'
-									: 'bg-white/14',
+									: 'bg-foreground/14',
 							)}
 						/>
 					))}
@@ -92,7 +92,7 @@ function PasswordField({
 					{error}
 				</p>
 			) : showStrength ? (
-				<p className="mt-2 text-[11.5px] font-light text-white/40">
+				<p className="mt-2 text-[11.5px] font-light text-foreground/40">
 					Mínimo de 12 caracteres.
 				</p>
 			) : null}

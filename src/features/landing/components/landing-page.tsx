@@ -24,7 +24,7 @@ function LandingPage() {
 		: [];
 
 	return (
-		<div className="bg-[#0a0a0b] text-[#f2f2f0]">
+		<div className="bg-background text-foreground">
 			<LandingHeader />
 			<LandingHero
 				stats={

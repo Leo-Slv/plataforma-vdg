@@ -272,16 +272,16 @@ function LessonEditorPage({
 
 	if (notFound) {
 		return (
-			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-[#0a0a0b] text-[#f2f2f0]">
+			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
 				<AdminSidebar active="courses" />
 				<div className="flex flex-col items-center justify-center gap-4 text-center">
-					<p className="font-sans text-sm font-light text-white/60">
+					<p className="font-sans text-sm font-light text-foreground/60">
 						Aula não encontrada.
 					</p>
 					<button
 						type="button"
 						onClick={() => router.push(appRoutes.admin.courseModules(courseId))}
-						className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+						className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 					>
 						Voltar para módulos
 					</button>
@@ -302,11 +302,11 @@ function LessonEditorPage({
 		deleteVideoMutation.isPending;
 
 	return (
-		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-[#0a0a0b] text-[#f2f2f0]">
+		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
 			<AdminSidebar active="courses" />
 
 			<div className="p-8.5">
-				<div className="font-sans text-xs font-light text-white/40">
+				<div className="font-sans text-xs font-light text-foreground/40">
 					Cursos / {course?.title ?? '…'} / {courseModule?.title ?? '…'} /
 					Editar aula
 				</div>
@@ -320,7 +320,7 @@ function LessonEditorPage({
 							onClick={() =>
 								router.push(appRoutes.admin.courseModules(courseId))
 							}
-							className="rounded-full border border-white/18 px-5 py-3 font-sans text-[13px] text-white/60"
+							className="rounded-full border border-foreground/18 px-5 py-3 font-sans text-[13px] text-foreground/60"
 						>
 							Cancelar
 						</button>
@@ -328,7 +328,7 @@ function LessonEditorPage({
 							type="button"
 							onClick={form.handleSubmit(handleSubmit)}
 							disabled={isLoading || updateLessonMutation.isPending}
-							className="rounded-full bg-[#f4f4f2] px-5.5 py-3.25 font-sans text-[13px] text-[#0a0a0b] disabled:opacity-60"
+							className="rounded-full bg-foreground px-5.5 py-3.25 font-sans text-[13px] text-background disabled:opacity-60"
 						>
 							{updateLessonMutation.isPending ? 'Salvando...' : 'Salvar aula'}
 						</button>
@@ -338,14 +338,14 @@ function LessonEditorPage({
 				{pageError ? (
 					<div
 						role="alert"
-						className="mt-6 rounded-md border border-white/12 bg-[#101012] px-4 py-3 text-[13px] font-light text-white/70"
+						className="mt-6 rounded-md border border-foreground/12 bg-surface px-4 py-3 text-[13px] font-light text-foreground/70"
 					>
 						{pageError}
 					</div>
 				) : null}
 
 				{isLoading ? (
-					<p className="mt-16 py-16 text-center font-sans text-sm font-light text-white/50">
+					<p className="mt-16 py-16 text-center font-sans text-sm font-light text-foreground/50">
 						Carregando…
 					</p>
 				) : (
@@ -373,7 +373,7 @@ function LessonEditorPage({
 										type="button"
 										onClick={handleMoveLesson}
 										disabled={moveLessonMutation.isPending}
-										className="mt-2.5 rounded-full border border-white/18 px-4 py-2 font-sans text-[12.5px] text-white/70 disabled:opacity-60"
+										className="mt-2.5 rounded-full border border-foreground/18 px-4 py-2 font-sans text-[12.5px] text-foreground/70 disabled:opacity-60"
 									>
 										{moveLessonMutation.isPending
 											? 'Movendo...'
@@ -432,10 +432,10 @@ function LessonEditorPage({
 								}
 							/>
 							<div>
-								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">
+								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
 									Ordem no módulo
 								</div>
-								<div className="rounded-md border border-white/12 bg-[#141416] px-4 py-3.25 font-sans text-[14px] font-light text-[#f2f2f0]">
+								<div className="rounded-md border border-foreground/12 bg-surface-2 px-4 py-3.25 font-sans text-[14px] font-light text-foreground">
 									{(lessonPosition ?? 0) + 1}
 								</div>
 							</div>

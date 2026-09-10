@@ -108,14 +108,14 @@ function VideoFormModal({
 					<button
 						type="button"
 						onClick={onClose}
-						className="rounded-full border border-white/18 px-5 py-3 font-sans text-[13px] text-white/60"
+						className="rounded-full border border-foreground/18 px-5 py-3 font-sans text-[13px] text-foreground/60"
 					>
 						Cancelar
 					</button>
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						className="rounded-full bg-[#f4f4f2] px-5.5 py-3.25 font-sans text-[13px] text-[#0a0a0b] disabled:opacity-60"
+						className="rounded-full bg-foreground px-5.5 py-3.25 font-sans text-[13px] text-background disabled:opacity-60"
 					>
 						{isSubmitting ? 'Salvando...' : 'Salvar'}
 					</button>

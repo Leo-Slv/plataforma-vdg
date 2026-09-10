@@ -13,16 +13,16 @@ function AreaSection({ group, position, onSelectArea }: AreaSectionProps) {
 
 	return (
 		<section className="mt-12 first:mt-0">
-			<div className="flex items-baseline justify-between border-b border-white/10 pb-3.5">
+			<div className="flex items-baseline justify-between border-b border-foreground/10 pb-3.5">
 				<div>
-					<div className="font-heading text-[9.5px] tracking-[0.18em] text-white/40 uppercase">
+					<div className="font-heading text-[9.5px] tracking-[0.18em] text-foreground/40 uppercase">
 						Área {label}
 					</div>
 					<h2 className="mt-2.75 font-heading text-2xl font-light">
 						{area.name}
 					</h2>
 					{area.description ? (
-						<p className="mt-2 max-w-[420px] text-[13px] font-light text-white/45">
+						<p className="mt-2 max-w-[420px] text-[13px] font-light text-foreground/45">
 							{area.description}
 						</p>
 					) : null}
@@ -30,7 +30,7 @@ function AreaSection({ group, position, onSelectArea }: AreaSectionProps) {
 				<button
 					type="button"
 					onClick={() => onSelectArea(area.id)}
-					className="font-sans text-[12.5px] font-light text-white/45"
+					className="font-sans text-[12.5px] font-light text-foreground/45"
 				>
 					{courses.length} cursos →
 				</button>

@@ -96,7 +96,7 @@ function LoginForm() {
 				labelExtra={
 					<Link
 						href={appRoutes.auth.forgotPassword}
-						className="font-sans text-[11px] text-white/50"
+						className="font-sans text-[11px] text-foreground/50"
 					>
 						Esqueci
 					</Link>
@@ -104,15 +104,15 @@ function LoginForm() {
 				{...form.register('password')}
 			/>
 
-			<div className="flex items-center gap-2.5 font-sans text-[13px] font-light text-white/55">
-				<span className="size-4 rounded-[3px] border border-white/25" />
+			<div className="flex items-center gap-2.5 font-sans text-[13px] font-light text-foreground/55">
+				<span className="size-4 rounded-[3px] border border-foreground/25" />
 				Continuar conectado neste aparelho
 			</div>
 
 			{formError ? (
 				<div
 					role="alert"
-					className="rounded-md border border-white/12 bg-[#101012] px-4 py-3 text-[13px] font-light text-white/70"
+					className="rounded-md border border-foreground/12 bg-surface px-4 py-3 text-[13px] font-light text-foreground/70"
 				>
 					{formError}
 				</div>
@@ -121,12 +121,12 @@ function LoginForm() {
 			<button
 				type="submit"
 				disabled={mutation.isPending}
-				className="mt-1.5 rounded-full bg-[#f4f4f2] py-4.25 text-center text-[15px] text-[#0a0a0b] disabled:opacity-50"
+				className="mt-1.5 rounded-full bg-foreground py-4.25 text-center text-[15px] text-background disabled:opacity-50"
 			>
 				{mutation.isPending ? 'Entrando...' : 'Entrar'}
 			</button>
 
-			<p className="border-t border-white/8 pt-5.5 text-[12.5px] font-light text-white/38">
+			<p className="border-t border-foreground/8 pt-5.5 text-[12.5px] font-light text-foreground/38">
 				{RATE_LIMIT_MESSAGE}
 			</p>
 		</form>

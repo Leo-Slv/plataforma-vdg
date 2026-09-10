@@ -66,7 +66,7 @@ function MyCoursesPage() {
 	const initials = getInitials(getUserName());
 
 	return (
-		<div className="min-h-screen bg-[#0a0a0b] text-[#f2f2f0]">
+		<div className="min-h-screen bg-background text-foreground">
 			<AppNav
 				displayName={displayName}
 				initials={initials}
@@ -74,20 +74,20 @@ function MyCoursesPage() {
 			/>
 
 			{catalogQuery.isPending ? (
-				<p className="px-5 py-16 text-center font-sans text-sm font-light text-white/50 sm:px-10">
+				<p className="px-5 py-16 text-center font-sans text-sm font-light text-foreground/50 sm:px-10">
 					Carregando…
 				</p>
 			) : catalogQuery.isError ? (
 				isApiError(catalogQuery.error) &&
 				catalogQuery.error.status === 401 ? null : (
 					<div className="flex flex-col items-center gap-4 px-5 py-16 text-center sm:px-10">
-						<p className="font-sans text-sm font-light text-white/60">
+						<p className="font-sans text-sm font-light text-foreground/60">
 							Não foi possível carregar seus cursos agora.
 						</p>
 						<button
 							type="button"
 							onClick={() => catalogQuery.refetch()}
-							className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+							className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 						>
 							Tentar novamente
 						</button>
@@ -95,12 +95,12 @@ function MyCoursesPage() {
 				)
 			) : ownedCourses.length === 0 ? (
 				<div className="flex flex-col items-center gap-4 px-5 py-16 text-center sm:px-10">
-					<p className="font-sans text-sm font-light text-white/60">
+					<p className="font-sans text-sm font-light text-foreground/60">
 						Você ainda não tem cursos.
 					</p>
 					<Link
 						href={appRoutes.catalog.index}
-						className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+						className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 					>
 						Ver o catálogo
 					</Link>
@@ -140,7 +140,7 @@ function MyCoursesPage() {
 					return (
 						<>
 							<div className="px-5 pt-11 sm:px-10">
-								<div className="font-heading text-[11px] tracking-[0.18em] text-white/42 uppercase">
+								<div className="font-heading text-[11px] tracking-[0.18em] text-foreground/42 uppercase">
 									Bom te ver{firstName ? `, ${firstName}` : ''}
 								</div>
 								<h1 className="mt-3.5 font-heading text-[42px] leading-[1.08] font-extralight">
@@ -159,11 +159,11 @@ function MyCoursesPage() {
 							) : null}
 
 							<div className="px-5 pt-11 pb-16 sm:px-10">
-								<div className="flex items-baseline justify-between border-b border-white/9 pb-4">
+								<div className="flex items-baseline justify-between border-b border-foreground/9 pb-4">
 									<h2 className="font-heading text-[22px] font-light">
 										Seus cursos
 									</h2>
-									<span className="font-sans text-[12.5px] font-light text-white/45">
+									<span className="font-sans text-[12.5px] font-light text-foreground/45">
 										{ownedCourses.length === 1
 											? '1 inscrito'
 											: `${ownedCourses.length} inscritos`}{' '}

@@ -20,7 +20,7 @@ function ReorderButtons({
 				onClick={onMoveUp}
 				disabled={!canMoveUp}
 				aria-label="Mover para cima"
-				className="text-[11px] text-white/40 disabled:opacity-25"
+				className="text-[11px] text-foreground/40 disabled:opacity-25"
 			>
 				▲
 			</button>
@@ -29,7 +29,7 @@ function ReorderButtons({
 				onClick={onMoveDown}
 				disabled={!canMoveDown}
 				aria-label="Mover para baixo"
-				className="text-[11px] text-white/40 disabled:opacity-25"
+				className="text-[11px] text-foreground/40 disabled:opacity-25"
 			>
 				▼
 			</button>

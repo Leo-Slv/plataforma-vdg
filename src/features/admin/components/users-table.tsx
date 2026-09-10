@@ -16,7 +16,7 @@ const COLUMNS = 'grid-cols-[2fr_1fr_1.6fr_1fr_1fr]';
 function UsersTable({ users }: UsersTableProps) {
 	if (users.length === 0) {
 		return (
-			<p className="py-12 text-center font-sans text-sm font-light text-white/45">
+			<p className="py-12 text-center font-sans text-sm font-light text-foreground/45">
 				Nenhum usuário encontrado.
 			</p>
 		);
@@ -26,7 +26,7 @@ function UsersTable({ users }: UsersTableProps) {
 		<div>
 			<div
 				className={cn(
-					'grid gap-4 border-b border-white/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase',
+					'grid gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
 					COLUMNS,
 				)}
 			>
@@ -42,19 +42,19 @@ function UsersTable({ users }: UsersTableProps) {
 					key={user.id}
 					href={appRoutes.admin.userEdit(user.id)}
 					className={cn(
-						'grid items-center gap-4 border-b border-white/7 py-4 font-sans text-[13px] text-white/75 hover:bg-white/3',
+						'grid items-center gap-4 border-b border-foreground/7 py-4 font-sans text-[13px] text-foreground/75 hover:bg-foreground/3',
 						COLUMNS,
 					)}
 				>
 					<div>
-						<div className="font-heading text-[14px] text-[#f2f2f0]">
+						<div className="font-heading text-[14px] text-foreground">
 							{user.name}
 						</div>
-						<div className="mt-1 font-sans text-[11px] font-light text-white/35">
+						<div className="mt-1 font-sans text-[11px] font-light text-foreground/35">
 							{user.email}
 						</div>
 					</div>
-					<span className="text-white/55">
+					<span className="text-foreground/55">
 						{formatRoleNames(user.roleNames)}
 					</span>
 					<AreaChips
@@ -65,12 +65,12 @@ function UsersTable({ users }: UsersTableProps) {
 						className={cn(
 							user.emailVerifiedAt
 								? 'text-[oklch(0.75_0.1_248)]'
-								: 'text-white/40',
+								: 'text-foreground/40',
 						)}
 					>
 						{user.emailVerifiedAt ? 'Confirmado' : 'Pendente'}
 					</span>
-					<span className="text-white/40">{formatDateBr(user.createdAt)}</span>
+					<span className="text-foreground/40">{formatDateBr(user.createdAt)}</span>
 				</Link>
 			))}
 		</div>

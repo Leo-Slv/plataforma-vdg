@@ -25,14 +25,14 @@ function PricingModelPicker({
 }: PricingModelPickerProps) {
 	return (
 		<div>
-			<span className="mb-2.25 block font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase">
+			<span className="mb-2.25 block font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
 				Modelo de cobrança
 			</span>
 			<div className="flex flex-col">
 				{OPTIONS.map((option) => (
 					<label
 						key={option.value}
-						className="flex items-center gap-3 border-t border-white/10 py-3.5"
+						className="flex items-center gap-3 border-t border-foreground/10 py-3.5"
 					>
 						<input
 							type="radio"
@@ -42,7 +42,7 @@ function PricingModelPicker({
 							onChange={() => onChangeModel(option.value)}
 							className="size-4"
 						/>
-						<span className="font-sans text-[13.5px] font-light text-white/70">
+						<span className="font-sans text-[13.5px] font-light text-foreground/70">
 							{option.label}
 						</span>
 						{option.value === 'Paid' && value === 'Paid' ? (
@@ -53,7 +53,7 @@ function PricingModelPicker({
 								value={priceAmount}
 								onChange={(event) => onChangePriceAmount(event.target.value)}
 								placeholder="R$ 0,00"
-								className="ml-auto w-32 rounded-md border border-white/12 bg-[#141416] px-3 py-2 font-sans text-[13px] text-[#f2f2f0] outline-none"
+								className="ml-auto w-32 rounded-md border border-foreground/12 bg-surface-2 px-3 py-2 font-sans text-[13px] text-foreground outline-none"
 							/>
 						) : null}
 					</label>

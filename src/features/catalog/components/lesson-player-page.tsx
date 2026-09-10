@@ -149,24 +149,24 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 	}
 
 	return (
-		<div className="min-h-screen bg-[#0a0a0b] text-[#f2f2f0]">
+		<div className="min-h-screen bg-background text-foreground">
 			<AppNav displayName={displayName} initials={initials} active="catalog" />
 
 			{catalogQuery.isPending ? (
-				<p className="px-5 py-16 text-center font-sans text-sm font-light text-white/50 sm:px-10">
+				<p className="px-5 py-16 text-center font-sans text-sm font-light text-foreground/50 sm:px-10">
 					Carregando…
 				</p>
 			) : catalogQuery.isError ? (
 				isApiError(catalogQuery.error) &&
 				catalogQuery.error.status === 401 ? null : (
 					<div className="flex flex-col items-center gap-4 px-5 py-16 text-center sm:px-10">
-						<p className="font-sans text-sm font-light text-white/60">
+						<p className="font-sans text-sm font-light text-foreground/60">
 							Não foi possível carregar este curso agora.
 						</p>
 						<button
 							type="button"
 							onClick={() => catalogQuery.refetch()}
-							className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+							className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 						>
 							Tentar novamente
 						</button>
@@ -174,12 +174,12 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 				)
 			) : !course ? (
 				<div className="flex flex-col items-center gap-4 px-5 py-16 text-center sm:px-10">
-					<p className="font-sans text-sm font-light text-white/60">
+					<p className="font-sans text-sm font-light text-foreground/60">
 						Curso não encontrado.
 					</p>
 					<Link
 						href={appRoutes.catalog.index}
-						className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+						className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 					>
 						Voltar ao catálogo
 					</Link>
@@ -197,23 +197,23 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 					>
 						<DialogContent
 							showCloseButton={false}
-							className="rounded-md border border-[oklch(0.62_0.1_248)] bg-[#0a0a0b] p-5 text-[#f2f2f0] shadow-[0_12px_30px_rgba(0,0,0,0.5)] ring-0"
+							className="rounded-md border border-[oklch(0.62_0.1_248)] bg-background p-5 text-foreground shadow-[0_12px_30px_rgba(0,0,0,0.5)] ring-0"
 						>
 							<DialogPrimitive.Close asChild>
 								<button
 									type="button"
 									onClick={handleClosePaidLessonDialog}
-									className="absolute top-3 right-3 text-white/50 hover:text-[#f2f2f0]"
+									className="absolute top-3 right-3 text-foreground/50 hover:text-foreground"
 								>
 									<XIcon className="size-4" />
 									<span className="sr-only">Fechar</span>
 								</button>
 							</DialogPrimitive.Close>
 							<DialogHeader>
-								<DialogTitle className="font-sans text-[13.5px] font-normal text-[#f2f2f0]">
+								<DialogTitle className="font-sans text-[13.5px] font-normal text-foreground">
 									Esta aula é paga
 								</DialogTitle>
-								<DialogDescription className="font-sans text-[12.5px] font-light text-white/55">
+								<DialogDescription className="font-sans text-[12.5px] font-light text-foreground/55">
 									Você só tem acesso às aulas de preview grátis deste curso.
 									Inscreva-se para desbloquear todo o conteúdo.
 								</DialogDescription>
@@ -222,7 +222,7 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 								<button
 									type="button"
 									onClick={handleClosePaidLessonDialog}
-									className="rounded-full bg-[#f4f4f2] px-5 py-2.5 font-sans text-[13px] text-[#0a0a0b]"
+									className="rounded-full bg-foreground px-5 py-2.5 font-sans text-[13px] text-background"
 								>
 									Voltar ao curso
 								</button>
@@ -233,7 +233,7 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 			) : blockedFromDetails ? (
 				<div className="min-h-[40vh]" />
 			) : detailsQuery.isPending || !detailsQuery.data ? (
-				<p className="px-5 py-16 text-center font-sans text-sm font-light text-white/50 sm:px-10">
+				<p className="px-5 py-16 text-center font-sans text-sm font-light text-foreground/50 sm:px-10">
 					Carregando…
 				</p>
 			) : (
@@ -244,12 +244,12 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 					if (!location) {
 						return (
 							<div className="flex flex-col items-center gap-4 px-5 py-16 text-center sm:px-10">
-								<p className="font-sans text-sm font-light text-white/60">
+								<p className="font-sans text-sm font-light text-foreground/60">
 									Aula não encontrada.
 								</p>
 								<Link
 									href={appRoutes.courses.detail(slug)}
-									className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+									className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 								>
 									Voltar ao curso
 								</Link>
@@ -275,19 +275,19 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 
 					return (
 						<>
-							<div className="flex items-center justify-between border-b border-white/8 px-5 py-3.5 sm:px-7">
+							<div className="flex items-center justify-between border-b border-foreground/8 px-5 py-3.5 sm:px-7">
 								<Link
 									href={appRoutes.courses.detail(slug)}
-									className="font-sans text-[13px] font-light text-white/50"
+									className="font-sans text-[13px] font-light text-foreground/50"
 								>
 									← {course.title}
 								</Link>
 								{percent !== null ? (
 									<div className="flex items-center gap-3.5">
-										<span className="font-sans text-xs font-light text-white/50">
+										<span className="font-sans text-xs font-light text-foreground/50">
 											{percent}% concluído
 										</span>
-										<span className="block h-[3px] w-[120px] overflow-hidden rounded-full bg-white/14">
+										<span className="block h-[3px] w-[120px] overflow-hidden rounded-full bg-foreground/14">
 											<span
 												className="block h-[3px] bg-[oklch(0.72_0.1_248)]"
 												style={{ width: `${percent}%` }}
@@ -309,21 +309,21 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 											type="button"
 											onClick={handleMarkAsWatched}
 											disabled={registerProgressMutation.isPending}
-											className="mt-5 rounded-full border border-white/20 px-6 py-3.5 font-sans text-[13px] text-[#f2f2f0] disabled:opacity-50"
+											className="mt-5 rounded-full border border-foreground/20 px-6 py-3.5 font-sans text-[13px] text-foreground disabled:opacity-50"
 										>
 											{registerProgressMutation.isPending
 												? 'Marcando...'
 												: 'Marcar aula como assistida'}
 										</button>
 									) : (
-										<span className="mt-5 inline-block rounded-full bg-[#101012] px-4 py-2 font-heading text-[11px] tracking-[0.14em] text-[oklch(0.75_0.1_248)] uppercase">
+										<span className="mt-5 inline-block rounded-full bg-surface px-4 py-2 font-heading text-[11px] tracking-[0.14em] text-[oklch(0.75_0.1_248)] uppercase">
 											Aula grátis
 										</span>
 									)}
 
 									<div className="mt-7 flex items-start justify-between gap-7">
 										<div>
-											<div className="font-heading text-[10.5px] tracking-[0.16em] text-white/42 uppercase">
+											<div className="font-heading text-[10.5px] tracking-[0.16em] text-foreground/42 uppercase">
 												Módulo{' '}
 												{String(location.modulePosition).padStart(2, '0')} ·
 												Aula {String(location.lessonPosition).padStart(2, '0')}
@@ -331,14 +331,14 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 											<h1 className="mt-3 font-heading text-[28px] leading-[1.2] font-extralight">
 												{location.lesson.title}
 											</h1>
-											<p className="mt-3.5 max-w-[560px] text-[14.5px] leading-[1.7] font-light text-white/55">
+											<p className="mt-3.5 max-w-[560px] text-[14.5px] leading-[1.7] font-light text-foreground/55">
 												{location.lesson.description}
 											</p>
 										</div>
 										{nextLessonId ? (
 											<Link
 												href={appRoutes.courses.lesson(slug, nextLessonId)}
-												className="flex-none rounded-full border border-white/20 px-5.5 py-3.5 font-sans text-[13px] text-[#f2f2f0]"
+												className="flex-none rounded-full border border-foreground/20 px-5.5 py-3.5 font-sans text-[13px] text-foreground"
 											>
 												Próxima aula →
 											</Link>

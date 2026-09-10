@@ -36,7 +36,7 @@ function LandingHero({ stats }: LandingHeroProps) {
 					</span>
 				</h1>
 
-				<p className="mt-4.5 max-w-[470px] text-[15px] leading-[1.65] font-light text-pretty text-white/58 sm:mt-6.5 sm:text-[17px] sm:text-white/60">
+				<p className="mt-4.5 max-w-[470px] text-[15px] leading-[1.65] font-light text-pretty text-foreground/58 sm:mt-6.5 sm:text-[17px] sm:text-foreground/60">
 					<span className="sm:hidden">{heroContent.subtextMobile}</span>
 					<span className="hidden sm:inline">{heroContent.subtext}</span>
 				</p>
@@ -44,34 +44,34 @@ function LandingHero({ stats }: LandingHeroProps) {
 				<div className="mt-7 flex flex-col gap-2.5 sm:mt-10 sm:flex-row sm:gap-3.5">
 					<Link
 						href={appRoutes.auth.register}
-						className="rounded-full bg-[#f4f4f2] px-7.5 py-4.5 text-center text-[15px] text-[#0a0a0b] sm:py-4 sm:text-[14px]"
+						className="rounded-full bg-foreground px-7.5 py-4.5 text-center text-[15px] text-background sm:py-4 sm:text-[14px]"
 					>
 						{heroContent.primaryCtaLabel}
 					</Link>
 					<Link
 						href={appRoutes.catalog.index}
-						className="rounded-full border border-white/20 px-7.5 py-4.5 text-center text-[15px] text-[#f2f2f0] sm:py-4 sm:text-[14px]"
+						className="rounded-full border border-foreground/20 px-7.5 py-4.5 text-center text-[15px] text-foreground sm:py-4 sm:text-[14px]"
 					>
 						{heroContent.secondaryCtaLabel}
 					</Link>
 				</div>
 
 				{stats ? (
-					<div className="mt-15 hidden gap-11 text-[13px] text-white/45 sm:flex">
+					<div className="mt-15 hidden gap-11 text-[13px] text-foreground/45 sm:flex">
 						<div>
-							<div className="font-heading text-[34px] font-extralight text-[#f2f2f0]">
+							<div className="font-heading text-[34px] font-extralight text-foreground">
 								{stats.activeAreaCount}
 							</div>
 							áreas de ensino
 						</div>
 						<div>
-							<div className="font-heading text-[34px] font-extralight text-[#f2f2f0]">
+							<div className="font-heading text-[34px] font-extralight text-foreground">
 								{stats.publishedCourseCount}
 							</div>
 							cursos publicados
 						</div>
 						<div>
-							<div className="font-heading text-[34px] font-extralight text-[#f2f2f0]">
+							<div className="font-heading text-[34px] font-extralight text-foreground">
 								11
 							</div>
 							anos de igreja

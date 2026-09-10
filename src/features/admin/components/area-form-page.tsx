@@ -173,11 +173,11 @@ function AreaFormPage(props: AreaFormPageProps) {
 				};
 
 	return (
-		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-[#0a0a0b] text-[#f2f2f0]">
+		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
 			<AdminSidebar active="areas" />
 
 			{props.mode === 'edit' && areaQuery.isPending ? (
-				<p className="py-16 text-center font-sans text-sm font-light text-white/50">
+				<p className="py-16 text-center font-sans text-sm font-light text-foreground/50">
 					Carregando área…
 				</p>
 			) : props.mode === 'edit' &&
@@ -185,13 +185,13 @@ function AreaFormPage(props: AreaFormPageProps) {
 			  isApiError(areaQuery.error) &&
 			  areaQuery.error.status === 404 ? (
 				<div className="flex flex-col items-center gap-4 py-16 text-center">
-					<p className="font-sans text-sm font-light text-white/60">
+					<p className="font-sans text-sm font-light text-foreground/60">
 						Área não encontrada.
 					</p>
 					<button
 						type="button"
 						onClick={goToList}
-						className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+						className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 					>
 						Voltar para áreas
 					</button>
@@ -199,13 +199,13 @@ function AreaFormPage(props: AreaFormPageProps) {
 			) : props.mode === 'edit' && areaQuery.isError ? (
 				isApiError(areaQuery.error) && areaQuery.error.status === 401 ? null : (
 					<div className="flex flex-col items-center gap-4 py-16 text-center">
-						<p className="font-sans text-sm font-light text-white/60">
+						<p className="font-sans text-sm font-light text-foreground/60">
 							Não foi possível carregar a área agora.
 						</p>
 						<button
 							type="button"
 							onClick={() => areaQuery.refetch()}
-							className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+							className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 						>
 							Tentar novamente
 						</button>

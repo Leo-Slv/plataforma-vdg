@@ -250,16 +250,16 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 
 	if (courseListLoaded && !coursesQuery.isError && !course) {
 		return (
-			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-[#0a0a0b] text-[#f2f2f0]">
+			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
 				<AdminSidebar active="courses" />
 				<div className="flex flex-col items-center justify-center gap-4 text-center">
-					<p className="font-sans text-sm font-light text-white/60">
+					<p className="font-sans text-sm font-light text-foreground/60">
 						Curso não encontrado.
 					</p>
 					<button
 						type="button"
 						onClick={() => router.push(appRoutes.admin.courses)}
-						className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+						className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 					>
 						Voltar para cursos
 					</button>
@@ -271,11 +271,11 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 	const modules = modulesQuery.data ?? [];
 
 	return (
-		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-[#0a0a0b] text-[#f2f2f0]">
+		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
 			<AdminSidebar active="courses" />
 
 			<div className="p-8.5">
-				<div className="font-sans text-xs font-light text-white/40">
+				<div className="font-sans text-xs font-light text-foreground/40">
 					Cursos / {course?.title ?? '…'} / Módulos
 				</div>
 				<div className="mt-3 flex items-end justify-between">
@@ -285,7 +285,7 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 					<button
 						type="button"
 						onClick={() => setModal({ type: 'create-module' })}
-						className="rounded-full bg-[#f4f4f2] px-5.5 py-3.25 font-sans text-[13px] text-[#0a0a0b]"
+						className="rounded-full bg-foreground px-5.5 py-3.25 font-sans text-[13px] text-background"
 					>
 						Novo módulo
 					</button>
@@ -294,7 +294,7 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 				{pageError ? (
 					<div
 						role="alert"
-						className="mt-6 rounded-md border border-white/12 bg-[#101012] px-4 py-3 text-[13px] font-light text-white/70"
+						className="mt-6 rounded-md border border-foreground/12 bg-surface px-4 py-3 text-[13px] font-light text-foreground/70"
 					>
 						{pageError}
 					</div>
@@ -302,27 +302,27 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 
 				<div className="mt-7.5">
 					{modulesQuery.isPending ? (
-						<p className="py-16 text-center font-sans text-sm font-light text-white/50">
+						<p className="py-16 text-center font-sans text-sm font-light text-foreground/50">
 							Carregando módulos…
 						</p>
 					) : modulesQuery.isError ? (
 						isApiError(modulesQuery.error) &&
 						modulesQuery.error.status === 401 ? null : (
 							<div className="flex flex-col items-center gap-4 py-16 text-center">
-								<p className="font-sans text-sm font-light text-white/60">
+								<p className="font-sans text-sm font-light text-foreground/60">
 									Não foi possível carregar os módulos agora.
 								</p>
 								<button
 									type="button"
 									onClick={() => modulesQuery.refetch()}
-									className="rounded-full border border-white/20 px-6 py-3 font-sans text-[13px] text-[#f2f2f0]"
+									className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
 								>
 									Tentar novamente
 								</button>
 							</div>
 						)
 					) : modules.length === 0 ? (
-						<p className="py-12 text-center font-sans text-sm font-light text-white/45">
+						<p className="py-12 text-center font-sans text-sm font-light text-foreground/45">
 							Nenhum módulo cadastrado ainda.
 						</p>
 					) : (

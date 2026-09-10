@@ -29,7 +29,7 @@ function AdminLessonRow({
 	deleteError,
 }: AdminLessonRowProps) {
 	return (
-		<div className="border-t border-white/6 py-3.5 pl-13.5">
+		<div className="border-t border-foreground/6 py-3.5 pl-13.5">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-3.5">
 					<ReorderButtons
@@ -39,10 +39,10 @@ function AdminLessonRow({
 						onMoveDown={onMoveDown}
 					/>
 					<div>
-						<div className="font-sans text-[14px] text-[#f2f2f0]">
+						<div className="font-sans text-[14px] text-foreground">
 							Aula {String(position + 1).padStart(2, '0')} — {lesson.title}
 						</div>
-						<div className="mt-1 font-sans text-[11.5px] font-light text-white/40">
+						<div className="mt-1 font-sans text-[11.5px] font-light text-foreground/40">
 							{formatDurationMinutes(lesson.durationSeconds)}
 						</div>
 					</div>
@@ -53,7 +53,7 @@ function AdminLessonRow({
 							'rounded-full px-2.25 py-1.25 font-heading text-[10px] tracking-[0.1em] uppercase',
 							lesson.freePreview
 								? 'bg-[oklch(0.3_0.07_248)] text-[oklch(0.85_0.08_248)]'
-								: 'bg-white/8 text-white/50',
+								: 'bg-foreground/8 text-foreground/50',
 						)}
 					>
 						{lesson.freePreview ? 'Gratuita' : 'Paga'}
@@ -61,7 +61,7 @@ function AdminLessonRow({
 					<button
 						type="button"
 						onClick={onEdit}
-						className="font-sans text-[12.5px] text-white/50"
+						className="font-sans text-[12.5px] text-foreground/50"
 					>
 						Editar
 					</button>

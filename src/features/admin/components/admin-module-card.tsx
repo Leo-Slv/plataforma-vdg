@@ -42,8 +42,8 @@ function AdminModuleCard({
 	const hasLessons = courseModule.lessons.length > 0;
 
 	return (
-		<div className="overflow-hidden rounded-[10px] border border-white/10">
-			<div className="flex items-center justify-between bg-[#101012] px-5 py-4.5">
+		<div className="overflow-hidden rounded-[10px] border border-foreground/10">
+			<div className="flex items-center justify-between bg-surface px-5 py-4.5">
 				<div className="flex items-center gap-3.5">
 					<ReorderButtons
 						canMoveUp={canMoveUp}
@@ -52,11 +52,11 @@ function AdminModuleCard({
 						onMoveDown={onMoveDown}
 					/>
 					<div>
-						<div className="font-heading text-[16px] font-light text-[#f2f2f0]">
+						<div className="font-heading text-[16px] font-light text-foreground">
 							Módulo {String(position + 1).padStart(2, '0')} —{' '}
 							{courseModule.title}
 						</div>
-						<div className="mt-0.5 font-sans text-[12px] font-light text-white/40">
+						<div className="mt-0.5 font-sans text-[12px] font-light text-foreground/40">
 							{courseModule.lessons.length === 1
 								? '1 aula'
 								: `${courseModule.lessons.length} aulas`}
@@ -67,7 +67,7 @@ function AdminModuleCard({
 					<button
 						type="button"
 						onClick={onEdit}
-						className="font-sans text-[12.5px] text-white/50"
+						className="font-sans text-[12.5px] text-foreground/50"
 					>
 						Editar módulo
 					</button>
@@ -107,7 +107,7 @@ function AdminModuleCard({
 				/>
 			))}
 
-			<div className="border-t border-white/6 py-3.5 pl-13.5">
+			<div className="border-t border-foreground/6 py-3.5 pl-13.5">
 				<button
 					type="button"
 					onClick={onAddLesson}

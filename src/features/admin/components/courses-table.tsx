@@ -37,7 +37,7 @@ function areaNames(course: Course, areas: Area[]) {
 function CoursesTable({ courses, areas }: CoursesTableProps) {
 	if (courses.length === 0) {
 		return (
-			<p className="py-12 text-center font-sans text-sm font-light text-white/45">
+			<p className="py-12 text-center font-sans text-sm font-light text-foreground/45">
 				Nenhum curso cadastrado.
 			</p>
 		);
@@ -49,7 +49,7 @@ function CoursesTable({ courses, areas }: CoursesTableProps) {
 		<div>
 			<div
 				className={cn(
-					'grid gap-4 border-b border-white/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-white/40 uppercase',
+					'grid gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
 					COLUMNS,
 				)}
 			>
@@ -65,28 +65,28 @@ function CoursesTable({ courses, areas }: CoursesTableProps) {
 					key={course.id}
 					href={appRoutes.admin.courseEdit(course.id)}
 					className={cn(
-						'grid items-center gap-4 border-b border-white/7 py-4.5 font-sans text-[13.5px] text-white/75 hover:bg-white/3',
+						'grid items-center gap-4 border-b border-foreground/7 py-4.5 font-sans text-[13.5px] text-foreground/75 hover:bg-foreground/3',
 						COLUMNS,
 					)}
 				>
 					<div>
-						<div className="font-heading text-[15px] text-[#f2f2f0]">
+						<div className="font-heading text-[15px] text-foreground">
 							{course.title}
 						</div>
-						<div className="mt-1.5 font-mono text-[10.5px] text-white/30">
+						<div className="mt-1.5 font-mono text-[10.5px] text-foreground/30">
 							/{course.slug}
 						</div>
 					</div>
-					<span className="text-white/55">{areaNames(course, areas)}</span>
+					<span className="text-foreground/55">{areaNames(course, areas)}</span>
 					<span>{pricingLabel(course)}</span>
 					<span
 						className={cn(
-							course.published ? 'text-[oklch(0.75_0.1_248)]' : 'text-white/45',
+							course.published ? 'text-[oklch(0.75_0.1_248)]' : 'text-foreground/45',
 						)}
 					>
 						{course.published ? 'Publicado' : 'Rascunho'}
 					</span>
-					<span className="text-white/40">{course.displayOrder}</span>
+					<span className="text-foreground/40">{course.displayOrder}</span>
 				</Link>
 			))}
 		</div>

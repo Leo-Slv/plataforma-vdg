@@ -22,9 +22,9 @@ function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
 	}
 
 	return (
-		<section className="border-t border-white/8 bg-[#0d0d0f] px-5 py-11 sm:px-11 sm:py-22">
+		<section className="border-t border-foreground/8 bg-canvas-alt px-5 py-11 sm:px-11 sm:py-22">
 			<div className="flex items-center justify-between gap-4">
-				<h2 className="font-heading text-[26px] font-light text-[#f2f2f0]">
+				<h2 className="font-heading text-[26px] font-light text-foreground">
 					O que os alunos dizem
 				</h2>
 
@@ -34,7 +34,7 @@ function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
 							type="button"
 							aria-label="Depoimento anterior"
 							onClick={() => scrollByCard(-1)}
-							className="flex size-9 items-center justify-center rounded-full border border-white/15 text-white/60 transition-colors hover:border-white/30 hover:text-white/90"
+							className="flex size-9 items-center justify-center rounded-full border border-foreground/15 text-foreground/60 transition-colors hover:border-foreground/30 hover:text-foreground/90"
 						>
 							←
 						</button>
@@ -42,7 +42,7 @@ function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
 							type="button"
 							aria-label="Próximo depoimento"
 							onClick={() => scrollByCard(1)}
-							className="flex size-9 items-center justify-center rounded-full border border-white/15 text-white/60 transition-colors hover:border-white/30 hover:text-white/90"
+							className="flex size-9 items-center justify-center rounded-full border border-foreground/15 text-foreground/60 transition-colors hover:border-foreground/30 hover:text-foreground/90"
 						>
 							→
 						</button>
@@ -61,15 +61,15 @@ function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
 				{testimonials.map((testimonial) => (
 					<div
 						key={testimonial.id}
-						className="flex w-[86%] flex-none snap-start flex-col gap-4.5 rounded-xl bg-[#141416] p-7.5 sm:w-[calc((100%-3.5rem)/3)]"
+						className="flex w-[86%] flex-none snap-start flex-col gap-4.5 rounded-xl bg-surface-2 p-7.5 sm:w-[calc((100%-3.5rem)/3)]"
 					>
 						<span
 							aria-hidden
-							className="font-serif text-[40px] leading-none text-white/20"
+							className="font-serif text-[40px] leading-none text-foreground/20"
 						>
 							&quot;
 						</span>
-						<p className="text-[14.5px] leading-[1.65] font-light text-white/70">
+						<p className="text-[14.5px] leading-[1.65] font-light text-foreground/70">
 							{testimonial.quote}
 						</p>
 						<div className="mt-1.5 flex items-center gap-2.5">
@@ -79,7 +79,7 @@ function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
 								alt=""
 								className="size-8 rounded-full object-cover"
 							/>
-							<div className="font-sans text-[12.5px] text-[#f2f2f0]">
+							<div className="font-sans text-[12.5px] text-foreground">
 								{testimonial.authorName}
 							</div>
 						</div>

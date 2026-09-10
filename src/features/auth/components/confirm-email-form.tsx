@@ -133,7 +133,7 @@ function ConfirmEmailForm({ onConfirmed }: ConfirmEmailFormProps) {
 				{formError ? (
 					<div
 						role="alert"
-						className="rounded-md border border-white/12 bg-[#101012] px-4 py-3 text-[13px] font-light text-white/70"
+						className="rounded-md border border-foreground/12 bg-surface px-4 py-3 text-[13px] font-light text-foreground/70"
 					>
 						{formError}
 					</div>
@@ -142,7 +142,7 @@ function ConfirmEmailForm({ onConfirmed }: ConfirmEmailFormProps) {
 				<button
 					type="submit"
 					disabled={confirmMutation.isPending}
-					className="rounded-full bg-[#f4f4f2] py-4.25 text-center text-[15px] text-[#0a0a0b] disabled:opacity-50"
+					className="rounded-full bg-foreground py-4.25 text-center text-[15px] text-background disabled:opacity-50"
 				>
 					{confirmMutation.isPending ? 'Confirmando...' : 'Confirmar e-mail'}
 				</button>
@@ -155,7 +155,7 @@ function ConfirmEmailForm({ onConfirmed }: ConfirmEmailFormProps) {
 						'rounded-md border px-4 py-3 text-[13px] font-light',
 						resendMessage.tone === 'success'
 							? 'border-[oklch(0.45_0.07_248)] text-[oklch(0.75_0.1_248)]'
-							: 'border-white/12 text-white/70',
+							: 'border-foreground/12 text-foreground/70',
 					)}
 				>
 					{resendMessage.text}
@@ -167,13 +167,13 @@ function ConfirmEmailForm({ onConfirmed }: ConfirmEmailFormProps) {
 					type="button"
 					onClick={handleResend}
 					disabled={resendMutation.isPending}
-					className="flex-1 rounded-full border border-white/20 py-4 text-center text-[14px] text-[#f2f2f0] disabled:opacity-50"
+					className="flex-1 rounded-full border border-foreground/20 py-4 text-center text-[14px] text-foreground disabled:opacity-50"
 				>
 					{resendMutation.isPending ? 'Reenviando...' : 'Reenviar código'}
 				</button>
 				<Link
 					href={appRoutes.auth.changeEmail}
-					className="flex-1 rounded-full border border-white/20 py-4 text-center text-[14px] text-[#f2f2f0]"
+					className="flex-1 rounded-full border border-foreground/20 py-4 text-center text-[14px] text-foreground"
 				>
 					Trocar e-mail
 				</Link>
