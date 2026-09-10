@@ -43,7 +43,7 @@ function LessonSidebar({
 									key={lesson.id}
 									href={appRoutes.courses.lesson(slug, lesson.id)}
 									className={cn(
-										'flex items-center gap-2.75 rounded-md px-3 py-2.75 font-sans text-[13px] leading-[1.35]',
+										'flex items-start gap-2.75 rounded-md px-3 py-2.75 font-sans text-[13px] leading-[1.35]',
 										isCurrent
 											? 'bg-white/6 text-[#f2f2f0]'
 											: 'font-light text-white/55',
@@ -52,24 +52,31 @@ function LessonSidebar({
 									{isCurrent ? (
 										<span
 											aria-hidden
-											className="flex size-4 flex-none items-center justify-center rounded-full border border-[oklch(0.72_0.1_248)] text-[7px] text-[oklch(0.75_0.1_248)]"
+											className="mt-0.5 flex size-4 flex-none items-center justify-center rounded-full border border-[oklch(0.72_0.1_248)] text-[7px] text-[oklch(0.75_0.1_248)]"
 										>
 											▶
 										</span>
 									) : isCompleted ? (
 										<span
 											aria-hidden
-											className="flex size-4 flex-none items-center justify-center rounded-full bg-[oklch(0.72_0.1_248)] text-[9px] text-[#0a0a0b]"
+											className="mt-0.5 flex size-4 flex-none items-center justify-center rounded-full bg-[oklch(0.72_0.1_248)] text-[9px] text-[#0a0a0b]"
 										>
 											✓
 										</span>
 									) : (
 										<span
 											aria-hidden
-											className="size-4 flex-none rounded-full border border-white/20"
+											className="mt-0.5 size-4 flex-none rounded-full border border-white/20"
 										/>
 									)}
-									{lesson.title}
+									<div className="min-w-0 flex-1">
+										<div>{lesson.title}</div>
+										{lesson.description ? (
+											<div className="mt-0.5 line-clamp-1 text-[11.5px] font-light text-white/40">
+												{lesson.description}
+											</div>
+										) : null}
+									</div>
 								</Link>
 							);
 						})}

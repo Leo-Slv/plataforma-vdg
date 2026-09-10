@@ -28,8 +28,20 @@ const course: CourseCatalogItem = {
 };
 
 const areas: AreaSummary[] = [
-	{ id: 'area-1', name: 'Discipulado', slug: 'discipulado', displayOrder: 1 },
-	{ id: 'area-2', name: 'Liderança', slug: 'lideranca', displayOrder: 2 },
+	{
+		id: 'area-1',
+		name: 'Discipulado',
+		slug: 'discipulado',
+		description: '',
+		displayOrder: 1,
+	},
+	{
+		id: 'area-2',
+		name: 'Liderança',
+		slug: 'lideranca',
+		description: '',
+		displayOrder: 2,
+	},
 ];
 
 test('findCourseBySlug finds a matching course', () => {

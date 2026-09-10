@@ -4,6 +4,7 @@ const areaSummarySchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	slug: z.string(),
+	description: z.string(),
 	displayOrder: z.number(),
 });
 

@@ -21,6 +21,11 @@ function AreaSection({ group, position, onSelectArea }: AreaSectionProps) {
 					<h2 className="mt-2.75 font-heading text-2xl font-light">
 						{area.name}
 					</h2>
+					{area.description ? (
+						<p className="mt-2 max-w-[420px] text-[13px] font-light text-white/45">
+							{area.description}
+						</p>
+					) : null}
 				</div>
 				<button
 					type="button"

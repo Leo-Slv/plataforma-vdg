@@ -7,8 +7,20 @@ import { CatalogPageHeader } from '@/features/catalog/components/catalog-page-he
 import type { AreaSummary } from '@/features/catalog/model/course-catalog';
 
 const areas: AreaSummary[] = [
-	{ id: 'area-1', name: 'Discipulado', slug: 'discipulado', displayOrder: 1 },
-	{ id: 'area-2', name: 'Liderança', slug: 'lideranca', displayOrder: 2 },
+	{
+		id: 'area-1',
+		name: 'Discipulado',
+		slug: 'discipulado',
+		description: '',
+		displayOrder: 1,
+	},
+	{
+		id: 'area-2',
+		name: 'Liderança',
+		slug: 'lideranca',
+		description: '',
+		displayOrder: 2,
+	},
 ];
 
 test('renders a pill for "Todas as áreas" plus one per area', () => {

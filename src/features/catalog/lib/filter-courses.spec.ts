@@ -34,12 +34,14 @@ const discipulado: AreaSummary = {
 	id: 'area-1',
 	name: 'Discipulado',
 	slug: 'discipulado',
+	description: '',
 	displayOrder: 1,
 };
 const lideranca: AreaSummary = {
 	id: 'area-2',
 	name: 'Liderança',
 	slug: 'lideranca',
+	description: '',
 	displayOrder: 2,
 };
 

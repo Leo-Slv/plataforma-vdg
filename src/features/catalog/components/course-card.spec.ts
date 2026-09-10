@@ -14,6 +14,7 @@ const area: AreaSummary = {
 	id: 'area-1',
 	name: 'Discipulado',
 	slug: 'discipulado',
+	description: '',
 	displayOrder: 1,
 };
 

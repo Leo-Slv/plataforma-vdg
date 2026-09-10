@@ -2,6 +2,7 @@ type AreaSummary = {
 	id: string;
 	name: string;
 	slug: string;
+	description: string;
 	displayOrder: number;
 };
 
