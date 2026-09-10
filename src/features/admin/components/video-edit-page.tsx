@@ -82,6 +82,10 @@ function VideoEditPage({ videoId }: VideoEditPageProps) {
 		queryClient.invalidateQueries({
 			queryKey: queryKeys.admin.lessonVideo(lessonId),
 		});
+		// Partial key match invalidates every cached page of the videos list,
+		// not just whichever page happened to be open before navigating here -
+		// otherwise the list shows the pre-save status until a manual refresh.
+		queryClient.invalidateQueries({ queryKey: ['admin', 'videos'] });
 	}
 
 	function handleSave() {
