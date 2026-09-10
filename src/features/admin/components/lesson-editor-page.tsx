@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { authPermissions } from '@/lib/auth/auth-permissions';
@@ -139,8 +140,14 @@ function LessonEditorPage({
 		updateLessonMutation.mutate(
 			{ courseId, moduleId, lessonId, payload: values },
 			{
-				onSuccess: invalidateModules,
-				onError: () => setPageError(GENERIC_ERROR_MESSAGE),
+				onSuccess: () => {
+					invalidateModules();
+					toast.success('Aula atualizada.');
+				},
+				onError: () => {
+					setPageError(GENERIC_ERROR_MESSAGE);
+					toast.error(GENERIC_ERROR_MESSAGE);
+				},
 			},
 		);
 	}
@@ -155,14 +162,16 @@ function LessonEditorPage({
 			{
 				onSuccess: () => {
 					invalidateModules();
+					toast.success('Aula excluída.');
 					router.push(appRoutes.admin.courseModules(courseId));
 				},
 				onError: (error) => {
-					setDeleteError(
+					const message =
 						isApiError(error) && error.status === 409
 							? 'Esta aula tem progresso registrado por algum aluno e não pode ser excluída.'
-							: GENERIC_ERROR_MESSAGE,
-					);
+							: GENERIC_ERROR_MESSAGE;
+					setDeleteError(message);
+					toast.error(message);
 				},
 			},
 		);
@@ -178,14 +187,16 @@ function LessonEditorPage({
 			{
 				onSuccess: () => {
 					invalidateModules();
+					toast.success('Aula movida.');
 					router.push(appRoutes.admin.courseModules(courseId));
 				},
 				onError: (error) => {
-					setMoveError(
+					const message =
 						isApiError(error) && error.status === 409
 							? 'O módulo de destino já atingiu o limite de aulas.'
-							: GENERIC_ERROR_MESSAGE,
-					);
+							: GENERIC_ERROR_MESSAGE;
+					setMoveError(message);
+					toast.error(message);
 				},
 			},
 		);
@@ -193,6 +204,8 @@ function LessonEditorPage({
 
 	function handleVideoSubmit(values: VideoFormValues) {
 		setVideoError(null);
+		const successMessage =
+			videoModal === 'replace' ? 'Vídeo substituído.' : 'Vídeo adicionado.';
 		replaceVideoMutation.mutate(
 			{
 				lessonId,
@@ -213,9 +226,13 @@ function LessonEditorPage({
 							onSettled: invalidateVideo,
 						},
 					);
+					toast.success(successMessage);
 					setVideoModal(null);
 				},
-				onError: () => setVideoError(GENERIC_ERROR_MESSAGE),
+				onError: () => {
+					setVideoError(GENERIC_ERROR_MESSAGE);
+					toast.error(GENERIC_ERROR_MESSAGE);
+				},
 			},
 		);
 	}
@@ -228,8 +245,14 @@ function LessonEditorPage({
 		deleteVideoMutation.mutate(
 			{ lessonId },
 			{
-				onSuccess: invalidateVideo,
-				onError: () => setVideoError(GENERIC_ERROR_MESSAGE),
+				onSuccess: () => {
+					invalidateVideo();
+					toast.success('Vídeo removido.');
+				},
+				onError: () => {
+					setVideoError(GENERIC_ERROR_MESSAGE);
+					toast.error(GENERIC_ERROR_MESSAGE);
+				},
 			},
 		);
 	}

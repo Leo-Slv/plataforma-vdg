@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -93,8 +94,12 @@ function ProfilePage() {
 					queryClient.setQueryData(queryKeys.auth.currentUser, updated);
 					setUserName(updated.name);
 					setProfileSaved(true);
+					toast.success('Perfil atualizado.');
 				},
-				onError: () => setProfileError(GENERIC_ERROR_MESSAGE),
+				onError: () => {
+					setProfileError(GENERIC_ERROR_MESSAGE);
+					toast.error(GENERIC_ERROR_MESSAGE);
+				},
 			},
 		);
 	}
@@ -104,6 +109,7 @@ function ProfilePage() {
 		changePasswordMutation.mutate(values, {
 			onSuccess: () => {
 				setPasswordChanged(true);
+				toast.success('Senha alterada.');
 				// The backend revokes every session on a password change,
 				// including this one's access token (TokenVersion bump) — the
 				// current session is no longer valid, so this must behave like
@@ -115,20 +121,23 @@ function ProfilePage() {
 			},
 			onError: (error) => {
 				if (isApiError(error) && error.status === 401) {
-					passwordForm.setError('currentPassword', {
-						message: 'Senha atual incorreta.',
-					});
+					const message = 'Senha atual incorreta.';
+					passwordForm.setError('currentPassword', { message });
+					toast.error(message);
 					return;
 				}
 				if (isApiError(error) && error.status === 429) {
 					setPasswordError(RATE_LIMIT_MESSAGE);
+					toast.error(RATE_LIMIT_MESSAGE);
 					return;
 				}
 				if (isApiError(error) && error.status === 400) {
 					setPasswordError(error.message);
+					toast.error(error.message);
 					return;
 				}
 				setPasswordError(GENERIC_ERROR_MESSAGE);
+				toast.error(GENERIC_ERROR_MESSAGE);
 			},
 		});
 	}

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
@@ -56,13 +57,17 @@ function SubmitTestimonialPage() {
 		submitMutation.mutate(
 			{ quote: values.quote, courseId },
 			{
-				onSuccess: () => setSubmitted(true),
+				onSuccess: () => {
+					setSubmitted(true);
+					toast.success('Depoimento enviado.');
+				},
 				onError: (error) => {
-					setFormError(
+					const message =
 						isApiError(error) && error.status === 404
 							? COURSE_NOT_FOUND_MESSAGE
-							: GENERIC_ERROR_MESSAGE,
-					);
+							: GENERIC_ERROR_MESSAGE;
+					setFormError(message);
+					toast.error(message);
 				},
 			},
 		);

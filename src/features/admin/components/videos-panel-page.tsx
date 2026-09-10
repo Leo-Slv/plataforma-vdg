@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 import { authPermissions } from '@/lib/auth/auth-permissions';
 import { useRequirePermission } from '@/lib/auth/use-require-permission';
@@ -23,6 +24,8 @@ import { VideosTable } from '@/features/admin/components/videos-table';
 import { PaginationControls } from '@/features/admin/components/pagination-controls';
 
 const PAGE_SIZE = 50;
+const GENERIC_ERROR_MESSAGE =
+	'Não foi possível concluir a ação. Tente novamente.';
 
 function VideosPanelPage() {
 	const router = useRouter();
@@ -65,7 +68,11 @@ function VideosPanelPage() {
 	function handleActivate(videoId: string) {
 		setPendingVideoId(videoId);
 		activateMutation.mutate(videoId, {
-			onSuccess: invalidateVideos,
+			onSuccess: () => {
+				invalidateVideos();
+				toast.success('Vídeo ativado.');
+			},
+			onError: () => toast.error(GENERIC_ERROR_MESSAGE),
 			onSettled: () => setPendingVideoId(null),
 		});
 	}
@@ -73,7 +80,11 @@ function VideosPanelPage() {
 	function handleUnlist(videoId: string) {
 		setPendingVideoId(videoId);
 		unlistMutation.mutate(videoId, {
-			onSuccess: invalidateVideos,
+			onSuccess: () => {
+				invalidateVideos();
+				toast.success('Vídeo não listado.');
+			},
+			onError: () => toast.error(GENERIC_ERROR_MESSAGE),
 			onSettled: () => setPendingVideoId(null),
 		});
 	}

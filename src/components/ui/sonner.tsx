@@ -1,45 +1,30 @@
 'use client';
 
-import { useTheme } from 'next-themes';
 import { Toaster as Sonner, type ToasterProps } from 'sonner';
-import {
-	CheckCircleIcon,
-	InfoIcon,
-	WarningIcon,
-	XCircleIcon,
-	SpinnerIcon,
-} from '@phosphor-icons/react';
 
-const Toaster = ({ ...props }: ToasterProps) => {
-	const { theme = 'system' } = useTheme();
-
+function Toaster({ ...props }: ToasterProps) {
 	return (
 		<Sonner
-			theme={theme as ToasterProps['theme']}
-			className="toaster group"
-			icons={{
-				success: <CheckCircleIcon className="size-4" />,
-				info: <InfoIcon className="size-4" />,
-				warning: <WarningIcon className="size-4" />,
-				error: <XCircleIcon className="size-4" />,
-				loading: <SpinnerIcon className="size-4 animate-spin" />,
-			}}
-			style={
-				{
-					'--normal-bg': 'var(--popover)',
-					'--normal-text': 'var(--popover-foreground)',
-					'--normal-border': 'var(--border)',
-					'--border-radius': 'var(--radius)',
-				} as React.CSSProperties
-			}
+			theme="dark"
+			position="top-right"
 			toastOptions={{
+				unstyled: true,
 				classNames: {
-					toast: 'cn-toast',
+					toast:
+						'flex w-full items-center gap-3 rounded-md border border-[oklch(0.62_0.1_248)] bg-[#0a0a0b] px-4 py-3.5 font-sans text-[13.5px] font-light text-[#f2f2f0] shadow-[0_12px_30px_rgba(0,0,0,0.5)]',
+					title: 'font-sans text-[13.5px] font-normal text-[#f2f2f0]',
+					description: 'font-sans text-[12.5px] font-light text-white/55',
+					actionButton:
+						'rounded-full bg-[#f4f4f2] px-3 py-1.5 text-[12px] text-[#0a0a0b]',
+					cancelButton:
+						'rounded-full border border-white/20 px-3 py-1.5 text-[12px] text-white/70',
+					closeButton:
+						'border border-white/15 bg-[#141416] text-white/60 hover:text-[#f2f2f0]',
 				},
 			}}
 			{...props}
 		/>
 	);
-};
+}
 
 export { Toaster };

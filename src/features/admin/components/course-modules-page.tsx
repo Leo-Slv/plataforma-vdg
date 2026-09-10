@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { authPermissions } from '@/lib/auth/auth-permissions';
@@ -102,9 +103,13 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 				{
 					onSuccess: () => {
 						invalidateModules();
+						toast.success('Módulo criado.');
 						setModal(null);
 					},
-					onError: () => setPageError(GENERIC_ERROR_MESSAGE),
+					onError: () => {
+						setPageError(GENERIC_ERROR_MESSAGE);
+						toast.error(GENERIC_ERROR_MESSAGE);
+					},
 				},
 			);
 			return;
@@ -116,9 +121,13 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 				{
 					onSuccess: () => {
 						invalidateModules();
+						toast.success('Módulo atualizado.');
 						setModal(null);
 					},
-					onError: () => setPageError(GENERIC_ERROR_MESSAGE),
+					onError: () => {
+						setPageError(GENERIC_ERROR_MESSAGE);
+						toast.error(GENERIC_ERROR_MESSAGE);
+					},
 				},
 			);
 		}
@@ -141,9 +150,13 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 				{
 					onSuccess: () => {
 						invalidateModules();
+						toast.success('Aula criada.');
 						setModal(null);
 					},
-					onError: () => setPageError(GENERIC_ERROR_MESSAGE),
+					onError: () => {
+						setPageError(GENERIC_ERROR_MESSAGE);
+						toast.error(GENERIC_ERROR_MESSAGE);
+					},
 				},
 			);
 		}
@@ -157,8 +170,14 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 		deleteModuleMutation.mutate(
 			{ courseId, moduleId },
 			{
-				onSuccess: invalidateModules,
-				onError: () => setPageError(GENERIC_ERROR_MESSAGE),
+				onSuccess: () => {
+					invalidateModules();
+					toast.success('Módulo excluído.');
+				},
+				onError: () => {
+					setPageError(GENERIC_ERROR_MESSAGE);
+					toast.error(GENERIC_ERROR_MESSAGE);
+				},
 			},
 		);
 	}
@@ -171,13 +190,17 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 		deleteLessonMutation.mutate(
 			{ courseId, moduleId, lessonId },
 			{
-				onSuccess: invalidateModules,
+				onSuccess: () => {
+					invalidateModules();
+					toast.success('Aula excluída.');
+				},
 				onError: (error) => {
 					const message =
 						isApiError(error) && error.status === 409
 							? 'Esta aula tem progresso registrado por algum aluno e não pode ser excluída.'
 							: GENERIC_ERROR_MESSAGE;
 					setLessonDeleteError({ lessonId, message });
+					toast.error(message);
 				},
 			},
 		);

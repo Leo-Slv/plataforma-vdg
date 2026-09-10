@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { authPermissions } from '@/lib/auth/auth-permissions';
@@ -205,6 +206,9 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 
 		if (results.some((result) => result.status === 'rejected')) {
 			setSaveError(GENERIC_ERROR_MESSAGE);
+			toast.error(GENERIC_ERROR_MESSAGE);
+		} else if (tasks.length > 0) {
+			toast.success('Alterações salvas.');
 		}
 
 		invalidateAreaAccess();
@@ -221,14 +225,16 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 						queryKey: queryKeys.admin.grantedCourseAccess(userId),
 					});
 					invalidateAreaAccess();
+					toast.success('Acesso ao curso concedido.');
 					setShowGrantModal(false);
 				},
 				onError: (error) => {
-					setGrantError(
+					const message =
 						isApiError(error) && (error.status === 409 || error.status === 404)
 							? 'Não foi possível conceder acesso a este curso.'
-							: GENERIC_ERROR_MESSAGE,
-					);
+							: GENERIC_ERROR_MESSAGE;
+					setGrantError(message);
+					toast.error(message);
 				},
 			},
 		);

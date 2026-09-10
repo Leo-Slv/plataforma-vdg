@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { authPermissions } from '@/lib/auth/auth-permissions';
@@ -55,11 +56,12 @@ function AreaFormPage(props: AreaFormPageProps) {
 	}
 
 	function handleMutationError(error: unknown) {
-		if (isApiError(error) && error.status === 409) {
-			setSubmitError(SLUG_CONFLICT_MESSAGE);
-			return;
-		}
-		setSubmitError(GENERIC_ERROR_MESSAGE);
+		const message =
+			isApiError(error) && error.status === 409
+				? SLUG_CONFLICT_MESSAGE
+				: GENERIC_ERROR_MESSAGE;
+		setSubmitError(message);
+		toast.error(message);
 	}
 
 	function handleSubmit(values: AreaFormValues) {
@@ -78,6 +80,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 				{
 					onSuccess: () => {
 						queryClient.invalidateQueries({ queryKey: queryKeys.admin.areas });
+						toast.success('Área criada.');
 						goToList();
 					},
 					onError: handleMutationError,
@@ -104,6 +107,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 					queryClient.invalidateQueries({
 						queryKey: queryKeys.admin.area(props.areaId),
 					});
+					toast.success('Área atualizada.');
 					goToList();
 				},
 				onError: handleMutationError,
@@ -136,6 +140,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 			{
 				onSuccess: () => {
 					queryClient.invalidateQueries({ queryKey: queryKeys.admin.areas });
+					toast.success('Área desativada.');
 					goToList();
 				},
 				onError: handleMutationError,

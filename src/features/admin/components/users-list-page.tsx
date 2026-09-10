@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 import { authPermissions } from '@/lib/auth/auth-permissions';
 import { useRequirePermission } from '@/lib/auth/use-require-permission';
@@ -66,14 +67,16 @@ function UsersListPage() {
 				// Partial key match invalidates every cached page/search combo,
 				// not just the one currently shown.
 				queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+				toast.success('Usuário criado.');
 				setShowCreateModal(false);
 			},
 			onError: (error) => {
-				setCreateError(
+				const message =
 					isApiError(error) && error.status === 409
 						? 'Já existe um usuário com este e-mail.'
-						: GENERIC_ERROR_MESSAGE,
-				);
+						: GENERIC_ERROR_MESSAGE;
+				setCreateError(message);
+				toast.error(message);
 			},
 		});
 	}

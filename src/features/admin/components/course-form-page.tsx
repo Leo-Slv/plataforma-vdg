@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { authPermissions } from '@/lib/auth/auth-permissions';
@@ -72,22 +73,29 @@ function CourseFormPage(props: CourseFormPageProps) {
 	}
 
 	function handleMutationError(error: unknown) {
-		if (isApiError(error) && error.status === 409) {
-			setSubmitError(SLUG_CONFLICT_MESSAGE);
-			return;
-		}
-		setSubmitError(GENERIC_ERROR_MESSAGE);
+		const message =
+			isApiError(error) && error.status === 409
+				? SLUG_CONFLICT_MESSAGE
+				: GENERIC_ERROR_MESSAGE;
+		setSubmitError(message);
+		toast.error(message);
 	}
 
 	function afterStatusResolved(courseId: string, wantsPublished: boolean) {
 		if (wantsPublished) {
 			publishMutation.mutate(courseId, {
-				onSuccess: goToList,
+				onSuccess: () => {
+					toast.success('Curso publicado.');
+					goToList();
+				},
 				onError: handleMutationError,
 			});
 		} else {
 			unpublishMutation.mutate(courseId, {
-				onSuccess: goToList,
+				onSuccess: () => {
+					toast.success('Curso despublicado.');
+					goToList();
+				},
 				onError: handleMutationError,
 			});
 		}
@@ -120,6 +128,7 @@ function CourseFormPage(props: CourseFormPageProps) {
 						queryClient.invalidateQueries({
 							queryKey: queryKeys.admin.courses,
 						});
+						toast.success('Curso criado.');
 						goToList();
 					},
 					onError: handleMutationError,
@@ -157,6 +166,7 @@ function CourseFormPage(props: CourseFormPageProps) {
 					if (statusChanged) {
 						afterStatusResolved(props.courseId, values.published);
 					} else {
+						toast.success('Curso atualizado.');
 						goToList();
 					}
 				},
@@ -177,6 +187,7 @@ function CourseFormPage(props: CourseFormPageProps) {
 		unpublishMutation.mutate(props.courseId, {
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: queryKeys.admin.courses });
+				toast.success('Curso despublicado.');
 				goToList();
 			},
 			onError: handleMutationError,
