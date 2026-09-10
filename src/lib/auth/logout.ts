@@ -13,7 +13,7 @@ async function performLogout(logout: () => Promise<unknown>) {
 	clearAccessToken();
 	// Full page navigation, not router.push: guarantees every cached query
 	// and in-memory auth state resets, not just the URL.
-	window.location.href = appRoutes.auth.login;
+	window.location.href = appRoutes.system.home;
 }
 
 export { performLogout };
