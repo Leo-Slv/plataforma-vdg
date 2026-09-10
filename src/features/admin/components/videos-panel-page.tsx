@@ -2,21 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 
 import { authPermissions } from '@/lib/auth/auth-permissions';
 import { useRequirePermission } from '@/lib/auth/use-require-permission';
 import { appRoutes } from '@/lib/routes/app-routes';
 import { isApiError } from '@/lib/http/api-error';
-import { queryKeys } from '@/lib/constants/query-keys';
 import { LoadingScreen } from '@/components/loading-screen';
 import {
 	useVideosQuery,
 	useCoursesQuery,
 	useAllCourseModulesQueries,
-	useActivateVideoMutation,
-	useUnlistVideoMutation,
 } from '@/features/admin/hooks/admin.queries';
 import { buildLessonLookup } from '@/features/admin/lib/build-lesson-lookup';
 import { AdminSidebar } from '@/features/admin/components/admin-sidebar';
@@ -24,16 +19,12 @@ import { VideosTable } from '@/features/admin/components/videos-table';
 import { PaginationControls } from '@/features/admin/components/pagination-controls';
 
 const PAGE_SIZE = 50;
-const GENERIC_ERROR_MESSAGE =
-	'Não foi possível concluir a ação. Tente novamente.';
 
 function VideosPanelPage() {
 	const router = useRouter();
-	const queryClient = useQueryClient();
 	const ready = useRequirePermission(authPermissions.manageVideos);
 
 	const [page, setPage] = useState(1);
-	const [pendingVideoId, setPendingVideoId] = useState<string | null>(null);
 
 	const videosQuery = useVideosQuery(page, PAGE_SIZE, { enabled: ready });
 	const coursesQuery = useCoursesQuery({ enabled: ready });
@@ -41,9 +32,6 @@ function VideosPanelPage() {
 	const modulesResults = useAllCourseModulesQueries(courseIds, {
 		enabled: ready,
 	});
-
-	const activateMutation = useActivateVideoMutation();
-	const unlistMutation = useUnlistVideoMutation();
 
 	useEffect(() => {
 		if (
@@ -57,36 +45,6 @@ function VideosPanelPage() {
 
 	if (!ready) {
 		return <LoadingScreen />;
-	}
-
-	function invalidateVideos() {
-		queryClient.invalidateQueries({
-			queryKey: queryKeys.admin.videos(page, PAGE_SIZE),
-		});
-	}
-
-	function handleActivate(videoId: string) {
-		setPendingVideoId(videoId);
-		activateMutation.mutate(videoId, {
-			onSuccess: () => {
-				invalidateVideos();
-				toast.success('Vídeo ativado.');
-			},
-			onError: () => toast.error(GENERIC_ERROR_MESSAGE),
-			onSettled: () => setPendingVideoId(null),
-		});
-	}
-
-	function handleUnlist(videoId: string) {
-		setPendingVideoId(videoId);
-		unlistMutation.mutate(videoId, {
-			onSuccess: () => {
-				invalidateVideos();
-				toast.success('Vídeo não listado.');
-			},
-			onError: () => toast.error(GENERIC_ERROR_MESSAGE),
-			onSettled: () => setPendingVideoId(null),
-		});
 	}
 
 	const videos = videosQuery.data?.items ?? [];
@@ -144,9 +102,6 @@ function VideosPanelPage() {
 								videos={videos}
 								lessonLookup={lessonLookup}
 								lookupReady={lookupReady}
-								pendingVideoId={pendingVideoId}
-								onActivate={handleActivate}
-								onUnlist={handleUnlist}
 							/>
 							{videos.length > 0 ? (
 								<PaginationControls

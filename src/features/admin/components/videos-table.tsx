@@ -1,4 +1,7 @@
+import Link from 'next/link';
+
 import { cn } from '@/lib/utils';
+import { appRoutes } from '@/lib/routes/app-routes';
 import type { Video } from '@/features/admin/model/video';
 import type { LessonLookupEntry } from '@/features/admin/lib/build-lesson-lookup';
 
@@ -6,9 +9,6 @@ type VideosTableProps = {
 	videos: Video[];
 	lessonLookup: Map<string, LessonLookupEntry>;
 	lookupReady: boolean;
-	pendingVideoId: string | null;
-	onActivate: (videoId: string) => void;
-	onUnlist: (videoId: string) => void;
 };
 
 const COLUMNS = 'grid-cols-[1.6fr_1.6fr_1fr_1.1fr]';
@@ -25,14 +25,7 @@ function lessonLabel(
 	return lookupReady ? '—' : '…';
 }
 
-function VideosTable({
-	videos,
-	lessonLookup,
-	lookupReady,
-	pendingVideoId,
-	onActivate,
-	onUnlist,
-}: VideosTableProps) {
+function VideosTable({ videos, lessonLookup, lookupReady }: VideosTableProps) {
 	if (videos.length === 0) {
 		return (
 			<p className="py-12 text-center font-sans text-sm font-light text-white/45">
@@ -57,13 +50,13 @@ function VideosTable({
 
 			{videos.map((video) => {
 				const isActive = video.visibility === 'Active';
-				const isPending = pendingVideoId === video.id;
 
 				return (
-					<div
+					<Link
 						key={video.id}
+						href={appRoutes.admin.videoEdit(video.id, video.lessonId)}
 						className={cn(
-							'grid items-center gap-4 border-b border-white/7 py-4.5 font-sans text-[13.5px] text-white/75',
+							'grid items-center gap-4 border-b border-white/7 py-4.5 font-sans text-[13.5px] text-white/75 hover:bg-white/3',
 							COLUMNS,
 						)}
 					>
@@ -87,26 +80,14 @@ function VideosTable({
 							{lessonLabel(video, lessonLookup, lookupReady)}
 						</span>
 						<span>{Math.floor(video.durationSeconds / 60)}min</span>
-						<div className="flex items-center gap-3">
-							<span
-								className={cn(
-									isActive ? 'text-[oklch(0.75_0.1_248)]' : 'text-white/45',
-								)}
-							>
-								{isActive ? 'Ativo' : 'Não listado'}
-							</span>
-							<button
-								type="button"
-								onClick={() =>
-									isActive ? onUnlist(video.id) : onActivate(video.id)
-								}
-								disabled={isPending}
-								className="font-sans text-[11.5px] text-white/40 underline underline-offset-2 disabled:opacity-50"
-							>
-								{isActive ? 'Não listar' : 'Ativar'}
-							</button>
-						</div>
-					</div>
+						<span
+							className={cn(
+								isActive ? 'text-[oklch(0.75_0.1_248)]' : 'text-white/45',
+							)}
+						>
+							{isActive ? 'Ativo' : 'Não listado'}
+						</span>
+					</Link>
 				);
 			})}
 		</div>

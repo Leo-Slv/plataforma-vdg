@@ -182,3 +182,21 @@ derived from the YouTube video id already being typed into the form:
     convenience, not a critical path; if unset, the endpoint returns 404
     and the admin falls back to typing the duration manually, same as
     before this change.
+
+## Frontend follow-up (2026-09-10) — dedicated video edit screen (1zf)
+
+The inline "Ativar"/"Não listar" toggle in the table (previous
+follow-up above) is gone — moved to its own screen, `/admin/videos/{id}`,
+matching mockup `1zf` ("Vídeo — editar"). Visibility is now an
+explicit toggle + "Salvar alterações" (uncommitted until saved), not
+an immediate per-click action. Also added "Desvincular vídeo"
+(`DELETE /api/videos/lessons/{lessonId}`, already existed — same
+endpoint `LessonVideoPanel`'s own remove action already used), which
+the table never exposed at all.
+
+No new backend endpoint was needed: `GET /api/videos` still doesn't
+return a lesson/course title, and there's no `GET /api/videos/{id}`
+either, but the edit route carries `lessonId` as a query param
+(`?lessonId=`, known from the row that linked here) and reuses the
+already-existing `GET /api/videos/lessons/{lessonId}` (`useLessonVideoQuery`,
+built for the lesson editor) instead of adding a redundant endpoint.

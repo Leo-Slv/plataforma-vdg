@@ -40,6 +40,8 @@ const appRoutes = {
 		users: '/admin/users',
 		userEdit: (userId: string) => `/admin/users/${userId}/edit`,
 		videos: '/admin/videos',
+		videoEdit: (videoId: string, lessonId: string) =>
+			`/admin/videos/${videoId}?lessonId=${lessonId}`,
 	},
 } as const;
 
