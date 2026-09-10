@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type AdminSidebarProps = {
 	active: 'areas' | 'courses' | 'users' | 'videos' | 'audit' | 'testimonials';
@@ -25,19 +26,22 @@ const NAV_ITEMS = [
 function AdminSidebar({ active, areasSummary }: AdminSidebarProps) {
 	return (
 		<div className="border-r border-foreground/8 p-5">
-			<div className="flex items-center gap-2.75 border-b border-foreground/8 pb-6">
-				<Image
-					src="/brand/viver-da-graca-mark.png"
-					alt="Viver da Graça"
-					width={28}
-					height={28}
-					className="size-7 rounded-full object-cover"
-				/>
-				<span className="font-heading text-[10.5px] leading-tight tracking-[0.14em] text-foreground/60 uppercase">
-					Admin
-					<br />
-					Viver da Graça
-				</span>
+			<div className="flex items-center justify-between gap-2.75 border-b border-foreground/8 pb-6">
+				<div className="flex items-center gap-2.75">
+					<Image
+						src="/brand/viver-da-graca-mark.png"
+						alt="Viver da Graça"
+						width={28}
+						height={28}
+						className="size-7 rounded-full object-cover"
+					/>
+					<span className="font-heading text-[10.5px] leading-tight tracking-[0.14em] text-foreground/60 uppercase">
+						Admin
+						<br />
+						Viver da Graça
+					</span>
+				</div>
+				<ThemeToggle />
 			</div>
 
 			<nav className="mt-5.5 flex flex-col gap-0.75 font-sans text-[13px]">

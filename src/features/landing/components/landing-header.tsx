@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { appRoutes } from '@/lib/routes/app-routes';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const navItems = ['Cursos', 'Áreas', 'Sobre a escola'];
 
@@ -27,24 +28,28 @@ function LandingHeader() {
 				))}
 			</nav>
 
-			<div className="hidden items-center gap-3 sm:flex">
-				<Link
-					href={appRoutes.auth.login}
-					className="px-1 py-2.5 text-[13px] text-foreground/70"
-				>
-					Entrar
-				</Link>
-				<Link
-					href={appRoutes.auth.register}
-					className="rounded-full bg-foreground px-5 py-2.5 text-[13px] text-background"
-				>
-					Criar conta
-				</Link>
-			</div>
+			<div className="flex items-center gap-3">
+				<ThemeToggle />
 
-			<div aria-hidden className="flex flex-col gap-1 sm:hidden">
-				<span className="h-px w-5 bg-foreground/70" />
-				<span className="h-px w-5 bg-foreground/70" />
+				<div className="hidden items-center gap-3 sm:flex">
+					<Link
+						href={appRoutes.auth.login}
+						className="px-1 py-2.5 text-[13px] text-foreground/70"
+					>
+						Entrar
+					</Link>
+					<Link
+						href={appRoutes.auth.register}
+						className="rounded-full bg-foreground px-5 py-2.5 text-[13px] text-background"
+					>
+						Criar conta
+					</Link>
+				</div>
+
+				<div aria-hidden className="flex flex-col gap-1 sm:hidden">
+					<span className="h-px w-5 bg-foreground/70" />
+					<span className="h-px w-5 bg-foreground/70" />
+				</div>
 			</div>
 		</header>
 	);
