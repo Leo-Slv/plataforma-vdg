@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import { appRoutes } from '@/lib/routes/app-routes';
+import { CoverImage } from '@/components/cover-image';
 import { formatDuration } from '@/features/landing/lib/format-duration';
 import { resolveLivePriceLabel } from '@/features/landing/lib/resolve-live-price-label';
 import type { FeaturedCourse } from '@/features/landing/model/featured-course';
@@ -67,28 +68,6 @@ function CardWrapper({
 	return <>{children}</>;
 }
 
-function CoverImage({ live }: { live?: LiveCourseInfo }) {
-	if (live?.thumbnailUrl) {
-		return (
-			// eslint-disable-next-line @next/next/no-img-element -- external, unconfigured media host
-			<img
-				src={live.thumbnailUrl}
-				alt=""
-				className="absolute inset-0 size-full object-cover"
-			/>
-		);
-	}
-	return (
-		<div
-			className="absolute inset-0"
-			style={{
-				backgroundImage:
-					'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
-			}}
-		/>
-	);
-}
-
 function FeaturedCourseCard({
 	course,
 	live,
@@ -102,7 +81,7 @@ function FeaturedCourseCard({
 		<CardWrapper live={live}>
 			<div className="hidden text-[#f2f2f0] sm:block">
 				<div className="relative aspect-video overflow-hidden rounded-[10px]">
-					<CoverImage live={live} />
+					<CoverImage src={live?.thumbnailUrl ?? null} />
 					<span className="absolute right-2.5 bottom-2.5 rounded bg-[#0a0a0b]/85 px-1.75 py-1 font-sans text-[11.5px] font-medium whitespace-nowrap">
 						{resolved.lessonCount} aulas · {resolved.durationLabel}
 					</span>
@@ -141,7 +120,7 @@ function FeaturedCourseCard({
 
 			<div className="flex items-center gap-3.5 sm:hidden">
 				<div className="relative h-16 w-22 flex-none overflow-hidden rounded-md">
-					<CoverImage live={live} />
+					<CoverImage src={live?.thumbnailUrl ?? null} />
 				</div>
 				<div>
 					<div

@@ -1,3 +1,4 @@
+import { AvatarImage } from '@/components/avatar-image';
 import type { Testimonial } from '@/features/landing/model/testimonial';
 
 type TestimonialsSectionProps = {
@@ -27,11 +28,10 @@ function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
 							{testimonial.quote}
 						</p>
 						<div className="mt-1.5 flex items-center gap-2.5">
-							{/* eslint-disable-next-line @next/next/no-img-element -- external, unconfigured media host */}
-							<img
-								src={testimonial.avatarUrl ?? '/brand/viver-da-graca-mark.png'}
+							<AvatarImage
+								src={testimonial.avatarUrl}
+								fallbackSrc="/brand/viver-da-graca-mark.png"
 								alt=""
-								aria-hidden
 								className="size-8 rounded-full object-cover"
 							/>
 							<div className="font-sans text-[12.5px] text-[#f2f2f0]">

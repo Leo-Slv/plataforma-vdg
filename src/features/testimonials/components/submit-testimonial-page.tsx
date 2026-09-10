@@ -38,6 +38,7 @@ function SubmitTestimonialPage() {
 
 	const [formError, setFormError] = useState<string | null>(null);
 	const [submitted, setSubmitted] = useState(false);
+	const [avatarFailed, setAvatarFailed] = useState(false);
 
 	const form = useForm<SubmitTestimonialFormValues>({
 		resolver: zodResolver(submitTestimonialFormSchema),
@@ -111,12 +112,14 @@ function SubmitTestimonialPage() {
 						</p>
 
 						<div className="mt-6.5 flex items-center gap-3 border-b border-white/8 pb-5.5">
-							{user?.avatarUrl ? (
+							{user?.avatarUrl && !avatarFailed ? (
 								// eslint-disable-next-line @next/next/no-img-element -- external, unconfigured media host
 								<img
+									key={user.avatarUrl}
 									src={user.avatarUrl}
 									alt=""
 									className="size-10 flex-none rounded-full object-cover"
+									onError={() => setAvatarFailed(true)}
 								/>
 							) : (
 								<span className="flex size-10 flex-none items-center justify-center rounded-full bg-[#22222a] font-heading text-xs">

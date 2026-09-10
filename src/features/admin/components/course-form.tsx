@@ -128,12 +128,18 @@ function CourseForm({
 						{...form.register('description')}
 					/>
 
-					<AdminField
-						label="Capa do curso (URL)"
-						placeholder="https://…"
-						error={form.formState.errors.thumbnailUrl?.message}
-						{...form.register('thumbnailUrl')}
-					/>
+					<div>
+						<AdminField
+							label="Capa do curso (URL)"
+							placeholder="https://…"
+							error={form.formState.errors.thumbnailUrl?.message}
+							{...form.register('thumbnailUrl')}
+						/>
+						<p className="mt-2 text-[11.5px] font-light text-white/35">
+							Use o link direto do arquivo de imagem (terminando em .jpg, .png
+							etc.), não o link de uma página.
+						</p>
+					</div>
 
 					<PricingModelPicker
 						value={form.watch('pricingModel')}

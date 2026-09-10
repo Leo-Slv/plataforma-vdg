@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { appRoutes } from '@/lib/routes/app-routes';
+import { CoverImage } from '@/components/cover-image';
 import { featuredFormationCopy } from '@/features/landing/lib/landing-content';
 import { formatDuration } from '@/features/landing/lib/format-duration';
 import { resolveLivePriceLabel } from '@/features/landing/lib/resolve-live-price-label';
@@ -25,22 +26,7 @@ function FeaturedFormationSection({ course }: FeaturedFormationSectionProps) {
 		<section className="border-t border-white/8 px-5 py-11 sm:px-11 sm:py-22">
 			<div className="grid grid-cols-1 items-center gap-8 overflow-hidden rounded-2xl bg-[#141416] sm:grid-cols-2 sm:gap-16">
 				<div className="relative aspect-4/3">
-					{course.thumbnailUrl ? (
-						// eslint-disable-next-line @next/next/no-img-element -- external, unconfigured media host
-						<img
-							src={course.thumbnailUrl}
-							alt=""
-							className="absolute inset-0 size-full object-cover opacity-50"
-						/>
-					) : (
-						<div
-							className="absolute inset-0 opacity-50"
-							style={{
-								backgroundImage:
-									'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
-							}}
-						/>
-					)}
+					<CoverImage src={course.thumbnailUrl} className="opacity-50" />
 					<div className="absolute inset-0 bg-gradient-to-r from-[#141416] via-transparent to-transparent" />
 				</div>
 				<div className="px-5 pb-8 sm:px-0 sm:pr-14 sm:pb-0">

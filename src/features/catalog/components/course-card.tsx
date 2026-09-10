@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
+import { CoverImage } from '@/components/cover-image';
 import { appRoutes } from '@/lib/routes/app-routes';
 import { formatCurrencyBrl } from '@/features/catalog/lib/format-currency-brl';
 import type {
@@ -63,25 +64,8 @@ function CourseCard({ course, area }: CourseCardProps) {
 				!course.hasAccess && 'opacity-55',
 			)}
 		>
-			<div
-				className="relative aspect-video overflow-hidden rounded-[10px]"
-				style={
-					course.thumbnailUrl
-						? undefined
-						: {
-								backgroundImage:
-									'repeating-linear-gradient(135deg, #17171a 0 8px, #1e1e22 8px 16px)',
-							}
-				}
-			>
-				{course.thumbnailUrl ? (
-					// eslint-disable-next-line @next/next/no-img-element -- external, unconfigured media host
-					<img
-						src={course.thumbnailUrl}
-						alt=""
-						className="size-full object-cover"
-					/>
-				) : null}
+			<div className="relative aspect-video overflow-hidden rounded-[10px]">
+				<CoverImage src={course.thumbnailUrl} />
 				<AccessBadge course={course} />
 			</div>
 			<div className="mt-3.5 flex gap-3">

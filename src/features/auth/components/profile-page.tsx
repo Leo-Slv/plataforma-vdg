@@ -49,6 +49,7 @@ function ProfilePage() {
 
 	const [profileError, setProfileError] = useState<string | null>(null);
 	const [profileSaved, setProfileSaved] = useState(false);
+	const [avatarFailed, setAvatarFailed] = useState(false);
 	const [passwordError, setPasswordError] = useState<string | null>(null);
 	const [passwordChanged, setPasswordChanged] = useState(false);
 
@@ -94,6 +95,7 @@ function ProfilePage() {
 					queryClient.setQueryData(queryKeys.auth.currentUser, updated);
 					setUserName(updated.name);
 					setProfileSaved(true);
+					setAvatarFailed(false);
 					toast.success('Perfil atualizado.');
 				},
 				onError: () => {
@@ -153,12 +155,14 @@ function ProfilePage() {
 				</Link>
 
 				<div className="mt-6.5 flex items-center gap-4">
-					{user?.avatarUrl ? (
+					{user?.avatarUrl && !avatarFailed ? (
 						// eslint-disable-next-line @next/next/no-img-element -- external, unconfigured media host
 						<img
+							key={user.avatarUrl}
 							src={user.avatarUrl}
 							alt=""
 							className="size-14 flex-none rounded-full object-cover"
+							onError={() => setAvatarFailed(true)}
 						/>
 					) : (
 						<span className="flex size-14 flex-none items-center justify-center rounded-full bg-[#22222a] font-heading text-lg">
@@ -231,14 +235,20 @@ function ProfilePage() {
 								{...profileForm.register('phone')}
 							/>
 
-							<FormField
-								id="avatarUrl"
-								label="URL da foto"
-								autoComplete="off"
-								placeholder="https://..."
-								error={profileForm.formState.errors.avatarUrl?.message}
-								{...profileForm.register('avatarUrl')}
-							/>
+							<div>
+								<FormField
+									id="avatarUrl"
+									label="URL da foto"
+									autoComplete="off"
+									placeholder="https://..."
+									error={profileForm.formState.errors.avatarUrl?.message}
+									{...profileForm.register('avatarUrl')}
+								/>
+								<p className="mt-2 text-[11.5px] font-light text-white/35">
+									Use o link direto do arquivo de imagem (terminando em .jpg,
+									.png etc.), não o link de uma página.
+								</p>
+							</div>
 
 							{profileError ? (
 								<div
