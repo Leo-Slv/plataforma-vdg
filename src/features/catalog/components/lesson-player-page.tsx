@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
+import { Dialog as DialogPrimitive } from 'radix-ui';
+import { XIcon } from '@phosphor-icons/react';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { queryKeys } from '@/lib/constants/query-keys';
@@ -12,6 +14,14 @@ import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { isApiError } from '@/lib/http/api-error';
 import { AppNav } from '@/components/app-nav';
 import { LoadingScreen } from '@/components/loading-screen';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
 import {
 	useCourseCatalogQuery,
 	useCourseDetailsQuery,
@@ -79,16 +89,29 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 		enabled: ready && lessonIsAccessible && videoId.length > 0,
 	});
 
+	const isPaidLessonLocked =
+		Boolean(course) &&
+		detailsQuery.isSuccess &&
+		Boolean(lessonLocation) &&
+		!lessonIsAccessible;
+
 	const blockedFromDetails =
 		Boolean(course) &&
 		(detailsQuery.isError ||
-			(detailsQuery.isSuccess && (!lessonLocation || !lessonIsAccessible)));
+			(detailsQuery.isSuccess && !lessonLocation) ||
+			isPaidLessonLocked);
+
+	const shouldRedirectSilently = blockedFromDetails && !isPaidLessonLocked;
 
 	useEffect(() => {
-		if (blockedFromDetails) {
+		if (shouldRedirectSilently) {
 			router.replace(appRoutes.courses.detail(slug));
 		}
-	}, [blockedFromDetails, router, slug]);
+	}, [shouldRedirectSilently, router, slug]);
+
+	function handleClosePaidLessonDialog() {
+		router.replace(appRoutes.courses.detail(slug));
+	}
 
 	const enteredAtRef = useRef<number | null>(null);
 	useEffect(() => {
@@ -161,6 +184,52 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 						Voltar ao catálogo
 					</Link>
 				</div>
+			) : isPaidLessonLocked ? (
+				<>
+					<div className="min-h-[40vh]" />
+					<Dialog
+						open
+						onOpenChange={(open) => {
+							if (!open) {
+								handleClosePaidLessonDialog();
+							}
+						}}
+					>
+						<DialogContent
+							showCloseButton={false}
+							className="rounded-md border border-[oklch(0.62_0.1_248)] bg-[#0a0a0b] p-5 text-[#f2f2f0] shadow-[0_12px_30px_rgba(0,0,0,0.5)] ring-0"
+						>
+							<DialogPrimitive.Close asChild>
+								<button
+									type="button"
+									onClick={handleClosePaidLessonDialog}
+									className="absolute top-3 right-3 text-white/50 hover:text-[#f2f2f0]"
+								>
+									<XIcon className="size-4" />
+									<span className="sr-only">Fechar</span>
+								</button>
+							</DialogPrimitive.Close>
+							<DialogHeader>
+								<DialogTitle className="font-sans text-[13.5px] font-normal text-[#f2f2f0]">
+									Esta aula é paga
+								</DialogTitle>
+								<DialogDescription className="font-sans text-[12.5px] font-light text-white/55">
+									Você só tem acesso às aulas de preview grátis deste curso.
+									Inscreva-se para desbloquear todo o conteúdo.
+								</DialogDescription>
+							</DialogHeader>
+							<DialogFooter>
+								<button
+									type="button"
+									onClick={handleClosePaidLessonDialog}
+									className="rounded-full bg-[#f4f4f2] px-5 py-2.5 font-sans text-[13px] text-[#0a0a0b]"
+								>
+									Voltar ao curso
+								</button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
+				</>
 			) : blockedFromDetails ? (
 				<div className="min-h-[40vh]" />
 			) : detailsQuery.isPending || !detailsQuery.data ? (
