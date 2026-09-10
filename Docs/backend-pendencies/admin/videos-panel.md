@@ -153,3 +153,32 @@ before this screen existed).
   `POST .../unlist`), not a separate edit screen — there's no "video
   detail" page to navigate to for this table's own rows, unlike
   courses/areas/users which toggle status from within their edit form.
+
+## Frontend follow-up (2026-09-10) — YouTube auto-fill
+
+`LessonVideoPanel`'s "Adicionar vídeo"/"Substituir vídeo" form
+(`VideoFormModal`) used to require the admin to type the duration in
+minutes by hand and, optionally, paste a thumbnail URL. Both are now
+derived from the YouTube video id already being typed into the form:
+
+- **Thumbnail**: always derived client-side from YouTube's predictable
+  thumbnail URL pattern (`https://img.youtube.com/vi/{id}/hqdefault.jpg`)
+  — no API call, no config, no cost. The "URL da miniatura" field is
+  gone from the form entirely.
+- **Duration**: a new "Buscar duração pelo ID" button calls a new
+  backend endpoint, `GET /api/videos/youtube-metadata?videoId=`
+  (`ManageVideos`-gated), which calls the real YouTube Data API v3
+  (`videos.list?part=contentDetails,snippet`) and returns the video's
+  real duration (parsed from ISO 8601, e.g. `PT18M33S`, via
+  `System.Xml.XmlConvert.ToTimeSpan`) and title. The "Duração (minutos)"
+  field is auto-filled but stays editable — this is a convenience, not
+  a validated source of truth, and the admin can still override it or
+  skip the button and type it manually if the lookup fails.
+  - Requires a Google Cloud API key with the YouTube Data API v3
+    enabled, configured as `YouTube:ApiKey` (`dotnet user-secrets set
+    "YouTube:ApiKey" "..."` locally, same pattern as `Resend:ApiKey`).
+    Deliberately **not** added to `ProductionConfigurationValidator`'s
+    required-in-Production list — this is a best-effort admin
+    convenience, not a critical path; if unset, the endpoint returns 404
+    and the admin falls back to typing the duration manually, same as
+    before this change.

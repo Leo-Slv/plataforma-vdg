@@ -29,6 +29,7 @@ import { replaceLessonVideo } from '@/features/admin/api/replace-lesson-video';
 import { markVideoReady } from '@/features/admin/api/mark-video-ready';
 import { deleteLessonVideo } from '@/features/admin/api/delete-lesson-video';
 import { getVideos } from '@/features/admin/api/get-videos';
+import { getYouTubeVideoMetadata } from '@/features/admin/api/get-youtube-video-metadata';
 import { activateVideo } from '@/features/admin/api/activate-video';
 import { unlistVideo } from '@/features/admin/api/unlist-video';
 import { getUsers } from '@/features/admin/api/get-users';
@@ -341,6 +342,12 @@ function useUnlistVideoMutation() {
 	});
 }
 
+function useYouTubeVideoMetadataMutation() {
+	return useMutation({
+		mutationFn: getYouTubeVideoMetadata,
+	});
+}
+
 function useAllCourseModulesQueries(
 	courseIds: string[],
 	options: { enabled: boolean },
@@ -479,6 +486,7 @@ export {
 	useVideosQuery,
 	useActivateVideoMutation,
 	useUnlistVideoMutation,
+	useYouTubeVideoMetadataMutation,
 	useAllCourseModulesQueries,
 	useUsersQuery,
 	useCreateUserMutation,

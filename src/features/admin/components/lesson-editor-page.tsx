@@ -32,6 +32,7 @@ import { AdminTextareaField } from '@/features/admin/components/admin-textarea-f
 import { StatusToggle } from '@/features/admin/components/status-toggle';
 import { LessonVideoPanel } from '@/features/admin/components/lesson-video-panel';
 import { VideoFormModal } from '@/features/admin/components/video-form-modal';
+import { buildYouTubeThumbnailUrl } from '@/features/admin/lib/youtube-thumbnail-url';
 import {
 	lessonEditorFormSchema,
 	type LessonEditorFormValues,
@@ -213,8 +214,7 @@ function LessonEditorPage({
 					title: values.title,
 					description: values.description,
 					storageKey: values.youtubeVideoId,
-					thumbnailUrl:
-						values.thumbnailUrl.length > 0 ? values.thumbnailUrl : null,
+					thumbnailUrl: buildYouTubeThumbnailUrl(values.youtubeVideoId),
 					durationSeconds: Number(values.durationMinutes) * 60,
 				},
 			},
@@ -471,14 +471,12 @@ function LessonEditorPage({
 									durationMinutes: String(
 										Math.floor(videoQuery.data.durationSeconds / 60),
 									),
-									thumbnailUrl: videoQuery.data.thumbnailUrl ?? '',
 								}
 							: {
 									title: '',
 									description: '',
 									youtubeVideoId: '',
 									durationMinutes: '',
-									thumbnailUrl: '',
 								}
 					}
 					onClose={() => setVideoModal(null)}

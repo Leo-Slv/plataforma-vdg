@@ -9,7 +9,6 @@ const videoFormSchema = z
 			.trim()
 			.min(1, 'Informe o ID do vídeo do YouTube.'),
 		durationMinutes: z.string().trim(),
-		thumbnailUrl: z.string().trim(),
 	})
 	.superRefine((values, ctx) => {
 		const minutes = Number(values.durationMinutes);
