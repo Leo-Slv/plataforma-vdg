@@ -85,6 +85,11 @@ function CourseFormPage(props: CourseFormPageProps) {
 		if (wantsPublished) {
 			publishMutation.mutate(courseId, {
 				onSuccess: () => {
+					// The earlier invalidate (from the field-update mutation that
+					// triggered this) ran before this publish call resolved, so it
+					// raced and refetched the still-unpublished course — invalidate
+					// again now that the status has actually changed server-side.
+					queryClient.invalidateQueries({ queryKey: queryKeys.admin.courses });
 					toast.success('Curso publicado.');
 					goToList();
 				},
@@ -93,6 +98,7 @@ function CourseFormPage(props: CourseFormPageProps) {
 		} else {
 			unpublishMutation.mutate(courseId, {
 				onSuccess: () => {
+					queryClient.invalidateQueries({ queryKey: queryKeys.admin.courses });
 					toast.success('Curso despublicado.');
 					goToList();
 				},

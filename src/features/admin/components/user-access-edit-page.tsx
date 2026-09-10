@@ -213,6 +213,11 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 
 		invalidateAreaAccess();
 		queryClient.invalidateQueries({ queryKey: queryKeys.admin.user(userId) });
+		// Partial key match invalidates every cached page/search combo of the
+		// users list, not just the one that happened to be open last — role,
+		// area, and active-status changes made here otherwise show stale on
+		// /admin/users until a manual refresh.
+		queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
 	}
 
 	function handleGrantCourse(courseId: string) {
