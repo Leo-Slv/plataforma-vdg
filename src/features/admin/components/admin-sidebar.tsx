@@ -50,6 +50,15 @@ function AdminSidebar({ active, areasSummary }: AdminSidebarProps) {
 				))}
 			</nav>
 
+			<div className="mt-5.5 border-t border-white/8 pt-4.5">
+				<Link
+					href={appRoutes.catalog.index}
+					className="flex items-center gap-2 font-sans text-[12.5px] font-light text-white/45"
+				>
+					← Voltar à plataforma
+				</Link>
+			</div>
+
 			{areasSummary && areasSummary.length > 0 ? (
 				<div className="mt-7 border-t border-white/8 pt-5">
 					<span className="font-heading text-[10px] tracking-[0.16em] text-white/35 uppercase">

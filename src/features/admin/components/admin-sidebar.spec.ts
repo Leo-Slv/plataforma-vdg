@@ -17,3 +17,12 @@ test('links every nav item to its real route', () => {
 	assert.match(html, new RegExp(`href="${appRoutes.admin.videos}"`));
 	assert.match(html, new RegExp(`href="${appRoutes.admin.audit}"`));
 });
+
+test('links "Voltar à plataforma" back to the catalog', () => {
+	const html = renderToStaticMarkup(
+		createElement(AdminSidebar, { active: 'courses' }),
+	);
+
+	assert.match(html, /Voltar à plataforma/);
+	assert.match(html, new RegExp(`href="${appRoutes.catalog.index}"`));
+});
