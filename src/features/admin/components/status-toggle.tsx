@@ -22,7 +22,7 @@ function StatusToggle({ label, checked, onChange }: StatusToggleProps) {
 				className={cn(
 					'flex h-5.5 w-9.5 items-center rounded-full p-0.5 transition-colors',
 					checked
-						? 'justify-end bg-[oklch(0.62_0.1_248)]'
+						? 'justify-end bg-[oklch(0.5_0.16_255)] dark:bg-[oklch(0.62_0.1_248)]'
 						: 'justify-start bg-foreground/15',
 				)}
 			>
