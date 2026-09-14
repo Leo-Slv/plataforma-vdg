@@ -17,8 +17,14 @@ import {
 	usePublishTestimonialMutation,
 	useUnpublishTestimonialMutation,
 } from '@/features/admin/hooks/admin.queries';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 import { AdminSidebar } from '@/features/admin/components/admin-sidebar';
-import { AdminSelect } from '@/features/admin/components/admin-select';
 import { TestimonialsTable } from '@/features/admin/components/testimonials-table';
 
 const GENERIC_ERROR_MESSAGE =
@@ -37,7 +43,7 @@ function TestimonialsPanelPage() {
 	const queryClient = useQueryClient();
 	const ready = useRequirePermission(authPermissions.manageCourses);
 
-	const [filter, setFilter] = useState<StatusFilter>('pending');
+	const [filter, setFilter] = useState<StatusFilter>('all');
 	const [pendingId, setPendingId] = useState<string | null>(null);
 
 	const testimonialsQuery = useTestimonialsQuery({ enabled: ready });
@@ -115,18 +121,30 @@ function TestimonialsPanelPage() {
 								: ' '}
 						</p>
 					</div>
-					<AdminSelect
-						label="Filtrar"
-						value={filter}
-						onChange={(event) => setFilter(event.target.value as StatusFilter)}
-						className="w-40"
-					>
-						{FILTER_OPTIONS.map((option) => (
-							<option key={option.value} value={option.value}>
-								{option.label}
-							</option>
-						))}
-					</AdminSelect>
+					<div>
+						<label className="mb-2.25 block font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
+							Filtrar
+						</label>
+						<Select
+							value={filter}
+							onValueChange={(value) => setFilter(value as StatusFilter)}
+						>
+							<SelectTrigger className="w-40 rounded-md border-foreground/12 bg-surface-2 px-4 py-3.25 font-sans text-[14px] font-light text-foreground focus-visible:border-[oklch(0.62_0.1_248)] focus-visible:ring-0 data-[size=default]:h-auto dark:bg-surface-2 dark:hover:bg-surface-2">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent className="rounded-md border-foreground/10 bg-surface-2 text-foreground">
+								{FILTER_OPTIONS.map((option) => (
+									<SelectItem
+										key={option.value}
+										value={option.value}
+										className="rounded-md py-2.75 pr-8 pl-3 font-sans text-[14px] font-light text-foreground/75 focus:bg-foreground/6 focus:text-foreground"
+									>
+										{option.label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
 				</div>
 
 				<div className="mt-8.5">
