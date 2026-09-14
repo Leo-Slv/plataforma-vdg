@@ -31,6 +31,7 @@ import { AdminSelect } from '@/features/admin/components/admin-select';
 import { AdminTextareaField } from '@/features/admin/components/admin-textarea-field';
 import { StatusToggle } from '@/features/admin/components/status-toggle';
 import { LessonVideoPanel } from '@/features/admin/components/lesson-video-panel';
+import { LessonQuestionsPanel } from '@/features/admin/components/lesson-questions-panel';
 import { VideoFormModal } from '@/features/admin/components/video-form-modal';
 import { buildYouTubeThumbnailUrl } from '@/features/admin/lib/youtube-thumbnail-url';
 import {
@@ -349,113 +350,120 @@ function LessonEditorPage({
 						Carregando…
 					</p>
 				) : (
-					<div className="mt-8.5 grid grid-cols-1 gap-11 lg:grid-cols-[1.5fr_1fr]">
-						<div className="flex flex-col gap-5.5">
-							<AdminField
-								label="Título da aula"
-								error={form.formState.errors.title?.message}
-								{...form.register('title')}
-							/>
-							<div>
-								<AdminSelect
-									label="Módulo"
-									value={targetModuleId}
-									onChange={(event) => setTargetModuleId(event.target.value)}
-								>
-									{modulesQuery.data?.map((item, index) => (
-										<option key={item.id} value={item.id}>
-											Módulo {String(index + 1).padStart(2, '0')} — {item.title}
-										</option>
-									))}
-								</AdminSelect>
-								{targetModuleId !== moduleId ? (
-									<button
-										type="button"
-										onClick={handleMoveLesson}
-										disabled={moveLessonMutation.isPending}
-										className="mt-2.5 rounded-full border border-foreground/18 px-4 py-2 font-sans text-[12.5px] text-foreground/70 disabled:opacity-60"
+					<>
+						<div className="mt-8.5 grid grid-cols-1 gap-11 lg:grid-cols-[1.5fr_1fr]">
+							<div className="flex flex-col gap-5.5">
+								<AdminField
+									label="Título da aula"
+									error={form.formState.errors.title?.message}
+									{...form.register('title')}
+								/>
+								<div>
+									<AdminSelect
+										label="Módulo"
+										value={targetModuleId}
+										onChange={(event) => setTargetModuleId(event.target.value)}
 									>
-										{moveLessonMutation.isPending
-											? 'Movendo...'
-											: 'Mover aula para este módulo'}
-									</button>
-								) : null}
-								{moveError ? (
-									<p className="mt-2 text-[12px] text-[oklch(0.704_0.191_22.216)]">
-										{moveError}
+										{modulesQuery.data?.map((item, index) => (
+											<option key={item.id} value={item.id}>
+												Módulo {String(index + 1).padStart(2, '0')} —{' '}
+												{item.title}
+											</option>
+										))}
+									</AdminSelect>
+									{targetModuleId !== moduleId ? (
+										<button
+											type="button"
+											onClick={handleMoveLesson}
+											disabled={moveLessonMutation.isPending}
+											className="mt-2.5 rounded-full border border-foreground/18 px-4 py-2 font-sans text-[12.5px] text-foreground/70 disabled:opacity-60"
+										>
+											{moveLessonMutation.isPending
+												? 'Movendo...'
+												: 'Mover aula para este módulo'}
+										</button>
+									) : null}
+									{moveError ? (
+										<p className="mt-2 text-[12px] text-[oklch(0.704_0.191_22.216)]">
+											{moveError}
+										</p>
+									) : null}
+								</div>
+								<AdminTextareaField
+									label="Descrição / transcrição"
+									error={form.formState.errors.description?.message}
+									{...form.register('description')}
+								/>
+								<LessonVideoPanel
+									video={
+										canManageVideos && !videoNotRegistered
+											? (videoQuery.data ?? null)
+											: null
+									}
+									isLoading={canManageVideos && videoQuery.isPending}
+									hasError={canManageVideos && videoHasRealError}
+									canManage={canManageVideos}
+									isMutating={isVideoMutating}
+									onAdd={() => setVideoModal('add')}
+									onReplace={() => setVideoModal('replace')}
+									onRemove={handleRemoveVideo}
+								/>
+								{videoError ? (
+									<p className="text-[12.5px] text-[oklch(0.704_0.191_22.216)]">
+										{videoError}
 									</p>
 								) : null}
 							</div>
-							<AdminTextareaField
-								label="Descrição / transcrição"
-								error={form.formState.errors.description?.message}
-								{...form.register('description')}
-							/>
-							<LessonVideoPanel
-								video={
-									canManageVideos && !videoNotRegistered
-										? (videoQuery.data ?? null)
-										: null
-								}
-								isLoading={canManageVideos && videoQuery.isPending}
-								hasError={canManageVideos && videoHasRealError}
-								canManage={canManageVideos}
-								isMutating={isVideoMutating}
-								onAdd={() => setVideoModal('add')}
-								onReplace={() => setVideoModal('replace')}
-								onRemove={handleRemoveVideo}
-							/>
-							{videoError ? (
-								<p className="text-[12.5px] text-[oklch(0.704_0.191_22.216)]">
-									{videoError}
-								</p>
-							) : null}
+
+							<div className="flex flex-col gap-5.5">
+								<StatusToggle
+									label="Aula gratuita (freePreview)"
+									checked={form.watch('freePreview')}
+									onChange={(checked) =>
+										form.setValue('freePreview', checked, {
+											shouldValidate: true,
+										})
+									}
+								/>
+								<StatusToggle
+									label="Publicada"
+									checked={form.watch('published')}
+									onChange={(checked) =>
+										form.setValue('published', checked, {
+											shouldValidate: true,
+										})
+									}
+								/>
+								<div>
+									<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
+										Ordem no módulo
+									</div>
+									<div className="rounded-md border border-foreground/12 bg-surface-2 px-4 py-3.25 font-sans text-[14px] font-light text-foreground">
+										{(lessonPosition ?? 0) + 1}
+									</div>
+								</div>
+								<button
+									type="button"
+									onClick={handleDeleteLesson}
+									disabled={deleteLessonMutation.isPending}
+									className="text-left font-sans text-[12.5px] text-[oklch(0.65_0.16_25)] disabled:opacity-60"
+								>
+									{deleteLessonMutation.isPending
+										? 'Excluindo...'
+										: 'Excluir aula'}
+								</button>
+								{deleteError ? (
+									<p className="text-[12px] text-[oklch(0.704_0.191_22.216)]">
+										{deleteError}
+									</p>
+								) : null}
+							</div>
 						</div>
 
-						<div className="flex flex-col gap-5.5">
-							<StatusToggle
-								label="Aula gratuita (freePreview)"
-								checked={form.watch('freePreview')}
-								onChange={(checked) =>
-									form.setValue('freePreview', checked, {
-										shouldValidate: true,
-									})
-								}
-							/>
-							<StatusToggle
-								label="Publicada"
-								checked={form.watch('published')}
-								onChange={(checked) =>
-									form.setValue('published', checked, {
-										shouldValidate: true,
-									})
-								}
-							/>
-							<div>
-								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
-									Ordem no módulo
-								</div>
-								<div className="rounded-md border border-foreground/12 bg-surface-2 px-4 py-3.25 font-sans text-[14px] font-light text-foreground">
-									{(lessonPosition ?? 0) + 1}
-								</div>
-							</div>
-							<button
-								type="button"
-								onClick={handleDeleteLesson}
-								disabled={deleteLessonMutation.isPending}
-								className="text-left font-sans text-[12.5px] text-[oklch(0.65_0.16_25)] disabled:opacity-60"
-							>
-								{deleteLessonMutation.isPending
-									? 'Excluindo...'
-									: 'Excluir aula'}
-							</button>
-							{deleteError ? (
-								<p className="text-[12px] text-[oklch(0.704_0.191_22.216)]">
-									{deleteError}
-								</p>
-							) : null}
+						<div className="mt-8.5 max-w-[720px]">
+							<LessonQuestionsPanel lessonId={lessonId} />
 						</div>
-					</div>
+					</>
 				)}
 			</div>
 
