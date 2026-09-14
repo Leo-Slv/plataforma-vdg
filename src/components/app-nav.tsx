@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { XIcon } from '@phosphor-icons/react';
 
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
@@ -29,11 +30,13 @@ const ADMIN_PANEL_PERMISSIONS = [
 
 function AppNav({ displayName, initials, active }: AppNavProps) {
 	const [menuOpen, setMenuOpen] = useState(false);
+	const [navOpen, setNavOpen] = useState(false);
 
 	useEffect(() => {
 		function handleKeyDown(event: KeyboardEvent) {
 			if (event.key === 'Escape') {
 				setMenuOpen(false);
+				setNavOpen(false);
 			}
 		}
 		window.addEventListener('keydown', handleKeyDown);
@@ -53,13 +56,22 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 	return (
 		<header className="relative flex items-center justify-between border-b border-foreground/8 px-5 py-4.5 sm:px-10">
 			<div className="flex items-center gap-8.5">
-				<Image
-					src="/brand/viver-da-graca-mark.png"
-					alt="Viver da Graça"
-					width={32}
-					height={32}
-					className="size-8 rounded-full object-cover"
-				/>
+				<button
+					type="button"
+					onClick={() => setNavOpen(true)}
+					aria-haspopup="menu"
+					aria-expanded={navOpen}
+					aria-label="Abrir menu de navegação"
+					className="sm:cursor-default"
+				>
+					<Image
+						src="/brand/viver-da-graca-mark.png"
+						alt="Viver da Graça"
+						width={32}
+						height={32}
+						className="size-8 rounded-full object-cover"
+					/>
+				</button>
 				<nav className="hidden items-center gap-7 font-sans text-[13px] sm:flex">
 					<Link
 						href={appRoutes.catalog.index}
@@ -159,6 +171,81 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 								Sair
 							</button>
 						</div>
+					</div>
+				</>
+			) : null}
+
+			{navOpen ? (
+				<>
+					<div
+						className="fixed inset-0 z-40 bg-black/40"
+						onClick={() => setNavOpen(false)}
+					/>
+					<div
+						role="menu"
+						className="fixed inset-y-0 left-0 z-50 flex w-[280px] max-w-[80vw] flex-col border-r border-foreground/10 bg-surface-2 p-5 shadow-[0_12px_30px_rgba(0,0,0,0.5)]"
+					>
+						<div className="flex items-center justify-between">
+							<div className="flex items-center gap-3">
+								<Image
+									src="/brand/viver-da-graca-mark.png"
+									alt="Viver da Graça"
+									width={32}
+									height={32}
+									className="size-8 rounded-full object-cover"
+								/>
+								<span className="font-heading text-[12px] font-light tracking-[0.16em] uppercase">
+									Viver da Graça
+								</span>
+							</div>
+							<button
+								type="button"
+								onClick={() => setNavOpen(false)}
+								aria-label="Fechar menu"
+								className="flex size-7.5 items-center justify-center rounded-full text-foreground/50 hover:bg-foreground/6 hover:text-foreground"
+							>
+								<XIcon className="size-4" />
+							</button>
+						</div>
+
+						<nav className="mt-8 flex flex-col gap-1 font-sans text-[14px]">
+							<Link
+								href={appRoutes.catalog.index}
+								onClick={() => setNavOpen(false)}
+								className={cn(
+									'rounded-md px-2.5 py-2.75',
+									active === 'catalog'
+										? 'bg-foreground/6 text-foreground'
+										: 'text-foreground/55 hover:bg-foreground/5',
+								)}
+							>
+								Catálogo
+							</Link>
+							<Link
+								href={appRoutes.myCourses.index}
+								onClick={() => setNavOpen(false)}
+								className={cn(
+									'rounded-md px-2.5 py-2.75',
+									active === 'my-courses'
+										? 'bg-foreground/6 text-foreground'
+										: 'text-foreground/55 hover:bg-foreground/5',
+								)}
+							>
+								Meus cursos
+							</Link>
+							<span className="rounded-md px-2.5 py-2.75 text-foreground/55">
+								Certificados
+							</span>
+							{canSeeAdminPanel ? (
+								<Link
+									href={appRoutes.admin.courses}
+									onClick={() => setNavOpen(false)}
+									className="rounded-md px-2.5 py-2.75 text-foreground/55 hover:bg-foreground/5"
+								>
+									Painel admin
+								</Link>
+							) : null}
+						</nav>
 					</div>
 				</>
 			) : null}
