@@ -150,21 +150,26 @@ public/
 - **Admin — Editar aula** (`/admin/courses/[courseId]/modules/[moduleId]/lessons/[lessonId]/edit`)
   — título, descrição/transcrição, "aula gratuita" e "publicada", mais um
   painel de vídeo (ver/registrar/substituir/remover, via
-  `GET/PUT/DELETE /api/videos/lessons/{lessonId}`). Só existe hospedagem
-  "por link" (YouTube não listado) — sem upload de arquivo — então o
-  formulário de vídeo pede ID do vídeo no YouTube, não um arquivo; depois
-  de registrar, o front chama `POST /api/videos/{id}/ready` na hora, já
-  que vídeo do YouTube não passa por nenhum processamento no CourseCore.
-  Módulo e ordem aparecem só como leitura (mockup mostra como editável,
-  mas não existe endpoint para mover aula de módulo nem para setar ordem
-  direto). Painel de vídeo exige a permissão `videos.manage`, separada da
-  `courses.manage` que já gate a tela inteira. "Excluir aula" reaparece
-  aqui e volta para a lista de módulos. Abaixo, um painel "Perguntas dos
-  alunos" lista o mural público de perguntas da aula
+  `GET/PUT/DELETE /api/videos/lessons/{lessonId}`). O vídeo pode vir do
+  YouTube (só o ID, sem upload — depois de registrar o front chama
+  `POST /api/videos/{id}/ready` na hora, já que vídeo do YouTube não passa
+  por processamento no CourseCore) ou de upload direto pro bucket S3
+  interno (`POST /api/videos/upload-url` gera uma URL assinada, o arquivo
+  vai direto pro bucket com barra de progresso, e a duração é lida do
+  próprio arquivo no navegador). Módulo e ordem aparecem só como leitura
+  (mockup mostra como editável, mas não existe endpoint para mover aula de
+  módulo nem para setar ordem direto). Painel de vídeo exige a permissão
+  `videos.manage`, separada da `courses.manage` que já gate a tela
+  inteira. "Excluir aula" reaparece aqui e volta para a lista de módulos.
+  Abaixo, um painel "Materiais da aula" (mesmo fluxo de upload do vídeo,
+  `POST /api/materials/upload-url` + `POST /api/materials/lessons/{id}`,
+  também atrás de `videos.manage`) e um painel "Perguntas dos alunos" que
+  lista o mural público de perguntas da aula
   (`GET /api/questions/lessons/{lessonId}`) e permite responder
   (`POST /api/questions/{id}/answer`) ou remover
-  (`DELETE /api/questions/{id}`) qualquer pergunta — sem gate extra de
-  permissão, já que ambas as rotas exigem exatamente `courses.manage`, a
+  (`DELETE /api/questions/{id}`) qualquer pergunta — esse último sem gate
+  extra de permissão, já que ambas as rotas exigem exatamente
+  `courses.manage`, a
   mesma claim que já protege a tela inteira. Spec em
   `Docs/specs/admin/lesson-editor.md`.
 - **Admin — Usuários** (`/admin/users`) — lista paginada e pesquisável
