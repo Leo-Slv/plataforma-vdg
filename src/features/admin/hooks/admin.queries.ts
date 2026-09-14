@@ -28,6 +28,9 @@ import { getLessonVideo } from '@/features/admin/api/get-lesson-video';
 import { replaceLessonVideo } from '@/features/admin/api/replace-lesson-video';
 import { markVideoReady } from '@/features/admin/api/mark-video-ready';
 import { deleteLessonVideo } from '@/features/admin/api/delete-lesson-video';
+import { getLessonQuestions } from '@/features/admin/api/get-lesson-questions';
+import { answerLessonQuestion } from '@/features/admin/api/answer-lesson-question';
+import { removeLessonQuestion } from '@/features/admin/api/remove-lesson-question';
 import { getVideos } from '@/features/admin/api/get-videos';
 import { getYouTubeVideoMetadata } from '@/features/admin/api/get-youtube-video-metadata';
 import { activateVideo } from '@/features/admin/api/activate-video';
@@ -308,6 +311,29 @@ function useReplaceLessonVideoMutation() {
 	});
 }
 
+function useLessonQuestionsQuery(
+	lessonId: string,
+	options: { enabled: boolean },
+) {
+	return useQuery({
+		queryKey: queryKeys.admin.lessonQuestions(lessonId),
+		queryFn: () => getLessonQuestions(lessonId),
+		enabled: options.enabled && lessonId.length > 0,
+	});
+}
+
+function useAnswerLessonQuestionMutation() {
+	return useMutation({
+		mutationFn: answerLessonQuestion,
+	});
+}
+
+function useRemoveLessonQuestionMutation() {
+	return useMutation({
+		mutationFn: removeLessonQuestion,
+	});
+}
+
 function useMarkVideoReadyMutation() {
 	return useMutation({
 		mutationFn: ({ videoId }: { videoId: string }) => markVideoReady(videoId),
@@ -503,6 +529,9 @@ export {
 	useMoveLessonMutation,
 	useReorderLessonsMutation,
 	useLessonVideoQuery,
+	useLessonQuestionsQuery,
+	useAnswerLessonQuestionMutation,
+	useRemoveLessonQuestionMutation,
 	useReplaceLessonVideoMutation,
 	useMarkVideoReadyMutation,
 	useDeleteLessonVideoMutation,
