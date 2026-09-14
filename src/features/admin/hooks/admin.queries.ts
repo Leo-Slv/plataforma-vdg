@@ -26,6 +26,7 @@ import { moveLesson } from '@/features/admin/api/move-lesson';
 import { reorderLessons } from '@/features/admin/api/reorder-lessons';
 import { getLessonVideo } from '@/features/admin/api/get-lesson-video';
 import { replaceLessonVideo } from '@/features/admin/api/replace-lesson-video';
+import { requestVideoUploadUrl } from '@/features/admin/api/request-video-upload-url';
 import { markVideoReady } from '@/features/admin/api/mark-video-ready';
 import { deleteLessonVideo } from '@/features/admin/api/delete-lesson-video';
 import { getLessonQuestions } from '@/features/admin/api/get-lesson-questions';
@@ -311,6 +312,12 @@ function useReplaceLessonVideoMutation() {
 	});
 }
 
+function useRequestVideoUploadUrlMutation() {
+	return useMutation({
+		mutationFn: requestVideoUploadUrl,
+	});
+}
+
 function useLessonQuestionsQuery(
 	lessonId: string,
 	options: { enabled: boolean },
@@ -533,6 +540,7 @@ export {
 	useAnswerLessonQuestionMutation,
 	useRemoveLessonQuestionMutation,
 	useReplaceLessonVideoMutation,
+	useRequestVideoUploadUrlMutation,
 	useMarkVideoReadyMutation,
 	useDeleteLessonVideoMutation,
 	useVideosQuery,
