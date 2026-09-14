@@ -12,6 +12,8 @@ import { removeLessonNote } from '@/features/catalog/api/remove-lesson-note';
 import { getLessonQuestions } from '@/features/catalog/api/get-lesson-questions';
 import { askLessonQuestion } from '@/features/catalog/api/ask-lesson-question';
 import { answerLessonQuestion } from '@/features/catalog/api/answer-lesson-question';
+import { getLessonMaterials } from '@/features/catalog/api/get-lesson-materials';
+import { getMaterialDownloadUrl } from '@/features/catalog/api/get-material-download-url';
 
 function useCourseCatalogQuery(options: { enabled: boolean }) {
 	return useQuery({
@@ -128,6 +130,23 @@ function useAnswerLessonQuestionMutation() {
 	});
 }
 
+function useLessonMaterialsQuery(
+	lessonId: string,
+	options: { enabled: boolean },
+) {
+	return useQuery({
+		queryKey: queryKeys.lessons.materials(lessonId),
+		queryFn: () => getLessonMaterials(lessonId),
+		enabled: options.enabled && lessonId.length > 0,
+	});
+}
+
+function useMaterialDownloadUrlMutation() {
+	return useMutation({
+		mutationFn: getMaterialDownloadUrl,
+	});
+}
+
 export {
 	useCourseCatalogQuery,
 	useCourseDetailsQuery,
@@ -142,4 +161,6 @@ export {
 	useLessonQuestionsQuery,
 	useAskLessonQuestionMutation,
 	useAnswerLessonQuestionMutation,
+	useLessonMaterialsQuery,
+	useMaterialDownloadUrlMutation,
 };

@@ -19,6 +19,8 @@ const queryKeys = {
 		note: (lessonId: string) => ['lessons', lessonId, 'note'] as const,
 		questions: (lessonId: string) =>
 			['lessons', lessonId, 'questions'] as const,
+		materials: (lessonId: string) =>
+			['lessons', lessonId, 'materials'] as const,
 	},
 	media: {
 		playback: (videoId: string) => ['media', 'playback', videoId] as const,
