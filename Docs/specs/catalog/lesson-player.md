@@ -45,8 +45,9 @@ honest, inert placeholder rather than a play button wired to nothing.
 | Mockup shows | Backend has it? |
 |---|---|
 | Per-lesson duration in the sidebar ("14:20") | Only on `VideoResponse.DurationSeconds` — same unreachable-without-a-videoId problem as above. |
-| Attached materials ("Apostila — Módulo 01", PDF sizes) | No attachment/material concept anywhere in the domain. |
-| "Anotações" / "Perguntas" tabs | No notes or Q&A concept anywhere. |
+| Attached materials ("Apostila — Módulo 01", PDF sizes) | **Still no** — `LessonMaterial` CRUD exists but has three compounding gaps (no real upload path, no student-facing list endpoint, no download route). See `Docs/backend-pendencies/admin/lesson-materials.md`. |
+| "Anotações" tab | **Now real** — `GET/PUT/DELETE /api/notes/lessons/{lessonId}`, a private per-user note. |
+| "Perguntas" tab | **Now real** — `GET/POST /api/questions/lessons/{lessonId}`, a public per-lesson Q&A board (answering is admin-only, not part of this screen). |
 | Captions (CC), playback speed, scrubber | Player chrome for a video that doesn't play here — moot. |
 
 ## What's real and drives this page instead
@@ -90,11 +91,38 @@ honest, inert placeholder rather than a play button wired to nothing.
 - Connects course-detail's module cards (currently inert — see
   `course-detail.md`'s non-goals) to this page: clicking a module now
   opens its first lesson.
+- A "Material / Anotações / Perguntas" tab bar under the video, matching
+  the mockup, with two of the three tabs real:
+  - **Anotações**: a private textarea, one per user per lesson. Loads the
+    user's existing note (if any), saves via an explicit "Salvar" button
+    (no autosave/debounce — matches this screen's existing explicit-action
+    convention, e.g. "Marcar aula como assistida"), and can be cleared.
+  - **Perguntas**: a public list of every question asked on this lesson
+    (by any student with course access), each showing the asker's name,
+    question text, and the answer plus answerer's name once one exists —
+    and a form to ask a new question. No answer/delete affordance here;
+    answering is `ManageCourses`-gated and has no admin UI yet (out of
+    scope for this screen, see Non-goals).
+  - **Material**: renders as an honest inert tab (same pattern already
+    established for the video area) — see Non-goals for why.
 
 ## Non-goals
 
-- Everything in both gap tables above: real video playback, per-lesson
-  duration, materials, notes, questions, captions, speed, scrubbing.
+- **The "Material" tab's actual content.** All three of its backend gaps
+  are still open (no real upload path, no student-facing list endpoint, no
+  download route — `Docs/backend-pendencies/admin/lesson-materials.md`).
+  The tab renders and is selectable, showing a plain "Em breve" state
+  instead of a broken empty list or a button wired to nothing.
+- **Answering or deleting a question from this screen.** Both require
+  `ManageCourses`, which a student viewing this page never has; there's
+  also no mockup for where an admin would do this from. Out of scope here
+  — revisit once that surface gets its own spec.
+- **Real-time updates to the Perguntas list** (a new answer or question
+  appearing without a refetch). The list refetches after the visitor
+  submits their own question; nothing pushes updates for other students'
+  activity.
+- Everything else in both gap tables above: real video playback, per-lesson
+  duration, captions, speed, scrubbing.
 - Auto-tracking watch time as a background heartbeat while the page is
   open. The elapsed-time counter only gets sent when the visitor clicks
   "Marcar aula como assistida" — a real player would report continuously;
@@ -122,6 +150,26 @@ honest, inert placeholder rather than a play button wired to nothing.
 - "Próxima aula" is absent (not disabled — the mockup's still-modules-
   ahead state doesn't apply to a last lesson) when the current lesson is
   the last one in the course.
+- Tab bar defaults to "Material" (matches the mockup's own default
+  selection), switching tabs is pure client-side state — no refetch on
+  every switch, only on first mount of a tab that needs data.
+- **Anotações**: `GET` fires once per lesson (on first visiting the tab,
+  not eagerly on page load, since most visits won't touch it). A 404
+  response renders an empty textarea, not an error. "Salvar" is disabled
+  while empty-and-never-saved (nothing to save) and while a save request
+  is in flight; on success, shows a brief confirmation and keeps the
+  content in the field. "Limpar" (shown only when a note exists) calls
+  `DELETE` and empties the field on success.
+- **Perguntas**: `GET` fires once per lesson the same way. The ask form
+  submits via `POST`, disables while in flight, clears on success, and
+  refetches the list so the visitor's own question appears immediately
+  (with no answer yet). Questions render oldest-first (matches the
+  backend's own creation order — no client-side re-sorting). An empty
+  list shows "Nenhuma pergunta ainda — seja o primeiro." instead of a
+  bare blank tab.
+- Switching lessons resets both tabs' loaded state (a new lesson has its
+  own note and its own question list — nothing persists across
+  `lessonId` changes).
 
 ## Acceptance criteria
 
@@ -141,3 +189,11 @@ honest, inert placeholder rather than a play button wired to nothing.
   looks like it plays something it can't.
 - A module card on `/courses/[slug]` now links to that module's first
   lesson.
+- The "Anotações" tab reads/writes the real note for the current
+  user+lesson via `GET`/`PUT`/`DELETE /api/notes/lessons/{lessonId}` — no
+  local-only draft state that silently discards on navigation.
+- The "Perguntas" tab lists real questions via
+  `GET /api/questions/lessons/{lessonId}` and posts new ones via `POST`
+  to the same route — no client-side mock data anywhere.
+- The "Material" tab renders a plain "Em breve" state — no empty grid, no
+  fabricated file cards, no button wired to nothing.

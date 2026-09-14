@@ -54,19 +54,47 @@ Spec: [`Docs/specs/catalog/lesson-player.md`](../../specs/catalog/lesson-player.
 - **Resolved, 2026-09-04**: solved by the same change as pendency 1 —
   `LessonResponse.DurationSeconds` is populated in the same bulk lookup.
 
-## 3. No attached-materials concept
+## 3. No attached-materials concept — STILL BLOCKING, see dedicated file
 
 - **Mockup expects**: "Apostila — Módulo 01" and similar PDF attachments
-  per module/lesson, with file sizes.
-- **Backend today**: no attachment/material concept anywhere in the
-  domain.
-- **Severity**: Feature gap.
+  per module/lesson, with file sizes, under the "Material" tab.
+- **Backend today (updated 2026-09-14)**: `LessonMaterial` CRUD now exists
+  (`feat(media): add lesson material CRUD per aula`), but three compounding
+  gaps keep it unusable end-to-end for this screen: no real upload path (an
+  admin can't obtain a valid `StorageKey`), no student-facing list endpoint
+  (`GET /api/materials/lessons/{lessonId}` is `ManageVideos`-gated,
+  admin-only), and no download route (`GetDownloadUrlAsync` is dead code —
+  written, never called, no controller route). Full detail in
+  [`Docs/backend-pendencies/admin/lesson-materials.md`](../admin/lesson-materials.md).
+- **Severity**: **Blocking** — the "Material" tab is skipped for now.
 
-## 4. No notes or Q&A concept
+## 4. No notes or Q&A concept — CLOSED
 
 - **Mockup expects**: "Anotações" / "Perguntas" tabs alongside the video.
-- **Backend today**: nothing anywhere in the domain.
-- **Severity**: Feature gap.
+- **Backend today (was)**: nothing anywhere in the domain.
+- **Severity**: was Feature gap.
+- **Resolved, 2026-09-11/14**: both landed as real, independently usable
+  modules — neither shares any gap with pendency 3 above.
+  - **Notes**: `GET/PUT/DELETE /api/notes/lessons/{lessonId}`
+    (`feat(progress): add per-lesson student notes`). Plain `[Authorize]`
+    (any authenticated user), one note per user per lesson, upserted via
+    `PUT` (`{ content }`, max 10,000 chars). `GetLessonNoteUseCase` verifies
+    the caller has course access before returning; `GET` 404s when no note
+    exists yet for that user/lesson — the frontend treats that as an empty
+    editor, not an error state. Private per user — never shown to anyone
+    else, unlike Questions below.
+  - **Questions**: `GET/POST /api/questions/lessons/{lessonId}`,
+    `POST /api/questions/{id}/answer`, `DELETE /api/questions/{id}`
+    (`feat(questions): add public per-lesson Q&A`). Listing and asking are
+    plain `[Authorize]`, gated by the same `CourseAccessService` check as
+    Notes — this is a *public* board per lesson (every student with course
+    access sees every question, not just their own), unlike Notes'
+    per-user privacy. Answering/removing require `ManageCourses` (already
+    mapped to `authPermissions.manageCourses` on the frontend). Question
+    and answer text both cap at 2,000 chars. `LessonQuestionResponse`
+    carries `askedByName`/`answeredByName` directly (denormalized at write
+    time from `User.Name`), so no extra user lookups are needed to render
+    the list.
 
 ## 5. Captions, playback speed, scrubber — unblocked, frontend work only
 
