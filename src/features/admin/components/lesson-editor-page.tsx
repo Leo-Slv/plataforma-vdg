@@ -33,12 +33,11 @@ import { StatusToggle } from '@/features/admin/components/status-toggle';
 import { LessonVideoPanel } from '@/features/admin/components/lesson-video-panel';
 import { LessonQuestionsPanel } from '@/features/admin/components/lesson-questions-panel';
 import { VideoFormModal } from '@/features/admin/components/video-form-modal';
-import { buildYouTubeThumbnailUrl } from '@/features/admin/lib/youtube-thumbnail-url';
 import {
 	lessonEditorFormSchema,
 	type LessonEditorFormValues,
 } from '@/features/admin/schemas/lesson-editor-form.schema';
-import type { VideoFormValues } from '@/features/admin/schemas/video-form.schema';
+import type { VideoSubmitValues } from '@/features/admin/schemas/video-form.schema';
 
 const GENERIC_ERROR_MESSAGE =
 	'Não foi possível concluir a ação. Tente novamente.';
@@ -204,7 +203,7 @@ function LessonEditorPage({
 		);
 	}
 
-	function handleVideoSubmit(values: VideoFormValues) {
+	function handleVideoSubmit(values: VideoSubmitValues) {
 		setVideoError(null);
 		const successMessage =
 			videoModal === 'replace' ? 'Vídeo substituído.' : 'Vídeo adicionado.';
@@ -214,9 +213,11 @@ function LessonEditorPage({
 				payload: {
 					title: values.title,
 					description: values.description,
-					storageKey: values.youtubeVideoId,
-					thumbnailUrl: buildYouTubeThumbnailUrl(values.youtubeVideoId),
-					durationSeconds: Number(values.durationMinutes) * 60,
+					storageProvider: values.storageProvider,
+					storageKey: values.storageKey,
+					thumbnailUrl: values.thumbnailUrl,
+					durationSeconds: values.durationSeconds,
+					sizeBytes: values.sizeBytes,
 				},
 			},
 			{
@@ -470,17 +471,30 @@ function LessonEditorPage({
 			{videoModal ? (
 				<VideoFormModal
 					mode={videoModal}
+					lessonId={lessonId}
 					defaultValues={
 						videoModal === 'replace' && videoQuery.data
-							? {
-									title: videoQuery.data.title,
-									description: videoQuery.data.description,
-									youtubeVideoId: videoQuery.data.storageKey,
-									durationMinutes: String(
-										Math.floor(videoQuery.data.durationSeconds / 60),
-									),
-								}
+							? videoQuery.data.storageProvider === 'S3'
+								? {
+										storageProvider: 'S3',
+										title: videoQuery.data.title,
+										description: videoQuery.data.description,
+										file: null,
+										durationMinutes: String(
+											Math.floor(videoQuery.data.durationSeconds / 60),
+										),
+									}
+								: {
+										storageProvider: 'YouTube',
+										title: videoQuery.data.title,
+										description: videoQuery.data.description,
+										youtubeVideoId: videoQuery.data.storageKey,
+										durationMinutes: String(
+											Math.floor(videoQuery.data.durationSeconds / 60),
+										),
+									}
 							: {
+									storageProvider: 'YouTube',
 									title: '',
 									description: '',
 									youtubeVideoId: '',
