@@ -1,7 +1,5 @@
 import { findCurrentLesson } from '@/features/catalog/lib/lesson-sequence';
-import type {
-	CourseCatalogItem,
-} from '@/features/catalog/model/course-catalog';
+import type { CourseCatalogItem } from '@/features/catalog/model/course-catalog';
 import type { CourseDetails } from '@/features/catalog/model/course-details';
 import type { CourseProgress } from '@/features/catalog/model/course-progress';
 
@@ -39,7 +37,9 @@ function computeCardState(
 
 function latestWatchedAt(progress: CourseProgress): string | undefined {
 	return progress.lessons.reduce<string | undefined>((latest, entry) => {
-		return !latest || entry.lastWatchedAt > latest ? entry.lastWatchedAt : latest;
+		return !latest || entry.lastWatchedAt > latest
+			? entry.lastWatchedAt
+			: latest;
 	}, undefined);
 }
 
@@ -68,10 +68,13 @@ function sortOwnedCourses(entries: OwnedCourseEntry[]): OwnedCourseEntry[] {
 	});
 }
 
-function pickHeroEntry(entries: OwnedCourseEntry[]): OwnedCourseEntry | undefined {
+function pickHeroEntry(
+	entries: OwnedCourseEntry[],
+): OwnedCourseEntry | undefined {
 	const inProgress = entries.filter(
 		(entry) =>
-			entry.progress.progressPercent > 0 && entry.progress.progressPercent < 100,
+			entry.progress.progressPercent > 0 &&
+			entry.progress.progressPercent < 100,
 	);
 
 	if (inProgress.length === 0) {
@@ -79,7 +82,8 @@ function pickHeroEntry(entries: OwnedCourseEntry[]): OwnedCourseEntry | undefine
 	}
 
 	return inProgress.reduce((latest, entry) =>
-		(latestWatchedAt(entry.progress) ?? '') > (latestWatchedAt(latest.progress) ?? '')
+		(latestWatchedAt(entry.progress) ?? '') >
+		(latestWatchedAt(latest.progress) ?? '')
 			? entry
 			: latest,
 	);

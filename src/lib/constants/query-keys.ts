@@ -15,6 +15,11 @@ const queryKeys = {
 	progress: {
 		course: (courseId: string) => ['progress', 'course', courseId] as const,
 	},
+	lessons: {
+		note: (lessonId: string) => ['lessons', lessonId, 'note'] as const,
+		questions: (lessonId: string) =>
+			['lessons', lessonId, 'questions'] as const,
+	},
 	media: {
 		playback: (videoId: string) => ['media', 'playback', videoId] as const,
 	},
