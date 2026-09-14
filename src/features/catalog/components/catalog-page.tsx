@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { AnimatePresence, motion } from 'motion/react';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { getUserName } from '@/lib/auth/access-token';
@@ -99,13 +100,25 @@ function CatalogPage() {
 								);
 							}
 
-							return groups.map((group) => (
-								<AreaSection
-									key={group.area.id}
-									group={group}
-									onSelectArea={setSelectedAreaId}
-								/>
-							));
+							return (
+								<AnimatePresence initial={false}>
+									{groups.map((group) => (
+										<motion.div
+											key={group.area.id}
+											layout
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											exit={{ opacity: 0 }}
+											transition={{ duration: 0.15 }}
+										>
+											<AreaSection
+												group={group}
+												onSelectArea={setSelectedAreaId}
+											/>
+										</motion.div>
+									))}
+								</AnimatePresence>
+							);
 						})()}
 					</div>
 				</>

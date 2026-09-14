@@ -179,6 +179,12 @@ in the implementation plan).
 Area pill + search text are independent, composable client-side filters
 over the one fetched list — no loading state, no request.
 
+**Added 2026-09-14**: course cards and area sections animate in/out
+(`motion`/`AnimatePresence`, 150ms opacity fade + layout reflow) when a
+filter changes which ones are shown, instead of an abrupt appear/disappear
+— the first UI need `motion` was actually installed for (see CLAUDE.md's
+dependency-set note).
+
 ## Acceptance criteria
 
 - `/catalog` with no stored access token redirects to `/login`.

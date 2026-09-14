@@ -1,3 +1,5 @@
+import { AnimatePresence, motion } from 'motion/react';
+
 import { CourseCard } from '@/features/catalog/components/course-card';
 import type { AreaGroup } from '@/features/catalog/lib/filter-courses';
 
@@ -36,9 +38,21 @@ function AreaSection({ group, onSelectArea }: AreaSectionProps) {
 						'linear-gradient(to right, #000 0, #000 92%, transparent 100%)',
 				}}
 			>
-				{courses.map((course) => (
-					<CourseCard key={course.id} course={course} area={area} />
-				))}
+				<AnimatePresence initial={false}>
+					{courses.map((course) => (
+						<motion.div
+							key={course.id}
+							layout
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							transition={{ duration: 0.15 }}
+							className="flex-none"
+						>
+							<CourseCard course={course} area={area} />
+						</motion.div>
+					))}
+				</AnimatePresence>
 			</div>
 		</section>
 	);
