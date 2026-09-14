@@ -11,6 +11,7 @@ import { saveLessonNote } from '@/features/catalog/api/save-lesson-note';
 import { removeLessonNote } from '@/features/catalog/api/remove-lesson-note';
 import { getLessonQuestions } from '@/features/catalog/api/get-lesson-questions';
 import { askLessonQuestion } from '@/features/catalog/api/ask-lesson-question';
+import { answerLessonQuestion } from '@/features/catalog/api/answer-lesson-question';
 
 function useCourseCatalogQuery(options: { enabled: boolean }) {
 	return useQuery({
@@ -121,6 +122,12 @@ function useAskLessonQuestionMutation() {
 	});
 }
 
+function useAnswerLessonQuestionMutation() {
+	return useMutation({
+		mutationFn: answerLessonQuestion,
+	});
+}
+
 export {
 	useCourseCatalogQuery,
 	useCourseDetailsQuery,
@@ -134,4 +141,5 @@ export {
 	useRemoveLessonNoteMutation,
 	useLessonQuestionsQuery,
 	useAskLessonQuestionMutation,
+	useAnswerLessonQuestionMutation,
 };
