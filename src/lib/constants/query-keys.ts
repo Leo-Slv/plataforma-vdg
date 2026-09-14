@@ -40,6 +40,8 @@ const queryKeys = {
 			['admin', 'lessons', lessonId, 'video'] as const,
 		lessonQuestions: (lessonId: string) =>
 			['admin', 'lessons', lessonId, 'questions'] as const,
+		lessonMaterials: (lessonId: string) =>
+			['admin', 'lessons', lessonId, 'materials'] as const,
 		videos: (page: number, pageSize: number) =>
 			['admin', 'videos', page, pageSize] as const,
 		users: (page: number, pageSize: number, search: string) =>

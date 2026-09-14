@@ -32,6 +32,10 @@ import { deleteLessonVideo } from '@/features/admin/api/delete-lesson-video';
 import { getLessonQuestions } from '@/features/admin/api/get-lesson-questions';
 import { answerLessonQuestion } from '@/features/admin/api/answer-lesson-question';
 import { removeLessonQuestion } from '@/features/admin/api/remove-lesson-question';
+import { getLessonMaterials } from '@/features/admin/api/get-lesson-materials';
+import { requestMaterialUploadUrl } from '@/features/admin/api/request-material-upload-url';
+import { createLessonMaterial } from '@/features/admin/api/create-lesson-material';
+import { removeLessonMaterial } from '@/features/admin/api/remove-lesson-material';
 import { getVideos } from '@/features/admin/api/get-videos';
 import { getYouTubeVideoMetadata } from '@/features/admin/api/get-youtube-video-metadata';
 import { activateVideo } from '@/features/admin/api/activate-video';
@@ -341,6 +345,41 @@ function useRemoveLessonQuestionMutation() {
 	});
 }
 
+function useLessonMaterialsQuery(
+	lessonId: string,
+	options: { enabled: boolean },
+) {
+	return useQuery({
+		queryKey: queryKeys.admin.lessonMaterials(lessonId),
+		queryFn: () => getLessonMaterials(lessonId),
+		enabled: options.enabled && lessonId.length > 0,
+	});
+}
+
+function useRequestMaterialUploadUrlMutation() {
+	return useMutation({
+		mutationFn: requestMaterialUploadUrl,
+	});
+}
+
+function useCreateLessonMaterialMutation() {
+	return useMutation({
+		mutationFn: ({
+			lessonId,
+			payload,
+		}: {
+			lessonId: string;
+			payload: Parameters<typeof createLessonMaterial>[1];
+		}) => createLessonMaterial(lessonId, payload),
+	});
+}
+
+function useRemoveLessonMaterialMutation() {
+	return useMutation({
+		mutationFn: removeLessonMaterial,
+	});
+}
+
 function useMarkVideoReadyMutation() {
 	return useMutation({
 		mutationFn: ({ videoId }: { videoId: string }) => markVideoReady(videoId),
@@ -539,6 +578,10 @@ export {
 	useLessonQuestionsQuery,
 	useAnswerLessonQuestionMutation,
 	useRemoveLessonQuestionMutation,
+	useLessonMaterialsQuery,
+	useRequestMaterialUploadUrlMutation,
+	useCreateLessonMaterialMutation,
+	useRemoveLessonMaterialMutation,
 	useReplaceLessonVideoMutation,
 	useRequestVideoUploadUrlMutation,
 	useMarkVideoReadyMutation,
