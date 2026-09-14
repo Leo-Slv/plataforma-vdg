@@ -159,7 +159,13 @@ public/
   mas não existe endpoint para mover aula de módulo nem para setar ordem
   direto). Painel de vídeo exige a permissão `videos.manage`, separada da
   `courses.manage` que já gate a tela inteira. "Excluir aula" reaparece
-  aqui e volta para a lista de módulos. Spec em
+  aqui e volta para a lista de módulos. Abaixo, um painel "Perguntas dos
+  alunos" lista o mural público de perguntas da aula
+  (`GET /api/questions/lessons/{lessonId}`) e permite responder
+  (`POST /api/questions/{id}/answer`) ou remover
+  (`DELETE /api/questions/{id}`) qualquer pergunta — sem gate extra de
+  permissão, já que ambas as rotas exigem exatamente `courses.manage`, a
+  mesma claim que já protege a tela inteira. Spec em
   `Docs/specs/admin/lesson-editor.md`.
 - **Admin — Usuários** (`/admin/users`) — lista paginada e pesquisável
   (nome/e-mail) de `GET /api/users`, com contagem real de cadastrados/
