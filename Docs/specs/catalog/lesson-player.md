@@ -37,18 +37,18 @@ one:
 So this isn't "the mockup shows a duration we can't fetch" (already
 priced into `course-detail.md`) — it's that the screen's whole reason to
 exist, playing a video, has nothing to call. Per your call on this: the
-page gets built around what *is* real, with the video area as an
+page gets built around what _is_ real, with the video area as an
 honest, inert placeholder rather than a play button wired to nothing.
 
 ## What else in the mockup has no backend behind it
 
-| Mockup shows | Backend has it? |
-|---|---|
-| Per-lesson duration in the sidebar ("14:20") | Only on `VideoResponse.DurationSeconds` — same unreachable-without-a-videoId problem as above. |
+| Mockup shows                                           | Backend has it?                                                                                                                                                                      |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Per-lesson duration in the sidebar ("14:20")           | Only on `VideoResponse.DurationSeconds` — same unreachable-without-a-videoId problem as above.                                                                                       |
 | Attached materials ("Apostila — Módulo 01", PDF sizes) | **Now real (2026-09-14)** — all three gaps closed: real S3 upload, a student-reachable list endpoint, and a download route. See `Docs/backend-pendencies/admin/lesson-materials.md`. |
-| "Anotações" tab | **Now real** — `GET/PUT/DELETE /api/notes/lessons/{lessonId}`, a private per-user note. |
-| "Perguntas" tab | **Now real** — `GET/POST /api/questions/lessons/{lessonId}`, a public per-lesson Q&A board (answering is admin-only, not part of this screen). |
-| Captions (CC), playback speed, scrubber | Player chrome for a video that doesn't play here — moot. |
+| "Anotações" tab                                        | **Now real** — `GET/PUT/DELETE /api/notes/lessons/{lessonId}`, a private per-user note.                                                                                              |
+| "Perguntas" tab                                        | **Now real** — `GET/POST /api/questions/lessons/{lessonId}`, a public per-lesson Q&A board (answering is admin-only, not part of this screen).                                       |
+| Captions (CC), playback speed, scrubber                | Player chrome for a video that doesn't play here — moot.                                                                                                                             |
 
 ## What's real and drives this page instead
 
@@ -67,7 +67,7 @@ honest, inert placeholder rather than a play button wired to nothing.
   returns `Completed: false` regardless of `watchedSeconds` sent** — not
   a bug in this plan, a direct read of `RegisterLessonProgressUseCase`
   (`if (video is null ...) return false`). The button that calls this
-  is real functionality exercised honestly; whether it *visibly* flips
+  is real functionality exercised honestly; whether it _visibly_ flips
   a lesson to done depends on data (a real attached video) outside this
   screen.
 - The module/lesson list itself, from `GET /api/courses/{id}` — already
@@ -134,7 +134,9 @@ honest, inert placeholder rather than a play button wired to nothing.
   open. The elapsed-time counter only gets sent when the visitor clicks
   "Marcar aula como assistida" — a real player would report continuously;
   simulating that cadence for a page with no real video to justify it
-  would look more like real tracking than it is.
+  would look more like real tracking than it is. **Superseded 2026-09-14
+  for S3-hosted videos** — see "Behavior" below; this non-goal still
+  stands for YouTube-hosted lessons, which have no such event to hook.
 - Any attempt to force a lesson to `Completed: true` client-side when
   the server says otherwise (e.g. inflating `watchedSeconds`). The
   server's answer is the answer, even when it's "no" for a reason this
@@ -183,6 +185,22 @@ honest, inert placeholder rather than a play button wired to nothing.
 - Switching lessons resets both tabs' loaded state (a new lesson has its
   own note and its own question list — nothing persists across
   `lessonId` changes).
+- **Added 2026-09-14 — automatic progress for S3-hosted videos**: the
+  native `<video>` element (rendered for any non-YouTube `playbackUrl`,
+  effectively every S3-hosted lesson) reports real playback position via
+  its own `timeupdate` event, throttled to once per 5 real seconds, plus
+  once more on `ended` with the full duration — no click required, and
+  no separate heartbeat/polling loop, since the browser already fires
+  the event. Each report calls the same `POST /api/progress/lessons`
+  used by "Marcar aula como assistida", with the actual `currentTime`
+  (not wall-clock time since page load) as `watchedSeconds`, and the same
+  success handler refetches course progress so the bar/sidebar update
+  live as the video plays. YouTube-hosted lessons are unaffected — the
+  iframe embed exposes no equivalent event without the separate IFrame
+  Player API — and keep the existing manual button as their only way to
+  register progress. Automatic reporting is gated the same way the
+  manual button already is (`course.hasAccess`); a free-preview lesson
+  on a course the visitor doesn't own still shows no progress action.
 
 ## Acceptance criteria
 
@@ -217,3 +235,8 @@ honest, inert placeholder rather than a play button wired to nothing.
   `GET /api/materials/lessons/{lessonId}` and opens a real signed URL from
   `GET /api/materials/{materialId}/download` on tap — no fabricated file
   cards, no button wired to nothing.
+- Playing an S3-hosted lesson video reports real progress automatically
+  (no click needed) via the native `<video>`'s `timeupdate`/`ended`
+  events, throttled to at most once per 5 seconds; a YouTube-hosted
+  lesson still requires the manual "Marcar aula como assistida" button,
+  unchanged.

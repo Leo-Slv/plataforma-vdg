@@ -87,8 +87,12 @@ public/
   **Perguntas** é um mural público por aula, visível a qualquer aluno com
   acesso ao curso (`GET`/`POST /api/questions/lessons/{id}`), com um botão
   "Responder" inline que só aparece pra quem tem `courses.manage`
-  (`POST /api/questions/{id}/answer`). Spec em
-  `Docs/specs/catalog/lesson-player.md`.
+  (`POST /api/questions/{id}/answer`). Aulas hospedadas no S3 (vídeo
+  nativo, não YouTube) reportam progresso automaticamente pelo evento
+  `timeupdate`/`ended` do próprio `<video>` — sem precisar clicar em
+  nada, throttled a cada 5s — enquanto aulas do YouTube continuam
+  dependendo do botão manual, já que o iframe embutido não expõe esse
+  evento. Spec em `Docs/specs/catalog/lesson-player.md`.
 - **Meus cursos** (`/my-courses`) — dashboard com os cursos que a conta
   já possui: um card "continue de onde parou" para o curso em andamento
   assistido mais recentemente, e a grade completa com contagem real de

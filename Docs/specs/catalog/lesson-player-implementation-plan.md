@@ -169,7 +169,10 @@ the backend.
 ### `hooks/catalog.queries.ts` (add)
 
 ```ts
-function useCourseProgressQuery(courseId: string, options: { enabled: boolean }) {
+function useCourseProgressQuery(
+	courseId: string,
+	options: { enabled: boolean },
+) {
 	return useQuery({
 		queryKey: queryKeys.progress.course(courseId),
 		queryFn: () => getCourseProgress(courseId),
@@ -316,18 +319,18 @@ export { findLessonById, findNextLessonId };
   the acceptance criterion ("no button that looks like it plays something
   it can't") checkable in a unit test.
 - **`lesson-sidebar.tsx`**: props `{ details: CourseDetails; progress:
-  CourseProgress | undefined; currentLessonId: string; slug: string }`.
+CourseProgress | undefined; currentLessonId: string; slug: string }`.
   Renders "Conteúdo" eyebrow, then per module: "0{position} · {module
   .title}", then each lesson as a `<Link href={appRoutes.courses.lesson
-  (slug, lesson.id)}>` row with a leading status glyph:
+(slug, lesson.id)}>` row with a leading status glyph:
   - `lesson.id === currentLessonId` → outlined accent-blue circle with a
     small "▶" glyph, highlighted row background (mirrors the mockup's
     current-lesson treatment).
   - else, `progress?.lessons.find((l) => l.lessonId === lesson.id)
-    ?.completed` → filled accent-blue circle with "✓".
+?.completed` → filled accent-blue circle with "✓".
   - else → plain outlined circle, empty.
-  No duration anywhere in this component — the mockup's "14:20" per row
-  has nothing behind it (see the pendency file).
+    No duration anywhere in this component — the mockup's "14:20" per row
+    has nothing behind it (see the pendency file).
 - **`module-card.tsx`** (changed): gains a `slug: string` prop. Wrapped in
   `<Link href={appRoutes.courses.lesson(slug, module.lessons[0].id)}>`
   when `module.lessons.length > 0`; renders exactly as before (a plain
@@ -421,9 +424,7 @@ async function removeLessonNote(lessonId: string): Promise<void> {
 }
 
 // get-lesson-questions.ts
-async function getLessonQuestions(
-	lessonId: string,
-): Promise<LessonQuestion[]> {
+async function getLessonQuestions(lessonId: string): Promise<LessonQuestion[]> {
 	const data = await apiFetch(`/api/questions/lessons/${lessonId}`);
 	return z.array(lessonQuestionSchema).parse(data);
 }
@@ -514,7 +515,7 @@ function useAskLessonQuestionMutation() {
   importing the admin feature's equivalent concept, same cross-feature-
   isolation reasoning as `format-relative-time.ts`). Tapping a card calls
   `downloadMutation.mutate(materialId)`; on success, `window.open
-  (download.downloadUrl, '_blank', 'noopener,noreferrer')` — the URL isn't
+(download.downloadUrl, '_blank', 'noopener,noreferrer')` — the URL isn't
   prefetched for the whole list, only requested (and immediately used) on
   tap, since a signed URL expiring unused for every card but the clicked
   one is the point, not a bug. No spec file — same self-contained-queries
@@ -535,19 +536,19 @@ function useAskLessonQuestionMutation() {
   - Otherwise (404 or success) → the textarea + "Salvar" button, plus
     "Limpar" only when `noteQuery.data` exists (a 404 means nothing to
     clear).
-  "Salvar" calls `saveLessonNoteMutation.mutate({ lessonId, content })`,
-  disabled while `content.trim().length === 0` or the mutation is
-  in-flight; on success, `queryClient.setQueryData` with the response
-  (cheaper than refetching — the response is already the full note) and
-  `toast.success('Nota salva.')` — `sonner` is already a cross-feature
-  convention (`profile-page.tsx`, `submit-testimonial-page.tsx`), not
-  admin-only, so no new dependency. "Limpar" calls
-  `removeLessonNoteMutation.mutate(lessonId)`, on success clears the
-  textarea, `queryClient.removeQueries` for this note's key (so a future
-  404 renders correctly instead of stale cached content), and
-  `toast.success('Nota removida.')`.
+    "Salvar" calls `saveLessonNoteMutation.mutate({ lessonId, content })`,
+    disabled while `content.trim().length === 0` or the mutation is
+    in-flight; on success, `queryClient.setQueryData` with the response
+    (cheaper than refetching — the response is already the full note) and
+    `toast.success('Nota salva.')` — `sonner` is already a cross-feature
+    convention (`profile-page.tsx`, `submit-testimonial-page.tsx`), not
+    admin-only, so no new dependency. "Limpar" calls
+    `removeLessonNoteMutation.mutate(lessonId)`, on success clears the
+    textarea, `queryClient.removeQueries` for this note's key (so a future
+    404 renders correctly instead of stale cached content), and
+    `toast.success('Nota removida.')`.
 - **`lesson-questions-panel.tsx`**: props `{ lessonId: string; enabled:
-  boolean }`. Owns `useLessonQuestionsQuery`/`useAskLessonQuestionMutation`.
+boolean }`. Owns `useLessonQuestionsQuery`/`useAskLessonQuestionMutation`.
   Branches: pending → "Carregando…"; error → generic retry state; success
   with an empty array → "Nenhuma pergunta ainda — seja o primeiro.";
   success with items → maps in array order (already oldest-first from the
@@ -577,7 +578,7 @@ function useAskLessonQuestionMutation() {
   delete control — only answering was asked for.
 - **`lesson-questions-panel.tsx`** (updated 2026-09-14): decides
   `canAnswer` via `hasPermission(decodeAccessTokenClaims(),
-  authPermissions.manageCourses)` — the same claim check `AppNav` already
+authPermissions.manageCourses)` — the same claim check `AppNav` already
   uses for its admin-panel link, not a new pattern. Owns `replyingId`
   (one question's reply box open at a time) and `replyText`, plus the new
   `useAnswerLessonQuestionMutation()`; passes a `reply` object per question
@@ -633,6 +634,35 @@ Button label: "Marcar aula como assistida" (idle) / "Marcando…"
 "done" label — the spec is explicit that a click doesn't get to claim
 completion client-side; only the refetched sidebar checkmark does that,
 and it might stay unchecked, which is correct.
+
+**Added 2026-09-14 — automatic tracking for S3-hosted videos**: the
+manual button above is unchanged, but `VideoPlayer` (`video-player.tsx`)
+now accepts optional `onProgress?: (currentTime: number) => void` and
+`onEnded?: (duration: number) => void` props, wired only on its native
+`<video>` branch (`onTimeUpdate`/`onEnded`) — the `isEmbeddableUrl`
+(YouTube) branch renders an `<iframe>` with no such prop, so these never
+fire for YouTube playback URLs.
+
+`lesson-player-page.tsx` adds two refs alongside `enteredAtRef`, reset in
+the same `lessonId`-keyed effect: `lastReportedSecondsRef` (highest
+`watchedSeconds` already sent, to never report backwards or a duplicate)
+and `lastReportedAtRef` (wall-clock time of the last report, for
+throttling). A shared `reportWatchedSeconds(seconds)` helper does the
+actual `registerProgressMutation.mutate(...)` call (identical shape to
+the snippet above, just with the real `currentTime` instead of elapsed
+wall-clock time) and is called from:
+
+- `handleVideoProgress(currentTime)` — passed as `onProgress`, throttled
+  to once per `PROGRESS_REPORT_INTERVAL_MS` (5000ms) via
+  `lastReportedAtRef`.
+- `handleVideoEnded(duration)` — passed as `onEnded`, reports immediately
+  and unthrottled, so finishing a video doesn't wait out the last
+  interval to register full completion.
+
+Both are only passed to `<VideoPlayer>` when `course.hasAccess` is true,
+matching the manual button's own gating — a free-preview lesson on a
+course the visitor doesn't own shows the "Aula grátis" badge instead of
+the button, and now correspondingly gets no automatic reporting either.
 
 ## Progress-fetch failure handling (a call this plan has to make, beyond the spec)
 
