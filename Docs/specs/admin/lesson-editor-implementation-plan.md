@@ -78,6 +78,63 @@ module/lesson tree) and `useCoursesQuery` (for the course title in the
 breadcrumb), exactly like `course-modules-page.tsx` already does for the
 course. Find the target module/lesson client-side from that tree.
 
+## Materiais da aula panel (added 2026-09-14)
+
+Data layer, reusing the same `UploadUrl` model/schema and
+`uploadFileToStorage` helper the video-upload path already added (both
+`/api/videos/upload-url` and `/api/materials/upload-url` share the same
+`RequestUploadUrlRequest`/`UploadUrlResponse` shape on the backend):
+
+- `src/features/admin/schemas/lesson-material.schema.ts` /
+  `model/lesson-material.ts`: `{ id, title, fileName, contentType,
+  sizeBytes, displayOrder }` — drops `lessonId` (already scoped),
+  `storageProvider`/`storageKey` (never rendered), `createdAt`/`updatedAt`.
+- `src/features/admin/api/get-lesson-materials.ts`,
+  `request-material-upload-url.ts` (hardcodes `storageProvider: 'S3'`,
+  same reasoning as the video path — it's the only provider with a real
+  flow), `create-lesson-material.ts`, `remove-lesson-material.ts`.
+- `queryKeys.admin.lessonMaterials(lessonId)`; `admin.queries.ts` gains
+  `useLessonMaterialsQuery`, `useRequestMaterialUploadUrlMutation`,
+  `useCreateLessonMaterialMutation`, `useRemoveLessonMaterialMutation`.
+- `src/features/admin/schemas/material-form.schema.ts`: `{ title,
+  file: z.instanceof(File).nullable() }` + `superRefine` requiring `file`
+  — simpler than the video form's schema since there's no second "origin"
+  branch (materials only ever come from an upload, no YouTube-style link
+  option).
+
+Components:
+
+- `src/features/admin/components/material-form-modal.tsx`: title field +
+  file `<input accept="...">` (the content types
+  `MediaValidationLimits.AllowedMaterialContentTypes` allows), upload
+  progress bar. Submit sequence mirrors `video-form-modal.tsx`'s S3
+  branch: `requestMaterialUploadUrl` → `uploadFileToStorage` → call
+  `onSubmit` with a `CreateLessonMaterialPayload` the parent panel POSTs
+  as-is.
+- `src/features/admin/components/lesson-materials-panel.tsx`
+  (`LessonMaterialsPanel({ lessonId, canManage })`): self-contained, owns
+  its query/mutations, same shape as `LessonQuestionsPanel`. **`canManage`
+  is a required prop, not derived internally** — `LessonMaterialsController`
+  requires `ManageVideos`, the same second permission
+  `lesson-editor-page.tsx` already computes as `canManageVideos` for the
+  video panel, not the page's own `ManageCourses` gate. Passing it down
+  (rather than recomputing `hasPermission` inside the panel) keeps that
+  computation in one place. When `false`: the query stays disabled, "Adicionar
+  material" doesn't render, and the panel shows "Requer a permissão de
+  gerenciar vídeos." — identical fallback text to `LessonVideoPanel`'s.
+  List/add/remove otherwise mirror `LessonQuestionsPanel`'s structure
+  (`pendingId` for per-row disabled state, `invalidate()` after every
+  mutation, toasts).
+
+Wired into `lesson-editor-page.tsx` as a new full-width section between
+the two-column grid and the Perguntas panel, passing `canManage={canManageVideos}`
+(the same variable the video panel already uses — no new permission
+check introduced).
+
+No reorder or file-replace UI: `PATCH .../order` exists but wasn't asked
+for, and `UpdateLessonMaterialRequest` only covers title/order anyway
+(never the file) — see `Docs/backend-pendencies/admin/lesson-materials.md`.
+
 ## Perguntas dos alunos panel (added 2026-09-14)
 
 Data layer, mirroring the trimmed-model convention already used for
@@ -270,6 +327,12 @@ In `src/features/admin/components/course-modules-page.tsx`:
   self-contained-queries constraint that already excludes
   `lesson-note-panel.tsx`/`lesson-questions-panel.tsx` on the catalog side
   from component tests.
+- `material-form.schema.spec.ts` (added 2026-09-14): accepts a title with
+  a file selected, rejects an empty title, rejects a missing file — same
+  coverage style as `video-form.schema.spec.ts`.
+- No spec for `lesson-materials-panel.tsx` / `material-form-modal.tsx` —
+  same self-contained-queries / upload-orchestration constraints as
+  `lesson-questions-panel.tsx` and `video-form-modal.tsx` respectively.
 
 ## Sequencing
 

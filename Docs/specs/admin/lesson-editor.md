@@ -30,6 +30,9 @@ Design reference: artboard `1p` ("Aula — criar/editar") in
   `feat(questions): add public per-lesson Q&A` on the CourseCore side —
   see `Docs/specs/catalog/lesson-player.md` for the student-facing half),
   answer an unanswered one, or remove any question.
+- Upload a supporting file (PDF, Office doc, zip, image) to the lesson,
+  straight to the internal S3 bucket, and remove one (2026-09-14, once
+  `POST /api/materials/upload-url` shipped — see "Open decisions").
 
 ## Non-goals
 
@@ -94,6 +97,22 @@ Shared shell: `AdminSidebar` (`active="courses"`).
 
 ### Below the two columns
 
+- **Materiais da aula** — every file attached to this lesson
+  (`GET /api/materials/lessons/{lessonId}`), each showing title, file name,
+  and size. "Adicionar material" opens a modal: title + file picker
+  (accepts the types `MediaValidationLimits.AllowedMaterialContentTypes`
+  allows — PDF, Word, PowerPoint, Excel, zip, PNG/JPEG; 50 MB cap per
+  `MaxMaterialSizeBytes`). Submitting requests a presigned URL
+  (`POST /api/materials/upload-url`), PUTs the file to it with a progress
+  bar, then registers the material with the returned storage key
+  (`POST /api/materials/lessons/{lessonId}`). "Remover" calls
+  `DELETE /api/materials/{id}`. **Gated on `videos.manage`, same as the
+  video panel above and independent of the page's own `courses.manage`
+  gate** — every route on `LessonMaterialsController` requires
+  `ManageVideos`, not `ManageCourses`. An admin with `courses.manage` but
+  not `videos.manage` sees the same disabled state + explanatory note the
+  video panel already shows in that situation, reusing `canManageVideos`.
+  Empty state: "Nenhum material cadastrado ainda."
 - **Perguntas dos alunos** — every question asked on this lesson
   (`GET /api/questions/lessons/{lessonId}`, oldest first, same order the
   student-facing tab uses — no re-sorting), each showing the asker's name,
@@ -242,3 +261,10 @@ screens' precedent):
   Answering calls `POST /api/questions/{id}/answer` and the question
   immediately shows the reply; removing calls `DELETE /api/questions/{id}`
   and the question disappears from the list.
+- The "Materiais da aula" panel lists every real material via
+  `GET /api/materials/lessons/{lessonId}`. Adding one requests a real
+  presigned URL, uploads to it, and registers the material — the new file
+  appears in the list without a page refresh. Removing calls
+  `DELETE /api/materials/{id}`. Both the list and "Adicionar material" are
+  hidden behind `videos.manage`, independent of the page's own
+  `courses.manage` gate — same treatment as the video panel.
