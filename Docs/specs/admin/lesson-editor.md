@@ -23,6 +23,10 @@ Design reference: artboard `1p` ("Aula — criar/editar") in
   flag.
 - View, register, replace, or remove the lesson's video.
 - Delete the lesson, returning to the modules screen.
+- View every question students have asked on this lesson (public Q&A,
+  `feat(questions): add public per-lesson Q&A` on the CourseCore side —
+  see `Docs/specs/catalog/lesson-player.md` for the student-facing half),
+  answer an unanswered one, or remove any question.
 
 ## Non-goals
 
@@ -77,6 +81,24 @@ Shared shell: `AdminSidebar` (`active="courses"`).
     thumbnail URL — see "Open decisions" for why only YouTube).
   - "Remover vídeo" asks for confirmation, then calls
     `DELETE .../videos/lessons/{lessonId}`.
+
+### Below the two columns
+
+- **Perguntas dos alunos** — every question asked on this lesson
+  (`GET /api/questions/lessons/{lessonId}`, oldest first, same order the
+  student-facing tab uses — no re-sorting), each showing the asker's name,
+  question text, and a relative timestamp. An unanswered question gets a
+  "Responder" action (opens an inline textarea, submits via
+  `POST /api/questions/{id}/answer`, capped at 2000 chars matching
+  `QuestionValidationLimits.AnswerTextMaxLength`) and a "Remover" action
+  (`DELETE /api/questions/{id}`); an answered one shows the reply plus the
+  answerer's name instead of the form, with "Remover" still available
+  (answering doesn't lock a question against deletion on the backend, and
+  there's no reason this screen should invent that restriction). No
+  separate permission gate — this panel only renders once the page's own
+  `courses.manage` check has already passed, and both endpoints require
+  exactly that same claim (`AuthPolicyNames.ManageCourses`).
+- Empty state: "Nenhuma pergunta ainda." — no fabricated example rows.
 
 ### Right column
 
@@ -182,3 +204,8 @@ screens' precedent):
   opening the old edit-lesson modal.
 - Gated on `courses.manage` for the page; forbidden otherwise, same as
   every other admin screen.
+- The "Perguntas dos alunos" panel lists every real question for this
+  lesson via `GET /api/questions/lessons/{lessonId}` — no mock data.
+  Answering calls `POST /api/questions/{id}/answer` and the question
+  immediately shows the reply; removing calls `DELETE /api/questions/{id}`
+  and the question disappears from the list.

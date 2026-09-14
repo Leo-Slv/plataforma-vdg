@@ -78,6 +78,61 @@ module/lesson tree) and `useCoursesQuery` (for the course title in the
 breadcrumb), exactly like `course-modules-page.tsx` already does for the
 course. Find the target module/lesson client-side from that tree.
 
+## Perguntas dos alunos panel (added 2026-09-14)
+
+Data layer, mirroring the trimmed-model convention already used for
+`Video`/`LessonNote` elsewhere:
+
+- `src/features/admin/schemas/lesson-question.schema.ts`:
+  ```ts
+  const lessonQuestionSchema = z.object({
+  	id: z.string(),
+  	askedByName: z.string(),
+  	questionText: z.string(),
+  	answerText: z.string().nullable(),
+  	answeredByName: z.string().nullable(),
+  	answeredAt: z.string().nullable(),
+  	createdAt: z.string(),
+  });
+  ```
+  Drops `lessonId` (already scoped by the route), `askedByUserId`,
+  `answeredByUserId`, `updatedAt` — none render here.
+- `src/features/admin/model/lesson-question.ts`: `type LessonQuestion =
+  z.infer<typeof lessonQuestionSchema>` — same schema-first convention
+  `model/video.ts` already uses (unlike catalog's hand-written models).
+- `src/features/admin/api/get-lesson-questions.ts`,
+  `answer-lesson-question.ts`, `remove-lesson-question.ts` — plain
+  `apiFetch` wrappers against `GET/POST /api/questions/lessons/{id}`,
+  `POST /api/questions/{id}/answer`, `DELETE /api/questions/{id}`.
+- `queryKeys.admin.lessonQuestions(lessonId)` →
+  `['admin', 'lessons', lessonId, 'questions']`.
+- `admin.queries.ts`: `useLessonQuestionsQuery(lessonId, { enabled })`,
+  `useAnswerLessonQuestionMutation()`, `useRemoveLessonQuestionMutation()`.
+
+Component: `src/features/admin/components/lesson-questions-panel.tsx`
+(`LessonQuestionsPanel({ lessonId })`) — self-contained (owns its own
+query/mutations, like `LessonNotePanel` on the catalog side, unlike the
+prop-driven `LessonVideoPanel`), because there's no second permission gate
+to thread through here (see "Open decisions" below) and no sibling state
+on the page needs this data. Local state: `replyingId` (which question's
+reply textarea is open, one at a time), `replyText`, `pendingId` (which
+question has a mutation in flight, for per-row disabled state — same
+pattern `testimonials-table.tsx` already uses for publish/unpublish).
+Renders below the existing two-column grid, full-width
+(`max-w-[720px]`, matching the left column's typical content width),
+inside the same `!isLoading` branch.
+
+**Open decision, resolved without asking (mechanical, same reasoning
+already used for the video panel's permission gate)**: no second
+`useRequirePermission`/`hasPermission` check for this panel, unlike
+`LessonVideoPanel`'s `videos.manage` gate. The video panel needs one
+because `VideosController` requires `ManageVideos`, a *different* claim
+from the page's own `ManageCourses` gate — an admin could plausibly hold
+one without the other. `LessonQuestionsController`'s answer/remove routes
+require exactly `ManageCourses`, the same claim `useRequirePermission`
+already checked before this page renders anything at all; a second check
+here would be redundant, not defensive.
+
 ## Form schema
 
 - `src/features/admin/schemas/lesson-editor-form.schema.ts`:
@@ -175,6 +230,10 @@ In `src/features/admin/components/course-modules-page.tsx`:
 - Update/remove any existing test coverage for `course-modules-page.tsx`'s
   removed `'edit-lesson'` modal path; add a test asserting "Editar" now
   navigates instead of opening a modal.
+- No spec for `lesson-questions-panel.tsx` (added 2026-09-14) — same
+  self-contained-queries constraint that already excludes
+  `lesson-note-panel.tsx`/`lesson-questions-panel.tsx` on the catalog side
+  from component tests.
 
 ## Sequencing
 
