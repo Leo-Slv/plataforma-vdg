@@ -1,12 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 
 import { queryKeys } from '@/lib/constants/query-keys';
+import { authPermissions } from '@/lib/auth/auth-permissions';
+import { decodeAccessTokenClaims, hasPermission } from '@/lib/auth/jwt-claims';
 import {
+	useAnswerLessonQuestionMutation,
 	useAskLessonQuestionMutation,
 	useLessonQuestionsQuery,
 } from '@/features/catalog/hooks/catalog.queries';
@@ -28,6 +32,14 @@ function LessonQuestionsPanel({
 	const queryClient = useQueryClient();
 	const questionsQuery = useLessonQuestionsQuery(lessonId, { enabled });
 	const askMutation = useAskLessonQuestionMutation();
+	const answerMutation = useAnswerLessonQuestionMutation();
+
+	const canAnswer = hasPermission(
+		decodeAccessTokenClaims(),
+		authPermissions.manageCourses,
+	);
+	const [replyingId, setReplyingId] = useState<string | null>(null);
+	const [replyText, setReplyText] = useState('');
 
 	const form = useForm<AskLessonQuestionFormValues>({
 		resolver: zodResolver(askLessonQuestionFormSchema),
@@ -47,6 +59,25 @@ function LessonQuestionsPanel({
 				},
 				onError: () => {
 					toast.error('Não foi possível enviar sua pergunta agora.');
+				},
+			},
+		);
+	}
+
+	function handleSubmitAnswer(questionId: string) {
+		answerMutation.mutate(
+			{ questionId, answerText: replyText },
+			{
+				onSuccess: () => {
+					setReplyingId(null);
+					setReplyText('');
+					queryClient.invalidateQueries({
+						queryKey: queryKeys.lessons.questions(lessonId),
+					});
+					toast.success('Resposta enviada.');
+				},
+				onError: () => {
+					toast.error('Não foi possível enviar a resposta agora.');
 				},
 			},
 		);
@@ -78,7 +109,27 @@ function LessonQuestionsPanel({
 			) : (
 				<div>
 					{questionsQuery.data.map((question) => (
-						<LessonQuestionItem key={question.id} question={question} />
+						<LessonQuestionItem
+							key={question.id}
+							question={question}
+							reply={
+								canAnswer
+									? {
+											isReplying: replyingId === question.id,
+											replyText,
+											onReplyTextChange: setReplyText,
+											onStartReply: () => {
+												setReplyingId(question.id);
+												setReplyText('');
+											},
+											onCancelReply: () => setReplyingId(null),
+											onSubmitReply: () => handleSubmitAnswer(question.id),
+											isSubmitting:
+												answerMutation.isPending && replyingId === question.id,
+										}
+									: undefined
+							}
+						/>
 					))}
 				</div>
 			)}

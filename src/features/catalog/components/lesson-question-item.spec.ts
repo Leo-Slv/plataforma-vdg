@@ -45,3 +45,62 @@ test('renders the answerer name and answer text once answered', () => {
 	assert.match(html, /Pr\. João/);
 	assert.match(html, /O chamado vem antes de qualquer cargo\./);
 });
+
+const NOOP_REPLY = {
+	isReplying: false,
+	replyText: '',
+	onReplyTextChange: () => {},
+	onStartReply: () => {},
+	onCancelReply: () => {},
+	onSubmitReply: () => {},
+	isSubmitting: false,
+};
+
+test('renders no "Responder" button without the reply prop (no permission)', () => {
+	const html = renderToStaticMarkup(
+		createElement(LessonQuestionItem, { question: BASE_QUESTION }),
+	);
+
+	assert.doesNotMatch(html, /Responder/);
+});
+
+test('renders a "Responder" button for an unanswered question when reply is passed', () => {
+	const html = renderToStaticMarkup(
+		createElement(LessonQuestionItem, {
+			question: BASE_QUESTION,
+			reply: NOOP_REPLY,
+		}),
+	);
+
+	assert.match(html, /Responder/);
+	assert.doesNotMatch(html, /<textarea/);
+});
+
+test('renders the reply textarea and actions while isReplying is true', () => {
+	const html = renderToStaticMarkup(
+		createElement(LessonQuestionItem, {
+			question: BASE_QUESTION,
+			reply: { ...NOOP_REPLY, isReplying: true },
+		}),
+	);
+
+	assert.match(html, /<textarea/);
+	assert.match(html, /Enviar resposta/);
+	assert.match(html, /Cancelar/);
+});
+
+test('does not render "Responder" for an already-answered question even with reply passed', () => {
+	const answered: LessonQuestion = {
+		...BASE_QUESTION,
+		answerText: 'O chamado vem antes de qualquer cargo.',
+		answeredByName: 'Pr. João',
+	};
+	const html = renderToStaticMarkup(
+		createElement(LessonQuestionItem, {
+			question: answered,
+			reply: NOOP_REPLY,
+		}),
+	);
+
+	assert.doesNotMatch(html, /Responder/);
+});
