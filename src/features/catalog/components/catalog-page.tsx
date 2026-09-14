@@ -99,11 +99,10 @@ function CatalogPage() {
 								);
 							}
 
-							return groups.map((group, index) => (
+							return groups.map((group) => (
 								<AreaSection
 									key={group.area.id}
 									group={group}
-									position={index + 1}
 									onSelectArea={setSelectedAreaId}
 								/>
 							));

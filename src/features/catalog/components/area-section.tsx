@@ -3,24 +3,17 @@ import type { AreaGroup } from '@/features/catalog/lib/filter-courses';
 
 type AreaSectionProps = {
 	group: AreaGroup;
-	position: number;
 	onSelectArea: (areaId: string) => void;
 };
 
-function AreaSection({ group, position, onSelectArea }: AreaSectionProps) {
+function AreaSection({ group, onSelectArea }: AreaSectionProps) {
 	const { area, courses } = group;
-	const label = String(position).padStart(2, '0');
 
 	return (
 		<section className="mt-12 first:mt-0">
 			<div className="flex items-baseline justify-between border-b border-foreground/10 pb-3.5">
 				<div>
-					<div className="font-heading text-[9.5px] tracking-[0.18em] text-foreground/40 uppercase">
-						Área {label}
-					</div>
-					<h2 className="mt-2.75 font-heading text-2xl font-light">
-						{area.name}
-					</h2>
+					<h2 className="font-heading text-2xl font-light">{area.name}</h2>
 					{area.description ? (
 						<p className="mt-2 max-w-[420px] text-[13px] font-light text-foreground/45">
 							{area.description}
