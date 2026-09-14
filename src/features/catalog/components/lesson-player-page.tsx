@@ -56,6 +56,15 @@ type LessonPlayerPageProps = {
 	lessonId: string;
 };
 
+/**
+ * S3-hosted videos report real playback progress via the native `<video>`
+ * element's `timeupdate` — throttled so a mostly-static currentTime doesn't
+ * spam the progress endpoint every animation frame. YouTube videos have no
+ * such event (would need the separate IFrame Player API) and keep the
+ * existing manual "Marcar aula como assistida" button untouched.
+ */
+const PROGRESS_REPORT_INTERVAL_MS = 5000;
+
 function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
@@ -121,8 +130,12 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 	}
 
 	const enteredAtRef = useRef<number | null>(null);
+	const lastReportedSecondsRef = useRef(0);
+	const lastReportedAtRef = useRef(0);
 	useEffect(() => {
 		enteredAtRef.current = Date.now();
+		lastReportedSecondsRef.current = 0;
+		lastReportedAtRef.current = 0;
 	}, [lessonId]);
 
 	const [activeTab, setActiveTab] = useState<LessonTab>('material');
@@ -148,6 +161,38 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 
 	const displayName = getDisplayName(getUserName());
 	const initials = getInitials(getUserName());
+
+	function reportWatchedSeconds(seconds: number) {
+		if (!course || seconds <= lastReportedSecondsRef.current) {
+			return;
+		}
+
+		lastReportedSecondsRef.current = seconds;
+		lastReportedAtRef.current = Date.now();
+
+		registerProgressMutation.mutate(
+			{ lessonId, watchedSeconds: seconds },
+			{
+				onSuccess: () => {
+					queryClient.invalidateQueries({
+						queryKey: queryKeys.progress.course(course.id),
+					});
+				},
+			},
+		);
+	}
+
+	function handleVideoProgress(currentTime: number) {
+		if (Date.now() - lastReportedAtRef.current < PROGRESS_REPORT_INTERVAL_MS) {
+			return;
+		}
+
+		reportWatchedSeconds(Math.floor(currentTime));
+	}
+
+	function handleVideoEnded(duration: number) {
+		reportWatchedSeconds(Math.floor(duration));
+	}
 
 	function handleMarkAsWatched() {
 		if (!course) {
@@ -326,6 +371,10 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 									<VideoPlayer
 										status={videoStatus}
 										playbackUrl={playbackQuery.data?.playbackUrl}
+										onProgress={
+											course.hasAccess ? handleVideoProgress : undefined
+										}
+										onEnded={course.hasAccess ? handleVideoEnded : undefined}
 									/>
 
 									{course.hasAccess ? (

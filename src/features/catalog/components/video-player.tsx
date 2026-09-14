@@ -5,6 +5,14 @@ type VideoPlayerStatus = 'loading' | 'error' | 'no-video' | 'ready';
 type VideoPlayerProps = {
 	status: VideoPlayerStatus;
 	playbackUrl?: string;
+	/**
+	 * Fired from the native `<video>` element's `timeupdate` (S3-hosted
+	 * videos only — YouTube's iframe embed exposes no such event without
+	 * the separate IFrame Player API, so this never fires for it).
+	 */
+	onProgress?: (currentTime: number) => void;
+	/** Fired once when a native (non-YouTube) video reaches its end. */
+	onEnded?: (duration: number) => void;
 };
 
 function isEmbeddableUrl(url: string) {
@@ -27,7 +35,12 @@ function VideoMessage({ children }: { children: string }) {
 	);
 }
 
-function VideoPlayer({ status, playbackUrl }: VideoPlayerProps) {
+function VideoPlayer({
+	status,
+	playbackUrl,
+	onProgress,
+	onEnded,
+}: VideoPlayerProps) {
 	if (status === 'ready' && playbackUrl) {
 		if (isEmbeddableUrl(playbackUrl)) {
 			return (
@@ -45,7 +58,16 @@ function VideoPlayer({ status, playbackUrl }: VideoPlayerProps) {
 
 		return (
 			<div className="aspect-video overflow-hidden rounded-lg bg-black">
-				<video src={playbackUrl} controls playsInline className="size-full">
+				<video
+					src={playbackUrl}
+					controls
+					playsInline
+					className="size-full"
+					onTimeUpdate={(event) =>
+						onProgress?.(event.currentTarget.currentTime)
+					}
+					onEnded={(event) => onEnded?.(event.currentTarget.duration)}
+				>
 					<track kind="captions" />
 				</video>
 			</div>
