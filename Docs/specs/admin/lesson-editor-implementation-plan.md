@@ -148,20 +148,36 @@ here would be redundant, not defensive.
   screen owns its own form independent of the modal's lifecycle, avoiding a
   shared-schema coupling between a page and a modal that now serve different
   purposes.)
-- `src/features/admin/schemas/video-form.schema.ts`:
-  ```ts
-  const videoFormSchema = z.object({
-    title: z.string().trim().min(1, 'Informe o título do vídeo.'),
-    description: z.string().trim(),
-    youtubeVideoId: z.string().trim().min(1, 'Informe o ID do vídeo do YouTube.'),
-    durationMinutes: z.coerce.number().int().min(1, 'Informe a duração em minutos.'),
-    thumbnailUrl: z.string().trim(),
-  });
-  ```
-  Convert `durationMinutes * 60` → `durationSeconds` at the API-call
-  boundary (component/mutation call site), not inside the schema — same
-  separation of concerns as the rest of this codebase (schemas validate
-  shape, callers map to request payloads).
+- `src/features/admin/schemas/video-form.schema.ts` (updated 2026-09-14
+  for the S3 upload path): a `z.discriminatedUnion('storageProvider', [...])`
+  over two branches — `{ storageProvider: 'YouTube', title, description,
+  youtubeVideoId, durationMinutes }` and `{ storageProvider: 'S3', title,
+  description, file: z.instanceof(File).nullable(), durationMinutes }` —
+  plus a `.superRefine` on the union requiring `file` when
+  `storageProvider === 'S3'` (can't express "required in this branch" via
+  `discriminatedUnion` member schemas alone, since those must stay plain
+  `ZodObject`s for the discriminator to work). `durationMinutes` stays a
+  shared `z.string()` + `superRefine` (not `z.coerce.number()` — an empty
+  input needs to render as an empty field, not `0`), converted to seconds
+  at the API-call boundary. No `thumbnailUrl` form field — YouTube derives
+  it (`buildYouTubeThumbnailUrl`), S3 has none.
+- `src/features/admin/schemas/upload-url.schema.ts` /
+  `model/upload-url.ts`: mirrors `POST /api/videos/upload-url`'s response
+  (`storageProvider`, `storageKey`, `uploadUrl`, `expiresAt`).
+- `src/features/admin/api/request-video-upload-url.ts`: `apiFetch` POST to
+  `/api/videos/upload-url` with `storageProvider: 'S3'` hardcoded (the only
+  provider this flow ever requests an upload URL for).
+- `src/features/admin/lib/upload-file-to-storage.ts`: **not** `apiFetch`
+  — a raw `XMLHttpRequest` PUT straight to the presigned URL (a different
+  origin, no auth header, the signed URL itself is the authorization),
+  using `xhr.upload.onprogress` to report percent complete.
+- `src/features/admin/lib/read-video-file-duration.ts`: a throwaway
+  `<video>` + `URL.createObjectURL` to read `duration` from the local file
+  before any upload happens.
+- `src/features/admin/api/replace-lesson-video.ts` (changed): the payload
+  gained `storageProvider: 'YouTube' | 'S3'` and a real `sizeBytes` field
+  — both used to be hardcoded (`'YouTube'`, `0`) since only YouTube
+  existed.
 
 ## Components
 
@@ -196,10 +212,30 @@ here would be redundant, not defensive.
   `onAdd` / `onReplace` / `onRemove` callbacks; renders the three states
   described in the spec ("Vídeo da aula" section).
 - `src/features/admin/components/video-form-modal.tsx` — `AdminModal` +
-  `react-hook-form` + `videoFormSchema`, mirroring `lesson-form-modal.tsx`'s
-  structure (fields: título, descrição, ID do vídeo do YouTube, duração em
-  minutos, thumbnail URL opcional); `mode: 'add' | 'replace'` only changes
-  the modal title text.
+  `react-hook-form` + `videoFormSchema`; `mode: 'add' | 'replace'` only
+  changes the modal title text. **Updated 2026-09-14**: gained an origin
+  toggle (two buttons, "YouTube" / "Armazenamento interno") that calls
+  `form.reset(...)` with the other branch's shape — switching providers
+  mid-edit means starting that branch's fields fresh, not trying to carry
+  a YouTube id into a file field or vice versa. The S3 branch's file
+  `<input>` (`accept="video/mp4,video/quicktime,video/webm,video/x-matroska"`,
+  matching `MediaValidationLimits.AllowedVideoContentTypes`) reads the
+  duration via `readVideoFileDuration` on change and pre-fills
+  `durationMinutes` the same way the YouTube branch's "Buscar duração pelo
+  ID" button does. Submission for S3 is a 3-step async sequence before
+  calling the parent's `onSubmit` at all:
+  `requestVideoUploadUrl` → `uploadFileToStorage` (with a progress bar
+  driven by its `onProgress` callback) → call `onSubmit` with the unified
+  `VideoSubmitValues` shape (`storageProvider`, `storageKey`,
+  `durationSeconds`, `sizeBytes`, `thumbnailUrl`) so
+  `lesson-editor-page.tsx`'s `handleVideoSubmit` doesn't need to know which
+  branch produced it. A local `uploadError` state (distinct from the
+  parent's `videoError`) covers failures in that 3-step sequence
+  specifically. Because `form.formState.errors` isn't a discriminated type
+  matching the union the way `form.watch()`'s return value is, field-level
+  error lookups go through a small `Partial<Record<...>>` cast rather than
+  `errors.file`/`errors.youtubeVideoId` directly (TypeScript can't narrow
+  `FieldErrors<A | B>` by a sibling `watch()` value).
 
 ## Wiring the "Editar" change on the modules screen
 

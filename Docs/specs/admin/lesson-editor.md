@@ -21,7 +21,10 @@ Design reference: artboard `1p` ("Aula — criar/editar") in
 
 - Edit a single lesson's title, description/transcript, and free-preview
   flag.
-- View, register, replace, or remove the lesson's video.
+- View, register, replace, or remove the lesson's video — either as a
+  YouTube link (by video id) or by uploading a file straight to the
+  internal S3 bucket (2026-09-14, once `POST /api/videos/upload-url`
+  shipped a real presigned-upload flow — see "Open decisions").
 - Delete the lesson, returning to the modules screen.
 - View every question students have asked on this lesson (public Q&A,
   `feat(questions): add public per-lesson Q&A` on the CourseCore side —
@@ -42,12 +45,6 @@ Design reference: artboard `1p` ("Aula — criar/editar") in
   buttons) — there's no "set this lesson's order to N" endpoint. Order is
   shown read-only (the lesson's current 1-based position within its
   module); reordering stays on the modules screen.
-- **Raw video file upload.** Per the standing decision in
-  `course-modules-lessons.md` pendency 3, there's no upload endpoint —
-  video hosting is "via link" (private/unlisted YouTube). This screen's
-  video form is a plain link-registration form, not a drop zone, mirroring
-  the same workaround already shipped for course cover images
-  (`course-crud.md` pendency 4).
 - **Creating a lesson.** This screen is edit-only, matching the mockup's own
   breadcrumb ("Editar aula"); lesson creation stays on the modules screen's
   existing create-lesson modal.
@@ -73,12 +70,25 @@ Shared shell: `AdminSidebar` (`active="courses"`).
 - **Vídeo da aula** — video panel:
   - **No video registered** (`GET .../videos/lessons/{lessonId}` 404):
     "Nenhum vídeo cadastrado ainda." + "Adicionar vídeo" button.
-  - **Video registered**: shows duration (`Xmin`, from `DurationSeconds`)
-    and status (`Processing`/`Ready`/`Failed` → "Processando" / "Pronto" /
-    "Falhou"), plus "Substituir vídeo" and "Remover vídeo" actions.
-  - "Adicionar vídeo" / "Substituir vídeo" open the same video form modal
-    (title, description, YouTube video ID, duration in minutes, optional
-    thumbnail URL — see "Open decisions" for why only YouTube).
+  - **Video registered**: shows duration (`Xmin`, from `DurationSeconds`),
+    status (`Processing`/`Ready`/`Failed` → "Processando" / "Pronto" /
+    "Falhou"), and which storage the video is on ("YouTube" /
+    "Armazenamento interno"), plus "Substituir vídeo" and "Remover vídeo"
+    actions.
+  - "Adicionar vídeo" / "Substituir vídeo" open the same video form modal,
+    which now (2026-09-14) starts with an origin toggle:
+    - **YouTube**: video id field + "Buscar duração pelo ID" (unchanged).
+    - **Armazenamento interno**: a file picker (accepts
+      `video/mp4`/`quicktime`/`webm`/`x-matroska`, matching
+      `MediaValidationLimits.AllowedVideoContentTypes`); duration is read
+      client-side from the file's own metadata the moment it's selected
+      (no round trip needed), editable manually if that read fails.
+      Submitting requests a presigned URL
+      (`POST /api/videos/upload-url`), PUTs the file straight to it with a
+      progress bar, then registers the video with the returned storage
+      key — same `PUT .../videos/lessons/{lessonId}` call the YouTube path
+      already used, just with `storageProvider: "S3"`. No thumbnail for
+      this path (see "Open decisions").
   - "Remover vídeo" asks for confirmation, then calls
     `DELETE .../videos/lessons/{lessonId}`.
 
@@ -148,20 +158,38 @@ Resolved with the user on 2026-09-08:
 Derived without needing to ask (mechanical, consistent with prior
 screens' precedent):
 
-- **Video registration form ships as a link field, not a drop zone** —
-  same reasoning as the course cover-image workaround in `course-crud.md`
-  pendency 4: no upload endpoint exists, so the mockup's affordance becomes
-  a plain text input instead.
-- **Only `YouTube` is offered as a storage provider** — the only one with a
-  concrete workflow decided for this product
-  (`course-modules-lessons.md` pendency 3); the other `VideoStorageProvider`
-  values (`Local`, `S3`, `AzureBlob`, `CloudflareR2`, `Vimeo`, `Mux`) have no
-  admin-facing flow to populate their required fields (signed upload URLs,
-  API keys, etc.) and aren't offered.
-- **`SizeBytes` defaults to `0`** — required by `ReplaceLessonVideoRequest`
-  but meaningless for a YouTube-hosted video (CourseCore never stores the
-  bytes); not exposed as a form field, same treatment as other
-  backend-required-but-UI-irrelevant fields elsewhere in this codebase.
+- **Video registration ships as either a YouTube link or a real upload —
+  no other provider is offered (2026-09-14).** Originally
+  (`course-modules-lessons.md` pendency 3) only `YouTube` had a concrete
+  workflow, since no upload endpoint existed — the mockup's drop-zone
+  affordance became a plain link field instead. CourseCore later shipped
+  `POST /api/videos/upload-url` (a real S3 presigned-upload flow,
+  `feat(media): add real S3 presigned upload/download URLs`), so the form
+  now offers a second origin, "Armazenamento interno" (`storageProvider:
+  "S3"`): pick a file, it uploads straight to the bucket via the presigned
+  URL, then registers with the returned storage key. The other
+  `VideoStorageProvider` values (`Local`, `AzureBlob`, `CloudflareR2`,
+  `Vimeo`, `Mux`) still have no admin-facing flow and aren't offered.
+  **Config note, not a code gap**: the backend only allows a storage
+  provider CourseCore's own config lists — `S3` must be added to
+  `Media__Playback__AllowedStorageProviders` (see that repo's
+  `.env.example`) and `Media__S3__BucketName`/`Region`/`AccessKeyId`/
+  `SecretAccessKey` must be set, or `POST /api/videos/upload-url` 400s
+  with "Storage provider is not allowed."
+- **No thumbnail field for the internal-storage path** — YouTube gets one
+  derived from the video id (`buildYouTubeThumbnailUrl`); there's no
+  equivalent auto-derivation for an arbitrary uploaded file, and adding a
+  manual thumbnail-upload flow wasn't asked for.
+- **Duration is read client-side from the file itself for uploads**
+  (a throwaway `<video>` element's `loadedmetadata` event), rather than
+  requiring the admin to know it upfront the way the YouTube path's
+  "Buscar duração pelo ID" call does server-side. Falls back to manual
+  entry if the browser can't read it (e.g. an unsupported codec).
+- **`SizeBytes` defaults to `0`** for the YouTube path — required by
+  `ReplaceLessonVideoRequest` but meaningless for a YouTube-hosted video
+  (CourseCore never stores the bytes). The internal-storage path sends the
+  real `file.size` instead, since that number is actually meaningful
+  there.
 - **The video is marked `Ready` immediately after registration** — a
   YouTube-hosted video has no CourseCore-side transcoding step, so after
   `PUT .../videos/lessons/{lessonId}` succeeds the client also calls
@@ -187,10 +215,15 @@ screens' precedent):
 - Saving title/description/freePreview/published calls
   `PUT /api/courses/{courseId}/modules/{moduleId}/lessons/{lessonId}` and
   reflects the update.
-- A lesson with no video shows the empty state; registering one calls
-  `PUT /api/videos/lessons/{lessonId}` with `storageProvider: "YouTube"`
-  followed by `POST /api/videos/{videoId}/ready`, then shows it as
-  "Pronto".
+- A lesson with no video shows the empty state; registering one via
+  YouTube calls `PUT /api/videos/lessons/{lessonId}` with
+  `storageProvider: "YouTube"` followed by `POST /api/videos/{videoId}/ready`,
+  then shows it as "Pronto".
+- Registering one via upload calls `POST /api/videos/upload-url`, `PUT`s
+  the selected file to the returned presigned URL, then the same
+  `PUT /api/videos/lessons/{lessonId}` with `storageProvider: "S3"` and the
+  returned storage key, followed by the same `/ready` call — the panel
+  labels it "Armazenamento interno".
 - Replacing an existing video reuses the same `PUT` (upsert) and re-marks
   it ready; removing one calls `DELETE /api/videos/lessons/{lessonId}` and
   reverts to the empty state.
