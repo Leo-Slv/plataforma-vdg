@@ -258,7 +258,7 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 
 	if (notFound) {
 		return (
-			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
+			<div className="grid min-h-screen grid-cols-1 bg-background text-foreground lg:grid-cols-[236px_1fr]">
 				<AdminSidebar active="users" />
 				<div className="flex flex-col items-center justify-center gap-4 text-center">
 					<p className="font-sans text-sm font-light text-foreground/60">
@@ -295,14 +295,14 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 	);
 
 	return (
-		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
+		<div className="grid min-h-screen grid-cols-1 bg-background text-foreground lg:grid-cols-[236px_1fr]">
 			<AdminSidebar active="users" />
 
-			<div className="p-8.5">
+			<div className="p-5 sm:p-8.5">
 				<div className="font-sans text-xs font-light text-foreground/40">
 					Usuários / {userQuery.data?.name ?? '…'}
 				</div>
-				<div className="mt-3 flex items-end justify-between">
+				<div className="mt-3 flex flex-wrap items-end justify-between gap-3">
 					<div className="flex items-center gap-3.5">
 						<div>
 							<h1 className="font-heading text-[30px] font-extralight">
@@ -337,7 +337,7 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 						Carregando…
 					</p>
 				) : (
-					<div className="mt-8.5 grid grid-cols-[1.5fr_1fr] gap-11">
+					<div className="mt-8.5 grid grid-cols-1 gap-11 lg:grid-cols-[1.5fr_1fr]">
 						<div className="flex flex-col gap-5.5">
 							<div>
 								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">

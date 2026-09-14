@@ -250,7 +250,7 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 
 	if (courseListLoaded && !coursesQuery.isError && !course) {
 		return (
-			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
+			<div className="grid min-h-screen grid-cols-1 bg-background text-foreground lg:grid-cols-[236px_1fr]">
 				<AdminSidebar active="courses" />
 				<div className="flex flex-col items-center justify-center gap-4 text-center">
 					<p className="font-sans text-sm font-light text-foreground/60">
@@ -271,14 +271,14 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 	const modules = modulesQuery.data ?? [];
 
 	return (
-		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
+		<div className="grid min-h-screen grid-cols-1 bg-background text-foreground lg:grid-cols-[236px_1fr]">
 			<AdminSidebar active="courses" />
 
-			<div className="p-8.5">
+			<div className="p-5 sm:p-8.5">
 				<div className="font-sans text-xs font-light text-foreground/40">
 					Cursos / {course?.title ?? '…'} / Módulos
 				</div>
-				<div className="mt-3 flex items-end justify-between">
+				<div className="mt-3 flex flex-wrap items-end justify-between gap-3">
 					<h1 className="font-heading text-[34px] font-extralight">
 						Módulos e aulas
 					</h1>

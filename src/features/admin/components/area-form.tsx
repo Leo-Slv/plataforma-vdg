@@ -47,8 +47,12 @@ function AreaForm({
 	const slug = slugify(name);
 
 	return (
-		<form onSubmit={form.handleSubmit(onSubmit)} noValidate className="p-8.5">
-			<div className="flex items-end justify-between">
+		<form
+			onSubmit={form.handleSubmit(onSubmit)}
+			noValidate
+			className="p-5 sm:p-8.5"
+		>
+			<div className="flex flex-wrap items-end justify-between gap-3">
 				<div>
 					<div className="font-sans text-xs font-light text-foreground/40">
 						Áreas / {mode === 'create' ? 'Nova área' : 'Editar'}
@@ -57,7 +61,7 @@ function AreaForm({
 						{mode === 'create' ? 'Nova área' : name || 'Área'}
 					</h1>
 				</div>
-				<div className="flex gap-2.5">
+				<div className="flex flex-wrap gap-2.5">
 					<button
 						type="button"
 						onClick={onCancel}

@@ -51,10 +51,10 @@ function AuditLogTable({
 	const now = new Date();
 
 	return (
-		<div>
+		<div className="overflow-x-auto">
 			<div
 				className={cn(
-					'grid gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
+					'grid min-w-[640px] gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
 					COLUMNS,
 				)}
 			>
@@ -68,7 +68,7 @@ function AuditLogTable({
 				<div
 					key={entry.id}
 					className={cn(
-						'grid items-center gap-4 border-b border-foreground/7 py-4 font-sans text-[13px] text-foreground/75',
+						'grid min-w-[640px] items-center gap-4 border-b border-foreground/7 py-4 font-sans text-[13px] text-foreground/75',
 						COLUMNS,
 					)}
 				>

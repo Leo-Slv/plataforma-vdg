@@ -29,7 +29,9 @@ function AreaChips({ status, names }: AreaChipsProps) {
 	}
 
 	if (names.length === 0) {
-		return <span className="font-sans text-[12px] text-foreground/30">Nenhuma</span>;
+		return (
+			<span className="font-sans text-[12px] text-foreground/30">Nenhuma</span>
+		);
 	}
 
 	return (

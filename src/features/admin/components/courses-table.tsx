@@ -46,10 +46,10 @@ function CoursesTable({ courses, areas }: CoursesTableProps) {
 	const sorted = sortCoursesByDisplayOrder(courses);
 
 	return (
-		<div>
+		<div className="overflow-x-auto">
 			<div
 				className={cn(
-					'grid gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
+					'grid min-w-[700px] gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
 					COLUMNS,
 				)}
 			>
@@ -65,7 +65,7 @@ function CoursesTable({ courses, areas }: CoursesTableProps) {
 					key={course.id}
 					href={appRoutes.admin.courseEdit(course.id)}
 					className={cn(
-						'grid items-center gap-4 border-b border-foreground/7 py-4.5 font-sans text-[13.5px] text-foreground/75 hover:bg-foreground/3',
+						'grid min-w-[700px] items-center gap-4 border-b border-foreground/7 py-4.5 font-sans text-[13.5px] text-foreground/75 hover:bg-foreground/3',
 						COLUMNS,
 					)}
 				>
@@ -81,7 +81,9 @@ function CoursesTable({ courses, areas }: CoursesTableProps) {
 					<span>{pricingLabel(course)}</span>
 					<span
 						className={cn(
-							course.published ? 'text-[oklch(0.75_0.1_248)]' : 'text-foreground/45',
+							course.published
+								? 'text-[oklch(0.75_0.1_248)]'
+								: 'text-foreground/45',
 						)}
 					>
 						{course.published ? 'Publicado' : 'Rascunho'}

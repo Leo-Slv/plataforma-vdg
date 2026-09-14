@@ -218,7 +218,7 @@ function CourseFormPage(props: CourseFormPageProps) {
 
 	if (props.mode === 'edit' && coursesQuery.isPending) {
 		return (
-			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
+			<div className="grid min-h-screen grid-cols-1 bg-background text-foreground lg:grid-cols-[236px_1fr]">
 				<AdminSidebar active="courses" />
 				<p className="py-16 text-center font-sans text-sm font-light text-foreground/50">
 					Carregando curso…
@@ -229,7 +229,7 @@ function CourseFormPage(props: CourseFormPageProps) {
 
 	if (props.mode === 'edit' && !coursesQuery.isPending && !course) {
 		return (
-			<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
+			<div className="grid min-h-screen grid-cols-1 bg-background text-foreground lg:grid-cols-[236px_1fr]">
 				<AdminSidebar active="courses" />
 				<div className="flex flex-col items-center justify-center gap-4 text-center">
 					<p className="font-sans text-sm font-light text-foreground/60">
@@ -276,7 +276,7 @@ function CourseFormPage(props: CourseFormPageProps) {
 				};
 
 	return (
-		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
+		<div className="grid min-h-screen grid-cols-1 bg-background text-foreground lg:grid-cols-[236px_1fr]">
 			<AdminSidebar active="courses" />
 			<CourseForm
 				mode={props.mode}

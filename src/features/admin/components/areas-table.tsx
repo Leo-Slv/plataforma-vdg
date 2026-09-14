@@ -23,10 +23,10 @@ function AreasTable({ areas }: AreasTableProps) {
 	const sorted = sortAreasByDisplayOrder(areas);
 
 	return (
-		<div>
+		<div className="overflow-x-auto">
 			<div
 				className={cn(
-					'grid gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
+					'grid min-w-[640px] gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
 					COLUMNS,
 				)}
 			>
@@ -42,7 +42,7 @@ function AreasTable({ areas }: AreasTableProps) {
 					key={area.id}
 					href={appRoutes.admin.areaEdit(area.id)}
 					className={cn(
-						'grid items-center gap-4 border-b border-foreground/7 py-4.5 font-sans text-[13.5px] text-foreground/75 hover:bg-foreground/3',
+						'grid min-w-[640px] items-center gap-4 border-b border-foreground/7 py-4.5 font-sans text-[13.5px] text-foreground/75 hover:bg-foreground/3',
 						COLUMNS,
 					)}
 				>

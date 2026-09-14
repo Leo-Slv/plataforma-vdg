@@ -63,10 +63,10 @@ function AuditPanelPage() {
 	const userLookupReady = userResults.every((result) => !result.isPending);
 
 	return (
-		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
+		<div className="grid min-h-screen grid-cols-1 bg-background text-foreground lg:grid-cols-[236px_1fr]">
 			<AdminSidebar active="audit" />
 
-			<div className="p-8.5">
+			<div className="p-5 sm:p-8.5">
 				<h1 className="font-heading text-[34px] font-extralight">Auditoria</h1>
 				<p className="mt-2.5 font-sans text-[13.5px] font-light text-foreground/45">
 					Histórico de ações administrativas, mais recentes primeiro

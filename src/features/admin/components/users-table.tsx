@@ -23,10 +23,10 @@ function UsersTable({ users }: UsersTableProps) {
 	}
 
 	return (
-		<div>
+		<div className="overflow-x-auto">
 			<div
 				className={cn(
-					'grid gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
+					'grid min-w-[680px] gap-4 border-b border-foreground/12 pb-3 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase',
 					COLUMNS,
 				)}
 			>
@@ -42,7 +42,7 @@ function UsersTable({ users }: UsersTableProps) {
 					key={user.id}
 					href={appRoutes.admin.userEdit(user.id)}
 					className={cn(
-						'grid items-center gap-4 border-b border-foreground/7 py-4 font-sans text-[13px] text-foreground/75 hover:bg-foreground/3',
+						'grid min-w-[680px] items-center gap-4 border-b border-foreground/7 py-4 font-sans text-[13px] text-foreground/75 hover:bg-foreground/3',
 						COLUMNS,
 					)}
 				>
@@ -70,7 +70,9 @@ function UsersTable({ users }: UsersTableProps) {
 					>
 						{user.emailVerifiedAt ? 'Confirmado' : 'Pendente'}
 					</span>
-					<span className="text-foreground/40">{formatDateBr(user.createdAt)}</span>
+					<span className="text-foreground/40">
+						{formatDateBr(user.createdAt)}
+					</span>
 				</Link>
 			))}
 		</div>

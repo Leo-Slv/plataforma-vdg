@@ -173,7 +173,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 				};
 
 	return (
-		<div className="grid min-h-screen grid-cols-[236px_1fr] bg-background text-foreground">
+		<div className="grid min-h-screen grid-cols-1 bg-background text-foreground lg:grid-cols-[236px_1fr]">
 			<AdminSidebar active="areas" />
 
 			{props.mode === 'edit' && areaQuery.isPending ? (

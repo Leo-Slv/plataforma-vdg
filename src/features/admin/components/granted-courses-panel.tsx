@@ -22,7 +22,9 @@ function GrantedCoursesPanel({
 			</div>
 			<div className="mt-3.5 flex flex-col gap-2.5 font-sans text-[13px] text-foreground/60">
 				{grantedTitles.length === 0 ? (
-					<span className="text-foreground/35">Nenhum curso pago concedido.</span>
+					<span className="text-foreground/35">
+						Nenhum curso pago concedido.
+					</span>
 				) : (
 					grantedTitles.map((title) => (
 						<div key={title} className="flex justify-between">

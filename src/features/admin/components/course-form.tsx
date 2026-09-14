@@ -52,8 +52,12 @@ function CourseForm({
 	const slug = slugify(title);
 
 	return (
-		<form onSubmit={form.handleSubmit(onSubmit)} noValidate className="p-8.5">
-			<div className="flex items-end justify-between">
+		<form
+			onSubmit={form.handleSubmit(onSubmit)}
+			noValidate
+			className="p-5 sm:p-8.5"
+		>
+			<div className="flex flex-wrap items-end justify-between gap-3">
 				<div>
 					<div className="font-sans text-xs font-light text-foreground/40">
 						Cursos / {mode === 'create' ? 'Novo curso' : 'Editar'}
@@ -62,7 +66,7 @@ function CourseForm({
 						{mode === 'create' ? 'Novo curso' : title || 'Curso'}
 					</h1>
 				</div>
-				<div className="flex gap-2.5">
+				<div className="flex flex-wrap gap-2.5">
 					{mode === 'edit' && previewHref ? (
 						<a
 							href={previewHref}
