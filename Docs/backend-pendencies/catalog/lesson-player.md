@@ -54,19 +54,23 @@ Spec: [`Docs/specs/catalog/lesson-player.md`](../../specs/catalog/lesson-player.
 - **Resolved, 2026-09-04**: solved by the same change as pendency 1 —
   `LessonResponse.DurationSeconds` is populated in the same bulk lookup.
 
-## 3. No attached-materials concept — STILL BLOCKING, see dedicated file
+## 3. No attached-materials concept — CLOSED
 
 - **Mockup expects**: "Apostila — Módulo 01" and similar PDF attachments
   per module/lesson, with file sizes, under the "Material" tab.
-- **Backend today (updated 2026-09-14)**: `LessonMaterial` CRUD now exists
-  (`feat(media): add lesson material CRUD per aula`), but three compounding
-  gaps keep it unusable end-to-end for this screen: no real upload path (an
-  admin can't obtain a valid `StorageKey`), no student-facing list endpoint
-  (`GET /api/materials/lessons/{lessonId}` is `ManageVideos`-gated,
-  admin-only), and no download route (`GetDownloadUrlAsync` is dead code —
-  written, never called, no controller route). Full detail in
+- **Backend today (was)**: `LessonMaterial` CRUD existed
+  (`feat(media): add lesson material CRUD per aula`) but three compounding
+  gaps kept it unusable end-to-end for this screen: no real upload path, no
+  student-facing list endpoint (`ManageVideos`-gated, admin-only), and no
+  download route (`GetDownloadUrlAsync` was dead code). Full detail in
   [`Docs/backend-pendencies/admin/lesson-materials.md`](../admin/lesson-materials.md).
-- **Severity**: **Blocking** — the "Material" tab is skipped for now.
+- **Severity**: was **Blocking**.
+- **Resolved, 2026-09-14**: all three closed — real S3 presigned
+  upload/download (`feat(media): add real S3 presigned upload/download URLs`),
+  then the student-facing list + download route
+  (`feat(media): let students list and download a lesson's materials`).
+  The "Material" tab now lists and downloads real files, same
+  course-access/free-preview gating as video playback.
 
 ## 4. No notes or Q&A concept — CLOSED
 

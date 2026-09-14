@@ -504,11 +504,22 @@ function useAskLessonQuestionMutation() {
   active one underlined (same treatment `AppNav`'s catalog/my-courses links
   already use), and returns its `children` below the bar so the page picks
   which panel to render. Owns no data.
-- **`lesson-material-panel.tsx`**: purely presentational, no props beyond
-  nothing — a static "Em breve" message, same category as
-  `lesson-video-placeholder.tsx` (an honest inert state, not a broken
-  empty list). Exists as its own component only so its "no data, no
-  fabricated cards" behavior is independently testable.
+- **`lesson-material-panel.tsx`** (rewritten 2026-09-14, was a static
+  "Em breve" placeholder): props `{ lessonId: string; enabled: boolean }`,
+  self-contained like `lesson-note-panel.tsx` — owns
+  `useLessonMaterialsQuery`/`useMaterialDownloadUrlMutation` directly.
+  Grid of file cards (title + `formatMaterialType(contentType)` + size in
+  MB, matching the mockup's "PDF · 1.2 MB" line — `format-material-type.ts`
+  is a plain content-type → label lookup, catalog's own copy rather than
+  importing the admin feature's equivalent concept, same cross-feature-
+  isolation reasoning as `format-relative-time.ts`). Tapping a card calls
+  `downloadMutation.mutate(materialId)`; on success, `window.open
+  (download.downloadUrl, '_blank', 'noopener,noreferrer')` — the URL isn't
+  prefetched for the whole list, only requested (and immediately used) on
+  tap, since a signed URL expiring unused for every card but the clicked
+  one is the point, not a bug. No spec file — same self-contained-queries
+  constraint as `lesson-note-panel.tsx`/`lesson-questions-panel.tsx`
+  (removed the old static component's spec along with the rewrite).
 - **`lesson-note-panel.tsx`**: props
   `{ lessonId: string; enabled: boolean }`. Owns
   `useLessonNoteQuery`/`useSaveLessonNoteMutation`/
@@ -664,9 +675,11 @@ depend on progress data.
   constraint that already excludes `course-detail-page.tsx`,
   `catalog-page.tsx`, `confirm-email-page.tsx` from component tests in
   this repo.
-- `components/lesson-material-panel.spec.ts`: renders the "Em breve"
-  copy; output contains no file-card-shaped markup and no button — same
-  regression-test shape as `lesson-video-placeholder.spec.ts`.
+- `lib/format-material-type.spec.ts` (added 2026-09-14, replacing the
+  removed `lesson-material-panel.spec.ts` once that component gained real
+  queries): known content type maps to its label, unknown one falls back
+  to "Arquivo". No spec for `lesson-material-panel.tsx` itself — same
+  self-contained-queries constraint as `lesson-note-panel.tsx`.
 - `components/lesson-question-item.spec.ts`: renders asker name + question
   text + relative time; with `answerText: null` renders no reply block;
   with a non-null `answerText` renders the answerer's name + text.
@@ -748,10 +761,33 @@ seconds tracking). What follows is the Notes & Questions tabs work added
     - **(new)** Switch lessons, then back to the first — confirm (Network
       tab) the note/question queries for the first lesson don't refire,
       and the second lesson's tabs start empty/unopened again.
-    - **(new)** Confirm the "Material" tab shows only the static "Em
-      breve" copy — no empty grid, no broken card.
 15. Update `src/features/README.md` and root `README.md`'s "Módulos
-    ativos" to mention Notes/Questions.
+    ativos" to mention Notes/Questions. — done
 16. Commit in small, conventional-commit chunks separated by context
     (query-key/model/schema/api/hooks; presentational panels + specs;
-    stateful note/question panels; page wiring; docs).
+    stateful note/question panels; page wiring; docs). — done
+
+**Material tab (2026-09-14)**, once CourseCore closed the materials list
+and download gaps (`Docs/backend-pendencies/admin/lesson-materials.md`):
+
+17. Add `queryKeys.lessons.materials`; `model/lesson-material.ts`,
+    `model/material-download.ts`; `schemas/lesson-material.schema.ts`,
+    `schemas/material-download.schema.ts`; `api/get-lesson-materials.ts`,
+    `api/get-material-download-url.ts`; extend `hooks/catalog.queries.ts`
+    with `useLessonMaterialsQuery`/`useMaterialDownloadUrlMutation`.
+18. Add `lib/format-material-type.ts` + spec.
+19. Rewrite `lesson-material-panel.tsx` from the static placeholder into
+    the real grid + per-card download, deleting its now-inapplicable spec.
+20. Wire `lessonId`/`enabled={openedTabs.has('material')}` into
+    `lesson-player-page.tsx`'s `<LessonMaterialPanel>` call.
+21. Run `npm run test`, `npm run typecheck`, `npm run lint`.
+22. Manually verify: a lesson with materials shows real cards (title +
+    type + size); tapping one opens a real signed URL in a new tab; a
+    lesson with none shows "Nenhum material disponível ainda."; a lesson
+    the account can't access (not owned, not free-preview) shows the
+    tab's error state, not a silent empty list.
+23. Update `README.md`'s lesson-player bullet and
+    `Docs/backend-pendencies/**` (materials pendencies 2-3, lesson-player
+    pendency 3) to reflect the closed gaps.
+24. Commit in small chunks (backend fix in the CourseCore repo; catalog
+    data layer; component rewrite; docs).

@@ -1,14 +1,15 @@
 # Painel admin — Materiais da aula — backend pendencies
 
-Spec (admin side only): `Docs/specs/admin/lesson-editor.md`'s "Materiais da
-aula" panel. Evaluated after CourseCore added a full `LessonMaterial` CRUD
+Spec: `Docs/specs/admin/lesson-editor.md`'s "Materiais da aula" panel (admin
+side) and `Docs/specs/catalog/lesson-player.md`'s "Material" tab (student
+side). Evaluated after CourseCore added a full `LessonMaterial` CRUD
 (`feat(media): add lesson material CRUD per aula`, commit `ce8a78d`)
-alongside per-lesson notes and public Q&A. Of the three compounding gaps
-found on 2026-09-14, pendency 1 closed the same day
-(`feat(media): add real S3 presigned upload/download URLs`, commit
-`3fac653`), unblocking the **admin** side. Pendencies 2-3 are still open, so
-the **student-facing "Material" tab stays "Em breve"** — see
-`Docs/backend-pendencies/catalog/lesson-player.md` pendency 3.
+alongside per-lesson notes and public Q&A. All three gaps found on
+2026-09-14 are now closed, the last two same-day as this file's own
+frontend work: pendency 1 by `feat(media): add real S3 presigned
+upload/download URLs` (commit `3fac653`), pendencies 2-3 by
+`feat(media): let students list and download a lesson's materials`
+(commit `99a3790`) — both admin and student sides are fully built.
 
 Design reference: the mockup has **no artboard for admin material
 management** — `1p` ("Aula — criar/editar", `Docs/specs/admin/lesson-editor.md`)
@@ -52,7 +53,7 @@ but nothing about how an admin attaches them.
   `S3` must be in `Media__Playback__AllowedStorageProviders` and
   `Media__S3__*` credentials set, or the upload-url call 400s.
 
-## 2. No student-facing endpoint to list a lesson's materials — still Blocking
+## 2. No student-facing endpoint to list a lesson's materials — CLOSED
 
 - **Mockup expects**: the "Material" tab on `1h` (lesson player, selected by
   default in the mockup) shows a grid of file cards for the lesson currently
@@ -71,10 +72,22 @@ but nothing about how an admin attaches them.
   `CourseAccessService` check `ListLessonQuestionsUseCase`/
   `GetLessonNoteUseCase` already use) or a `Materials` collection folded into
   `LessonResponse`/`CourseDetailsResponse`.
-- **Severity**: **Blocking** — the "Material" tab has no viable data path
-  for the audience it's built for (students), independent of pendency 1.
+- **Severity**: was **Blocking** — the "Material" tab had no viable data
+  path for the audience it's built for (students), independent of
+  pendency 1.
+- **Resolved, 2026-09-14**: `GET /api/materials/lessons/{lessonId}` is now
+  a plain `[Authorize]` route. `ListLessonMaterialsUseCase` gained
+  `userId`/`bypassAccessCheck` params, checking
+  `CourseAccessService.CanUserAccessCourseAsync` (with a free-preview
+  allowance matching `RequestVideoPlaybackUseCase`'s own) unless the
+  caller holds `ManageVideos` — the same controller-computed-claim bypass
+  pattern already used for `LessonQuestionsController` (pendency in
+  `Docs/backend-pendencies/catalog/lesson-player.md`, resolved earlier the
+  same day). `LessonResponse` did **not** need a new field — the
+  video-id-precedent's "own reachable GET" option was the one implemented,
+  not the "fold into LessonResponse" alternative.
 
-## 3. No download route — `GetDownloadUrlAsync` is dead code — still Blocking
+## 3. No download route — `GetDownloadUrlAsync` is dead code — CLOSED
 
 - **Mockup expects**: tapping a material card on `1h` opens/downloads the
   file.
@@ -93,17 +106,31 @@ but nothing about how an admin attaches them.
   `RequestVideoPlaybackUseCase`) plus the controller route it's missing, and
   a `DownloadUrl` field on `LessonMaterialResponse` — or fold the URL
   directly into whatever response pendency 2 ends up shipping.
-- **Severity**: **Blocking** — even once pendencies 1-2 close, there's still
-  no way to actually fetch a file's bytes.
+- **Severity**: was **Blocking** — even once pendencies 1-2 closed, there
+  was still no way to actually fetch a file's bytes.
+- **Resolved, 2026-09-14**: `GetLessonMaterialDownloadUrlUseCase` (new,
+  mirroring `RequestVideoPlaybackUseCase`'s shape) finally calls
+  `GetDownloadUrlAsync`, behind a new `GET /api/materials/{materialId}/download`
+  route with the same access check (and `ManageVideos` bypass) as pendency
+  2. Returns a new `MaterialDownloadResponse` (`materialId`, `title`,
+  `fileName`, `downloadUrl`, `expiresAt`) rather than folding a
+  `DownloadUrl` field into `LessonMaterialResponse` — the list response
+  and the download response serve different moments (browsing vs. the
+  instant before opening a file) and a URL that expires in
+  `S3StorageOptions.DownloadUrlExpirationMinutes` (10 by default) has no
+  business sitting in a cached list response anyway.
 
 ## Status (updated 2026-09-14)
 
-- **Admin materials management**: built — see `Docs/specs/admin/lesson-editor.md`'s
+Both sides fully built:
+
+- **Admin materials management** — `Docs/specs/admin/lesson-editor.md`'s
   "Materiais da aula" panel (list, upload-and-create, remove). No
   reorder/rename-file UI yet (`PATCH .../order` and `PUT /api/materials/{id}`
   are real but unused by the frontend so far — `UpdateLessonMaterialRequest`
   only covers title/order anyway, never the underlying file).
-- **Student "Material" tab**: still "Em breve" — pendencies 2 and 3 above
-  are both still open. Notes (`Docs/specs/catalog/lesson-player.md`) and
-  Questions — the other two tabs on the same `1h` tab bar — have no such
-  gaps and shipped independently already.
+- **Student "Material" tab** — `Docs/specs/catalog/lesson-player.md`'s
+  tab lists real materials and downloads them via a real signed URL,
+  gated by the same course-access/free-preview rule as video playback.
+  Joins Notes and Questions — the other two tabs on the same `1h` tab
+  bar — as fully real.

@@ -27,7 +27,7 @@ require, the workaround shipped instead, and a rough severity:
 | Confirm email (`/confirm-email`) | [auth/confirm-email.md](auth/confirm-email.md) | Feature gap |
 | Catalog (`/catalog`) | [catalog/course-catalog.md](catalog/course-catalog.md) | Feature gap |
 | Course detail (`/courses/[slug]`) | [catalog/course-detail.md](catalog/course-detail.md) | Feature gap (pendencies 5-7 remain: installments, checkout, course "kind") |
-| Lesson player (`/courses/[slug]/lessons/[lessonId]`) | [catalog/lesson-player.md](catalog/lesson-player.md) | **Blocking** |
+| Lesson player (`/courses/[slug]/lessons/[lessonId]`) | [catalog/lesson-player.md](catalog/lesson-player.md) | All CLOSED as of 2026-09-14 — was **Blocking** (pendency 1, video playback), materials/notes/Q&A closed the same day |
 | My courses (`/my-courses`) | [catalog/my-courses.md](catalog/my-courses.md) | Feature gap |
 | Profile (`/profile`) | [auth/profile.md](auth/profile.md) | Feature gap |
 
@@ -52,7 +52,7 @@ revisit once its blocking gap(s) close on the CourseCore side.
 | Painel admin — Vídeos (`1zc`) | [admin/videos-panel.md](admin/videos-panel.md) | **Built (2026-09-09)** — see `admin/videos-panel.md`'s "Frontend follow-up". `GET /api/videos` (paginated, not lesson-scoped); YouTube id/URL are derived response fields; visibility (`Active`/`Unlisted`) toggled inline per row. Lesson/course title (not on `VideoResponse`) is resolved client-side from the already-loaded course/module tree, bounded by course count. "Unlinked video" and the mockup's "Vincular vídeo" button both stay dropped (won't-implement / no lesson context to attach to). |
 | Painel admin — Auditoria (`1zd`) | [admin/audit-log-panel.md](admin/audit-log-panel.md) | **Built (2026-09-10)** — see `Docs/specs/admin/audit-log-panel.md`. `GET /api/audit-logs` already existed (built for the `/admin/courses` embedded preview); this is the real paginated full-history screen. "Filtrar por ação" has no backend support and is dropped (won't-implement for now). "Usuário" (no email on `AuditLogResponse`) is resolved client-side via `GET /api/users/{id}`, bounded to the distinct ids on the loaded page. |
 | Painel admin — Depoimentos (`1ze`) | [admin/testimonials-panel.md](admin/testimonials-panel.md) | **Built (2026-09-10)** — see `Docs/specs/admin/testimonials-panel.md`. `GET /api/testimonials` + `.../publish` + `.../unpublish` already existed; this is the moderation screen that finally calls them. The mockup's "Rejeitar" button has no backing state (`Published` is a single boolean, no `Rejected` distinct from `Pendente`) and is dropped (won't-implement for now); "Despublicar" was added for symmetry even though the mockup's own example row doesn't draw it. |
-| Painel admin — Materiais da aula (no artboard) | [admin/lesson-materials.md](admin/lesson-materials.md) | **Built (2026-09-14)** — upload endpoint resolved (`POST /api/materials/upload-url`), admin panel ships list/upload/remove. The student-facing "Material" tab on `1h` stays "Em breve": still no student-facing list endpoint and no download route. |
+| Painel admin — Materiais da aula (no artboard) | [admin/lesson-materials.md](admin/lesson-materials.md) | **Built (2026-09-14)** — all three gaps closed (upload, student-facing list, download route). Admin panel ships list/upload/remove; the student-facing "Material" tab on `1h` lists and downloads real files too. |
 
 New screens get their own file here as part of the standard spec workflow
 (see `CLAUDE.md`, "Implementation Workflow") — add a row above when one is

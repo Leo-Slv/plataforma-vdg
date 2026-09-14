@@ -45,7 +45,7 @@ honest, inert placeholder rather than a play button wired to nothing.
 | Mockup shows | Backend has it? |
 |---|---|
 | Per-lesson duration in the sidebar ("14:20") | Only on `VideoResponse.DurationSeconds` — same unreachable-without-a-videoId problem as above. |
-| Attached materials ("Apostila — Módulo 01", PDF sizes) | **Still no** — `LessonMaterial` CRUD exists but has three compounding gaps (no real upload path, no student-facing list endpoint, no download route). See `Docs/backend-pendencies/admin/lesson-materials.md`. |
+| Attached materials ("Apostila — Módulo 01", PDF sizes) | **Now real (2026-09-14)** — all three gaps closed: real S3 upload, a student-reachable list endpoint, and a download route. See `Docs/backend-pendencies/admin/lesson-materials.md`. |
 | "Anotações" tab | **Now real** — `GET/PUT/DELETE /api/notes/lessons/{lessonId}`, a private per-user note. |
 | "Perguntas" tab | **Now real** — `GET/POST /api/questions/lessons/{lessonId}`, a public per-lesson Q&A board (answering is admin-only, not part of this screen). |
 | Captions (CC), playback speed, scrubber | Player chrome for a video that doesn't play here — moot. |
@@ -92,7 +92,15 @@ honest, inert placeholder rather than a play button wired to nothing.
   `course-detail.md`'s non-goals) to this page: clicking a module now
   opens its first lesson.
 - A "Material / Anotações / Perguntas" tab bar under the video, matching
-  the mockup, with two of the three tabs real:
+  the mockup, all three tabs real as of 2026-09-14:
+  - **Material**: a grid of file cards for this lesson
+    (`GET /api/materials/lessons/{lessonId}`, gated by the same course
+    access — or free-preview — CourseCore uses for notes/questions/video
+    playback), each showing the title and a type/size line ("PDF · 1.2 MB").
+    Tapping a card requests a signed download URL
+    (`GET /api/materials/{materialId}/download`) and opens it in a new
+    tab — the request happens on tap, not eagerly for every card, since a
+    signed URL expires and most cards in a list are never clicked.
   - **Anotações**: a private textarea, one per user per lesson. Loads the
     user's existing note (if any), saves via an explicit "Salvar" button
     (no autosave/debounce — matches this screen's existing explicit-action
@@ -106,16 +114,12 @@ honest, inert placeholder rather than a play button wired to nothing.
     admin lesson-editor's own Perguntas panel (`Docs/specs/admin/lesson-editor.md`)
     but inline, on the same screen the question was asked from, instead of
     requiring a navigation to a separate admin screen.
-  - **Material**: renders as an honest inert tab (same pattern already
-    established for the video area) — see Non-goals for why.
 
 ## Non-goals
 
-- **The "Material" tab's actual content.** All three of its backend gaps
-  are still open (no real upload path, no student-facing list endpoint, no
-  download route — `Docs/backend-pendencies/admin/lesson-materials.md`).
-  The tab renders and is selectable, showing a plain "Em breve" state
-  instead of a broken empty list or a button wired to nothing.
+- **Uploading, renaming, or removing a material from this screen.** This
+  tab is read/download-only for students; management stays on the admin
+  lesson-editor's Materiais panel (`Docs/specs/admin/lesson-editor.md`).
 - **Deleting a question from this screen.** Only answering is exposed
   here; removal stays on the admin lesson-editor's Perguntas panel. No
   product reason beyond "one action was actually asked for" — revisit if
@@ -156,6 +160,12 @@ honest, inert placeholder rather than a play button wired to nothing.
 - Tab bar defaults to "Material" (matches the mockup's own default
   selection), switching tabs is pure client-side state — no refetch on
   every switch, only on first mount of a tab that needs data.
+- **Material**: `GET` fires immediately on page load, since it's the
+  default tab (not deferred to "first visit" the way Anotações/Perguntas
+  are — there's no visit to defer to, it's already showing). An empty
+  list shows "Nenhum material disponível ainda." A download request fires
+  per-card on tap, not for the whole list upfront — a signed URL that
+  expires unused for 19 of 20 cards would be wasted work.
 - **Anotações**: `GET` fires once per lesson (on first visiting the tab,
   not eagerly on page load, since most visits won't touch it). A 404
   response renders an empty textarea, not an error. "Salvar" is disabled
@@ -203,5 +213,7 @@ honest, inert placeholder rather than a play button wired to nothing.
   `POST /api/questions/{id}/answer` and the reply appears immediately.
   A plain student account never sees the control at all, not merely
   disabled.
-- The "Material" tab renders a plain "Em breve" state — no empty grid, no
-  fabricated file cards, no button wired to nothing.
+- The "Material" tab lists real materials via
+  `GET /api/materials/lessons/{lessonId}` and opens a real signed URL from
+  `GET /api/materials/{materialId}/download` on tap — no fabricated file
+  cards, no button wired to nothing.
