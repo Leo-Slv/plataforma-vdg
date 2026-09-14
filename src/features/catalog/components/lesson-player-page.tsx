@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
@@ -43,6 +43,13 @@ import {
 	type VideoPlayerStatus,
 } from '@/features/catalog/components/video-player';
 import { LessonSidebar } from '@/features/catalog/components/lesson-sidebar';
+import {
+	LessonTabs,
+	type LessonTab,
+} from '@/features/catalog/components/lesson-tabs';
+import { LessonMaterialPanel } from '@/features/catalog/components/lesson-material-panel';
+import { LessonNotePanel } from '@/features/catalog/components/lesson-note-panel';
+import { LessonQuestionsPanel } from '@/features/catalog/components/lesson-questions-panel';
 
 type LessonPlayerPageProps = {
 	slug: string;
@@ -117,6 +124,23 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 	useEffect(() => {
 		enteredAtRef.current = Date.now();
 	}, [lessonId]);
+
+	const [activeTab, setActiveTab] = useState<LessonTab>('material');
+	const [openedTabs, setOpenedTabs] = useState<Set<LessonTab>>(
+		() => new Set(['material']),
+	);
+	const [tabsForLessonId, setTabsForLessonId] = useState(lessonId);
+
+	if (lessonId !== tabsForLessonId) {
+		setTabsForLessonId(lessonId);
+		setActiveTab('material');
+		setOpenedTabs(new Set(['material']));
+	}
+
+	function handleSelectTab(tab: LessonTab) {
+		setActiveTab(tab);
+		setOpenedTabs((current) => new Set(current).add(tab));
+	}
 
 	if (!ready) {
 		return <LoadingScreen />;
@@ -344,6 +368,21 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 											</Link>
 										) : null}
 									</div>
+									<LessonTabs active={activeTab} onSelect={handleSelectTab}>
+										{activeTab === 'material' ? (
+											<LessonMaterialPanel />
+										) : activeTab === 'notes' ? (
+											<LessonNotePanel
+												lessonId={lessonId}
+												enabled={openedTabs.has('notes')}
+											/>
+										) : (
+											<LessonQuestionsPanel
+												lessonId={lessonId}
+												enabled={openedTabs.has('questions')}
+											/>
+										)}
+									</LessonTabs>
 								</div>
 
 								<LessonSidebar
