@@ -32,6 +32,7 @@ import { AdminTextareaField } from '@/features/admin/components/admin-textarea-f
 import { StatusToggle } from '@/features/admin/components/status-toggle';
 import { LessonVideoPanel } from '@/features/admin/components/lesson-video-panel';
 import { LessonQuestionsPanel } from '@/features/admin/components/lesson-questions-panel';
+import { LessonMaterialsPanel } from '@/features/admin/components/lesson-materials-panel';
 import { VideoFormModal } from '@/features/admin/components/video-form-modal';
 import {
 	lessonEditorFormSchema,
@@ -459,6 +460,13 @@ function LessonEditorPage({
 									</p>
 								) : null}
 							</div>
+						</div>
+
+						<div className="mt-8.5 max-w-[720px]">
+							<LessonMaterialsPanel
+								lessonId={lessonId}
+								canManage={canManageVideos}
+							/>
 						</div>
 
 						<div className="mt-8.5 max-w-[720px]">
