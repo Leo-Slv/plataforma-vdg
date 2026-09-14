@@ -83,7 +83,10 @@ function CourseCard({ course, area }: CourseCardProps) {
 						{area.name} · {course.description}
 					</div>
 				</div>
-				<span aria-hidden className="px-0.5 pt-0.5 text-[15px] text-foreground/35">
+				<span
+					aria-hidden
+					className="px-0.5 pt-0.5 text-[15px] text-foreground/35"
+				>
 					⋮
 				</span>
 			</div>

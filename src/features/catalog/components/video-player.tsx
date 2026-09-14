@@ -45,7 +45,7 @@ function VideoPlayer({ status, playbackUrl }: VideoPlayerProps) {
 
 		return (
 			<div className="aspect-video overflow-hidden rounded-lg bg-black">
-				<video src={playbackUrl} controls className="size-full">
+				<video src={playbackUrl} controls playsInline className="size-full">
 					<track kind="captions" />
 				</video>
 			</div>
