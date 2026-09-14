@@ -551,13 +551,30 @@ function useAskLessonQuestionMutation() {
   question needs to slot into an existing list the client doesn't own the
   ordering guarantees for).
 - **`lesson-question-item.tsx`**: purely presentational, props
-  `{ question: LessonQuestion }`. Renders the asker's name + question
-  text + relative timestamp (`formatRelativeTime`, already shared from
-  `@/features/admin/lib/format-relative-time` — reused as-is, not
-  duplicated, since it's a generic date-diff formatter with nothing
-  admin-specific about it), then, only when `question.answerText` is not
-  `null`, an indented "reply" block with the answerer's name + answer text.
-  No answer/delete controls — out of scope per the spec's non-goals.
+  `{ question: LessonQuestion; reply?: LessonQuestionReplyProps }`. Renders
+  the asker's name + question text + relative timestamp
+  (`formatRelativeTime`, duplicated into `catalog/lib` rather than
+  imported from `@/features/admin/lib` — cross-feature imports aren't a
+  pattern this codebase uses anywhere), then, only when
+  `question.answerText` is not `null`, an indented "reply" block with the
+  answerer's name + answer text. **Added 2026-09-14**: when `reply` is
+  passed and the question is unanswered, renders a "Responder" button
+  (`reply.onStartReply`) or, while `reply.isReplying`, an inline textarea +
+  "Enviar resposta"/"Cancelar". `reply` is `undefined` for a plain student
+  (no permission) or an already-answered question — the caller decides
+  when to pass it, this component just renders whatever it's given. No
+  delete control — only answering was asked for.
+- **`lesson-questions-panel.tsx`** (updated 2026-09-14): decides
+  `canAnswer` via `hasPermission(decodeAccessTokenClaims(),
+  authPermissions.manageCourses)` — the same claim check `AppNav` already
+  uses for its admin-panel link, not a new pattern. Owns `replyingId`
+  (one question's reply box open at a time) and `replyText`, plus the new
+  `useAnswerLessonQuestionMutation()`; passes a `reply` object per question
+  only when `canAnswer` is true, `undefined` otherwise — mirrors the
+  `LessonNotePanel`/`LessonQuestionsPanel` self-contained-queries
+  convention already established here, and the same
+  `replyingId`/`pendingId`-per-row shape the admin lesson-editor's own
+  `LessonQuestionsPanel` uses.
 
 `lesson-player-page.tsx` gains local state for which tab is active
 (`const [activeTab, setActiveTab] = useState<'material' | 'notes' |
@@ -653,6 +670,11 @@ depend on progress data.
 - `components/lesson-question-item.spec.ts`: renders asker name + question
   text + relative time; with `answerText: null` renders no reply block;
   with a non-null `answerText` renders the answerer's name + text.
+  **Added 2026-09-14**: no "Responder" text without a `reply` prop
+  (no-permission case); a "Responder" button with `reply` passed and
+  unanswered; the textarea + "Enviar resposta"/"Cancelar" while
+  `reply.isReplying`; no "Responder" for an already-answered question
+  even with `reply` passed.
 - No spec for `lesson-tabs.tsx` — trivial prop-driven active-state styling
   with no branching logic worth a regression test.
 - No spec for `lesson-note-panel.tsx` / `lesson-questions-panel.tsx` —

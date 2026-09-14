@@ -100,9 +100,12 @@ honest, inert placeholder rather than a play button wired to nothing.
   - **Perguntas**: a public list of every question asked on this lesson
     (by any student with course access), each showing the asker's name,
     question text, and the answer plus answerer's name once one exists —
-    and a form to ask a new question. No answer/delete affordance here;
-    answering is `ManageCourses`-gated and has no admin UI yet (out of
-    scope for this screen, see Non-goals).
+    and a form to ask a new question. An unanswered question additionally
+    shows a "Responder" action, but only when the signed-in account holds
+    `ManageCourses` — a plain student never sees it. This mirrors the
+    admin lesson-editor's own Perguntas panel (`Docs/specs/admin/lesson-editor.md`)
+    but inline, on the same screen the question was asked from, instead of
+    requiring a navigation to a separate admin screen.
   - **Material**: renders as an honest inert tab (same pattern already
     established for the video area) — see Non-goals for why.
 
@@ -113,10 +116,10 @@ honest, inert placeholder rather than a play button wired to nothing.
   download route — `Docs/backend-pendencies/admin/lesson-materials.md`).
   The tab renders and is selectable, showing a plain "Em breve" state
   instead of a broken empty list or a button wired to nothing.
-- **Answering or deleting a question from this screen.** Both require
-  `ManageCourses`, which a student viewing this page never has; there's
-  also no mockup for where an admin would do this from. Out of scope here
-  — revisit once that surface gets its own spec.
+- **Deleting a question from this screen.** Only answering is exposed
+  here; removal stays on the admin lesson-editor's Perguntas panel. No
+  product reason beyond "one action was actually asked for" — revisit if
+  needed.
 - **Real-time updates to the Perguntas list** (a new answer or question
   appearing without a refetch). The list refetches after the visitor
   submits their own question; nothing pushes updates for other students'
@@ -195,5 +198,10 @@ honest, inert placeholder rather than a play button wired to nothing.
 - The "Perguntas" tab lists real questions via
   `GET /api/questions/lessons/{lessonId}` and posts new ones via `POST`
   to the same route — no client-side mock data anywhere.
+- "Responder" only renders for an unanswered question when the signed-in
+  account's decoded JWT carries `courses.manage`; submitting it calls
+  `POST /api/questions/{id}/answer` and the reply appears immediately.
+  A plain student account never sees the control at all, not merely
+  disabled.
 - The "Material" tab renders a plain "Em breve" state — no empty grid, no
   fabricated file cards, no button wired to nothing.
