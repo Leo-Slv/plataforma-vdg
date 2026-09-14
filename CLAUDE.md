@@ -130,6 +130,15 @@ envelope pattern when adding new API calls.
   claims, redirect if missing or invalid); `/api/auth/me` is used
   client-side, via TanStack Query, wherever a screen needs the current
   user's own data.
+- **`useRequireAuth()` enforces a 700ms minimum before flipping to
+  `ready` (2026-09-14)** — since every authenticated screen gates its
+  first paint on this hook (rendering `<LoadingScreen />` until `ready`),
+  it's also the one place a screen-to-screen minimum loading time can
+  live without touching every page individually. An already-cached
+  navigation would otherwise flash the loading screen for a single frame
+  instead of a perceivable transition. This is deliberately screen-to-screen
+  only — smaller in-page loading states (a tab's own query, an admin
+  table's page-through) are untouched.
 
 ## Implementation Workflow
 
@@ -184,11 +193,14 @@ mockup(s) from each feature's spec when speccing a UI-heavy feature.
 - **No server-side session bootstrap**: client-only auth gating for now,
   since CourseCore has no `/api/auth/me`-equivalent endpoint — see "Auth"
   above.
-- **Reduced starter dependency set**: `recharts`, `motion`, `simplebar-react`,
+- **Reduced starter dependency set**: `recharts`, `simplebar-react`,
   `@iconify/react`, and `playwright` from the reference project's
   `package.json` were intentionally not installed in this scaffold — they
-  support features (dashboards, animations, e2e tests) that don't exist yet
-  here. Add them when the feature that actually needs them is specced.
+  support features (dashboards, e2e tests) that don't exist yet here. Add
+  them when the feature that actually needs them is specced. `motion` was
+  added on 2026-09-14 for the catalog's filter enter/exit fades
+  (`Docs/specs/catalog/course-catalog.md`) — the first animation need this
+  app actually had.
 - **No branch-flow model**: this repo commits directly, following
   CourseCore's own convention, not the reference project's
   `CONTRIBUTING.md` `main`/`develop`/`feature/*` branch flow.
