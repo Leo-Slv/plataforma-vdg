@@ -76,9 +76,16 @@ public/
   quando o curso é realmente possuído; numa aula grátis assistida sem
   ter o curso, mostra "Aula grátis" no lugar (sem tracking de progresso,
   já que não há relação de matrícula). Sem acesso ao curso E a aula não
-  sendo `freePreview`, redireciona pra `/courses/[slug]`. O player de
-  vídeo em si é um placeholder inerte — nenhuma rota do backend resolve o
-  vídeo de uma aula ainda. Spec em `Docs/specs/catalog/lesson-player.md`.
+  sendo `freePreview`, redireciona pra `/courses/[slug]`. O vídeo toca de
+  verdade quando a aula tem um vídeo anexado (`GET /api/videos/{id}/playback`).
+  Abaixo do vídeo, uma barra de abas Material/Anotações/Perguntas: **Anotações**
+  é uma nota privada por usuário/aula (`GET`/`PUT`/`DELETE /api/notes/lessons/{id}`);
+  **Perguntas** é um mural público por aula, visível a qualquer aluno com
+  acesso ao curso (`GET`/`POST /api/questions/lessons/{id}`) — responder é
+  admin-only e não tem UI ainda; **Material** ainda é "Em breve" (o backend
+  tem CRUD de materiais, mas sem upload real, sem rota de leitura pro aluno
+  e sem rota de download — ver `Docs/backend-pendencies/admin/lesson-materials.md`).
+  Spec em `Docs/specs/catalog/lesson-player.md`.
 - **Meus cursos** (`/my-courses`) — dashboard com os cursos que a conta
   já possui: um card "continue de onde parou" para o curso em andamento
   assistido mais recentemente, e a grade completa com contagem real de

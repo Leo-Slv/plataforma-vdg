@@ -34,17 +34,21 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
   `/login`, and `/confirm-email` (resend/change-email etc. can join
   later); see `Docs/specs/auth/register.md`, `Docs/specs/auth/login.md`,
   and `Docs/specs/auth/confirm-email.md`.
-- `catalog/` — maps to the backend's Courses (+ Progress) modules.
-  Currently `/catalog` (the first feature with a real `useQuery`, not
-  just mutations), `/courses/[slug]` (the first dynamic route),
-  `/courses/[slug]/lessons/[lessonId]` (the first two-segment dynamic
-  route, and the first mutation that invalidates a query on success),
-  and `/my-courses` (the first use of `useQueries` — a dynamic array of
-  queries sized by a previous response, N+1 requests for N owned
-  courses); see `Docs/specs/catalog/course-catalog.md`,
+- `catalog/` — maps to the backend's Courses (+ Progress and, for the
+  lesson player's Anotações/Perguntas tabs, Progress's notes endpoints and
+  the Questions module) modules. Currently `/catalog` (the first feature
+  with a real `useQuery`, not just mutations), `/courses/[slug]` (the
+  first dynamic route), `/courses/[slug]/lessons/[lessonId]` (the first
+  two-segment dynamic route, and the first mutation that invalidates a
+  query on success), and `/my-courses` (the first use of `useQueries` — a
+  dynamic array of queries sized by a previous response, N+1 requests for
+  N owned courses); see `Docs/specs/catalog/course-catalog.md`,
   `Docs/specs/catalog/course-detail.md`,
   `Docs/specs/catalog/lesson-player.md`, and
-  `Docs/specs/catalog/my-courses.md`.
+  `Docs/specs/catalog/my-courses.md`. The lesson player's third tab,
+  Material, stays a static "Em breve" state — the backend's `LessonMaterial`
+  CRUD has no working upload/list/download path yet; see
+  `Docs/backend-pendencies/admin/lesson-materials.md`.
 
 - `admin/` — the admin panel, mapping to whichever CourseCore module the
   current screen manages (starts with Access's areas endpoints). Currently
