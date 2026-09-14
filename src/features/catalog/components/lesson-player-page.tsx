@@ -370,7 +370,10 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 									</div>
 									<LessonTabs active={activeTab} onSelect={handleSelectTab}>
 										{activeTab === 'material' ? (
-											<LessonMaterialPanel />
+											<LessonMaterialPanel
+												lessonId={lessonId}
+												enabled={openedTabs.has('material')}
+											/>
 										) : activeTab === 'notes' ? (
 											<LessonNotePanel
 												lessonId={lessonId}
