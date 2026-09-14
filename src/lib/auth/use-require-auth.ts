@@ -12,7 +12,7 @@ import { getAccessToken } from '@/lib/auth/access-token';
  * an already-cached page would flash LoadingScreen for a single frame
  * instead of a perceivable, consistent transition.
  */
-const MIN_LOADING_MS = 700;
+const MIN_LOADING_MS = 500;
 
 function useRequireAuth() {
 	const router = useRouter();

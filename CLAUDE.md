@@ -130,11 +130,12 @@ envelope pattern when adding new API calls.
   claims, redirect if missing or invalid); `/api/auth/me` is used
   client-side, via TanStack Query, wherever a screen needs the current
   user's own data.
-- **`useRequireAuth()` enforces a 700ms minimum before flipping to
-  `ready` (2026-09-14)** — since every authenticated screen gates its
-  first paint on this hook (rendering `<LoadingScreen />` until `ready`),
-  it's also the one place a screen-to-screen minimum loading time can
-  live without touching every page individually. An already-cached
+- **`useRequireAuth()` enforces a 500ms minimum before flipping to
+  `ready` (2026-09-14, lowered from an initial 700ms same day)** — since
+  every authenticated screen gates its first paint on this hook
+  (rendering `<LoadingScreen />` until `ready`), it's also the one place
+  a screen-to-screen minimum loading time can live without touching every
+  page individually. An already-cached
   navigation would otherwise flash the loading screen for a single frame
   instead of a perceivable transition. This is deliberately screen-to-screen
   only — smaller in-page loading states (a tab's own query, an admin
