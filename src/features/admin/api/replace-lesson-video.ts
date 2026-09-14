@@ -5,9 +5,11 @@ import type { Video } from '@/features/admin/model/video';
 type ReplaceLessonVideoPayload = {
 	title: string;
 	description: string;
+	storageProvider: 'YouTube' | 'S3';
 	storageKey: string;
 	thumbnailUrl: string | null;
 	durationSeconds: number;
+	sizeBytes: number;
 };
 
 async function replaceLessonVideo(
@@ -16,11 +18,7 @@ async function replaceLessonVideo(
 ): Promise<Video> {
 	const data = await apiFetch(`/api/videos/lessons/${lessonId}`, {
 		method: 'PUT',
-		body: {
-			...payload,
-			storageProvider: 'YouTube',
-			sizeBytes: 0,
-		},
+		body: payload,
 	});
 	return videoSchema.parse(data);
 }
