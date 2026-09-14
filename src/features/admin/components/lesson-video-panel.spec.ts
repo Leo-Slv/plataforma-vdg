@@ -78,8 +78,25 @@ test('renders duration and status for a registered video', () => {
 		}),
 	);
 	assert.match(html, /18min · Pronto/);
+	assert.match(html, /YouTube/);
 	assert.match(html, /Substituir vídeo/);
 	assert.match(html, /Remover vídeo/);
+});
+
+test('labels an S3-backed video as internal storage', () => {
+	const html = renderToStaticMarkup(
+		createElement(LessonVideoPanel, {
+			video: buildVideo({ storageProvider: 'S3' }),
+			isLoading: false,
+			hasError: false,
+			canManage: true,
+			isMutating: false,
+			onAdd: noop,
+			onReplace: noop,
+			onRemove: noop,
+		}),
+	);
+	assert.match(html, /Armazenamento interno/);
 });
 
 test('renders "Processando" for a video still processing', () => {

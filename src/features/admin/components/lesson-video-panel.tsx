@@ -44,7 +44,10 @@ function LessonVideoPanel({
 							</p>
 							<p className="mt-1 font-mono text-[10px] text-foreground/30">
 								{Math.floor(video.durationSeconds / 60)}min ·{' '}
-								{formatVideoStatus(video.status)}
+								{formatVideoStatus(video.status)} ·{' '}
+								{video.storageProvider === 'S3'
+									? 'Armazenamento interno'
+									: 'YouTube'}
 							</p>
 						</div>
 						{canManage ? (
