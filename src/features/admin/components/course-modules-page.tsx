@@ -21,6 +21,7 @@ import {
 	useCreateLessonMutation,
 	useDeleteLessonMutation,
 	useReorderLessonsMutation,
+	useRequestModuleImageUploadUrlMutation,
 } from '@/features/admin/hooks/admin.queries';
 import { AdminSidebar } from '@/features/admin/components/admin-sidebar';
 import { AdminModuleCard } from '@/features/admin/components/admin-module-card';
@@ -57,6 +58,8 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 	const createLessonMutation = useCreateLessonMutation();
 	const deleteLessonMutation = useDeleteLessonMutation();
 	const reorderLessonsMutation = useReorderLessonsMutation();
+	const requestModuleImageUploadUrlMutation =
+		useRequestModuleImageUploadUrlMutation();
 
 	const [modal, setModal] = useState<ModalState>(null);
 	const [pageError, setPageError] = useState<string | null>(null);
@@ -390,7 +393,12 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 			{modal?.type === 'create-module' ? (
 				<ModuleFormModal
 					mode="create"
-					defaultValues={{ title: '', description: '', published: false }}
+					defaultValues={{
+						title: '',
+						description: '',
+						published: false,
+						imageUrl: null,
+					}}
 					onClose={() => setModal(null)}
 					onSubmit={handleModuleSubmit}
 					isSubmitting={createModuleMutation.isPending}
@@ -410,10 +418,20 @@ function CourseModulesPage({ courseId }: CourseModulesPageProps) {
 									title: editingModule.title,
 									description: editingModule.description,
 									published: editingModule.published,
+									imageUrl: editingModule.imageUrl,
 								}}
 								onClose={() => setModal(null)}
 								onSubmit={handleModuleSubmit}
 								isSubmitting={updateModuleMutation.isPending}
+								onRequestImageUpload={(file) =>
+									requestModuleImageUploadUrlMutation.mutateAsync({
+										courseId,
+										moduleId: modal.moduleId,
+										fileName: file.name,
+										contentType: file.type,
+										sizeBytes: file.size,
+									})
+								}
 							/>
 						);
 					})()

@@ -6,6 +6,7 @@ type UpdateCourseModulePayload = {
 	title: string;
 	description: string;
 	published: boolean;
+	imageUrl: string | null;
 };
 
 async function updateCourseModule(

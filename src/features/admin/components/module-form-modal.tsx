@@ -11,6 +11,7 @@ import { AdminModal } from '@/features/admin/components/admin-modal';
 import { AdminField } from '@/features/admin/components/admin-field';
 import { AdminTextareaField } from '@/features/admin/components/admin-textarea-field';
 import { StatusToggle } from '@/features/admin/components/status-toggle';
+import { ImageUploadField } from '@/features/admin/components/image-upload-field';
 
 type ModuleFormModalProps = {
 	mode: 'create' | 'edit';
@@ -18,6 +19,9 @@ type ModuleFormModalProps = {
 	onClose: () => void;
 	onSubmit: (values: ModuleFormValues) => void;
 	isSubmitting: boolean;
+	onRequestImageUpload?: (
+		file: File,
+	) => Promise<{ uploadUrl: string; publicUrl: string }>;
 };
 
 function ModuleFormModal({
@@ -26,6 +30,7 @@ function ModuleFormModal({
 	onClose,
 	onSubmit,
 	isSubmitting,
+	onRequestImageUpload,
 }: ModuleFormModalProps) {
 	const form = useForm<ModuleFormValues>({
 		resolver: zodResolver(moduleFormSchema),
@@ -61,6 +66,17 @@ function ModuleFormModal({
 						}
 					/>
 				) : null}
+
+				<ImageUploadField
+					label="Capa do módulo"
+					imageUrl={form.watch('imageUrl')}
+					disabled={mode === 'create' || !onRequestImageUpload}
+					disabledHint="Salve o módulo primeiro para poder enviar a capa."
+					onRequestUpload={(file) => onRequestImageUpload!(file)}
+					onUploaded={(publicUrl) =>
+						form.setValue('imageUrl', publicUrl, { shouldValidate: true })
+					}
+				/>
 
 				<div className="mt-1.5 flex justify-end gap-2.5">
 					<button

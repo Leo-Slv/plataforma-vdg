@@ -30,6 +30,7 @@ function buildModule(overrides: Partial<CourseModule>): CourseModule {
 		description: '',
 		displayOrder: 0,
 		published: true,
+		imageUrl: null,
 		lessons: [],
 		...overrides,
 	};
