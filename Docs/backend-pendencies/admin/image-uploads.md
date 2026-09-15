@@ -44,7 +44,38 @@ frontend still only offers the upload control post-creation, for the same
 reason — consistent behavior across all three beats exploiting a
 backend capability the create-mode UI has no use for yet.
 
-## Config pendency: the S3 bucket needs a public-read policy for these prefixes
+## Config pendency 1: the IAM credential needs `s3:PutObject` on the new prefixes
+
+**Severity: Config. Confirmed blocking (2026-09-15)** — verified against
+a real environment: the "request upload URL" call to CourseCore succeeds
+for all four endpoints (returns a valid presigned `uploadUrl`), but the
+browser's direct `PUT` to that S3 URL comes back `403 Forbidden`. Video
+and material uploads, hitting the same `IS3PresignedUrlProvider` with the
+same `Media:S3:AccessKeyId`/`SecretAccessKey` credential, work fine.
+
+Presigning doesn't check permissions at sign time — AWS only evaluates
+the IAM policy attached to that credential when the actual request hits
+S3. This points at an IAM policy whose `Resource` list is scoped to the
+key prefixes that existed before this change:
+
+```
+arn:aws:s3:::<bucket>/videos/*
+arn:aws:s3:::<bucket>/materials/*
+```
+
+**What needs to change (AWS console/Terraform — outside this repo, not a
+code fix):** add the four new prefixes this change introduced to that
+same policy's `s3:PutObject` (and ideally `s3:PutObjectAcl` if the bucket
+uses ACLs) `Resource` list:
+
+```
+arn:aws:s3:::<bucket>/course-thumbnails/*
+arn:aws:s3:::<bucket>/module-covers/*
+arn:aws:s3:::<bucket>/area-covers/*
+arn:aws:s3:::<bucket>/avatars/*
+```
+
+## Config pendency 2: the S3 bucket needs a public-read policy for these prefixes
 
 **Severity: Config.**
 
@@ -66,3 +97,7 @@ the same category of manual operator prerequisite as the existing
 `Docs/specs/catalog/lesson-player.md`'s backend-pendencies file) — code
 is done, an operator still needs to flip this on the actual bucket before
 uploaded images resolve for real users.
+
+Pendency 1 (write access) is the one actually observed blocking uploads
+today; pendency 2 (public read) hasn't been hit yet since no upload has
+gotten past pendency 1, but will surface next once writes are unblocked.
