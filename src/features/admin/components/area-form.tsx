@@ -28,7 +28,7 @@ type AreaFormProps = {
 	isDeleting?: boolean;
 	onRequestImageUpload?: (
 		file: File,
-	) => Promise<{ uploadUrl: string; publicUrl: string }>;
+	) => Promise<{ uploadUrl: string; storageKey: string }>;
 };
 
 function AreaForm({
@@ -135,8 +135,8 @@ function AreaForm({
 						disabled={mode === 'create' || !onRequestImageUpload}
 						disabledHint="Salve a área primeiro para poder enviar a capa."
 						onRequestUpload={(file) => onRequestImageUpload!(file)}
-						onUploaded={(publicUrl) =>
-							form.setValue('imageUrl', publicUrl, { shouldValidate: true })
+						onUploaded={(storageKey) =>
+							form.setValue('imageUrl', storageKey, { shouldValidate: true })
 						}
 					/>
 				</div>

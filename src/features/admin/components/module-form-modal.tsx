@@ -21,7 +21,7 @@ type ModuleFormModalProps = {
 	isSubmitting: boolean;
 	onRequestImageUpload?: (
 		file: File,
-	) => Promise<{ uploadUrl: string; publicUrl: string }>;
+	) => Promise<{ uploadUrl: string; storageKey: string }>;
 };
 
 function ModuleFormModal({
@@ -73,8 +73,8 @@ function ModuleFormModal({
 					disabled={mode === 'create' || !onRequestImageUpload}
 					disabledHint="Salve o módulo primeiro para poder enviar a capa."
 					onRequestUpload={(file) => onRequestImageUpload!(file)}
-					onUploaded={(publicUrl) =>
-						form.setValue('imageUrl', publicUrl, { shouldValidate: true })
+					onUploaded={(storageKey) =>
+						form.setValue('imageUrl', storageKey, { shouldValidate: true })
 					}
 				/>
 

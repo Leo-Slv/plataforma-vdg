@@ -31,7 +31,7 @@ type CourseFormProps = {
 	isDeleting?: boolean;
 	onRequestThumbnailUpload?: (
 		file: File,
-	) => Promise<{ uploadUrl: string; publicUrl: string }>;
+	) => Promise<{ uploadUrl: string; storageKey: string }>;
 };
 
 function CourseForm({
@@ -143,8 +143,8 @@ function CourseForm({
 						disabled={mode === 'create' || !onRequestThumbnailUpload}
 						disabledHint="Salve o curso primeiro para poder enviar a capa."
 						onRequestUpload={(file) => onRequestThumbnailUpload!(file)}
-						onUploaded={(publicUrl) =>
-							form.setValue('thumbnailUrl', publicUrl, {
+						onUploaded={(storageKey) =>
+							form.setValue('thumbnailUrl', storageKey, {
 								shouldValidate: true,
 							})
 						}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { uploadFileToStorage } from '@/features/admin/lib/upload-file-to-storage';
 
@@ -13,8 +13,8 @@ type ImageUploadFieldProps = {
 	imageUrl: string | null;
 	onRequestUpload: (
 		file: File,
-	) => Promise<{ uploadUrl: string; publicUrl: string }>;
-	onUploaded: (publicUrl: string) => void;
+	) => Promise<{ uploadUrl: string; storageKey: string }>;
+	onUploaded: (storageKey: string) => void;
 	disabled?: boolean;
 	disabledHint?: string;
 };
@@ -22,9 +22,11 @@ type ImageUploadFieldProps = {
 /**
  * A file-only image field: picking a file immediately requests a presigned
  * upload URL, PUTs the file straight to storage, then reports the resulting
- * public URL back to the caller's form state — there is no free-text URL
- * input, matching the same "upload only" treatment video/material fields
- * already got.
+ * storage key back to the caller's form state — the backend only ever hands
+ * back a bare key (never a browsable URL, the bucket stays private), so a
+ * freshly-picked file is previewed from a local object URL instead of the
+ * stored value until the entity is refetched and the server resolves it to
+ * a real signed URL.
  */
 function ImageUploadField({
 	label,
@@ -37,6 +39,16 @@ function ImageUploadField({
 	const [isUploading, setIsUploading] = useState(false);
 	const [uploadPercent, setUploadPercent] = useState<number | null>(null);
 	const [uploadError, setUploadError] = useState<string | null>(null);
+	const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
+	const localPreviewUrlRef = useRef<string | null>(null);
+
+	useEffect(() => {
+		return () => {
+			if (localPreviewUrlRef.current) {
+				URL.revokeObjectURL(localPreviewUrlRef.current);
+			}
+		};
+	}, []);
 
 	async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
 		const file = event.target.files?.[0] ?? null;
@@ -46,21 +58,30 @@ function ImageUploadField({
 			return;
 		}
 
+		if (localPreviewUrlRef.current) {
+			URL.revokeObjectURL(localPreviewUrlRef.current);
+		}
+		const objectUrl = URL.createObjectURL(file);
+		localPreviewUrlRef.current = objectUrl;
+		setLocalPreviewUrl(objectUrl);
+
 		setUploadError(null);
 		setIsUploading(true);
 		setUploadPercent(0);
 		try {
-			const { uploadUrl, publicUrl } = await onRequestUpload(file);
+			const { uploadUrl, storageKey } = await onRequestUpload(file);
 			await uploadFileToStorage(uploadUrl, file, {
 				onProgress: setUploadPercent,
 			});
-			onUploaded(publicUrl);
+			onUploaded(storageKey);
 		} catch {
 			setUploadError(UPLOAD_ERROR_MESSAGE);
 		} finally {
 			setIsUploading(false);
 		}
 	}
+
+	const previewUrl = localPreviewUrl ?? imageUrl;
 
 	return (
 		<div>
@@ -74,10 +95,10 @@ function ImageUploadField({
 				</p>
 			) : (
 				<div className="flex items-center gap-3.5">
-					{imageUrl ? (
+					{previewUrl ? (
 						<div
 							className="size-16 flex-none overflow-hidden rounded-md bg-surface bg-cover bg-center"
-							style={{ backgroundImage: `url(${imageUrl})` }}
+							style={{ backgroundImage: `url(${previewUrl})` }}
 						/>
 					) : (
 						<div

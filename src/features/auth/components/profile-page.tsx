@@ -133,7 +133,7 @@ function ProfilePage() {
 		setIsUploadingAvatar(true);
 		setAvatarUploadPercent(0);
 		try {
-			const { uploadUrl, publicUrl } =
+			const { uploadUrl, storageKey } =
 				await requestAvatarUploadUrlMutation.mutateAsync({
 					fileName: file.name,
 					contentType: file.type,
@@ -142,7 +142,7 @@ function ProfilePage() {
 			await uploadFileToStorage(uploadUrl, file, {
 				onProgress: setAvatarUploadPercent,
 			});
-			profileForm.setValue('avatarUrl', publicUrl, { shouldValidate: true });
+			profileForm.setValue('avatarUrl', storageKey, { shouldValidate: true });
 			setAvatarFailed(false);
 		} catch {
 			setAvatarUploadError(AVATAR_UPLOAD_ERROR_MESSAGE);

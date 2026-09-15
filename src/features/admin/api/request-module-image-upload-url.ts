@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/http/api-client';
-import { imageUploadUrlSchema } from '@/features/admin/schemas/image-upload-url.schema';
-import type { ImageUploadUrl } from '@/features/admin/model/image-upload-url';
+import { uploadUrlSchema } from '@/features/admin/schemas/upload-url.schema';
+import type { UploadUrl } from '@/features/admin/model/upload-url';
 
 type RequestModuleImageUploadUrlInput = {
 	courseId: string;
@@ -12,7 +12,7 @@ type RequestModuleImageUploadUrlInput = {
 
 async function requestModuleImageUploadUrl(
 	input: RequestModuleImageUploadUrlInput,
-): Promise<ImageUploadUrl> {
+): Promise<UploadUrl> {
 	const data = await apiFetch(
 		`/api/courses/${input.courseId}/modules/${input.moduleId}/image-upload-url`,
 		{
@@ -24,7 +24,7 @@ async function requestModuleImageUploadUrl(
 			},
 		},
 	);
-	return imageUploadUrlSchema.parse(data);
+	return uploadUrlSchema.parse(data);
 }
 
 export { requestModuleImageUploadUrl };
