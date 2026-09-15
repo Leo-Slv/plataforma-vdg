@@ -19,7 +19,9 @@ import {
 	useLogoutMutation,
 	useUpdateProfileMutation,
 	useChangePasswordMutation,
+	useRequestAvatarUploadUrlMutation,
 } from '@/features/auth/hooks/auth.queries';
+import { uploadFileToStorage } from '@/features/auth/lib/upload-file-to-storage';
 import { getInitials } from '@/features/catalog/lib/user-display';
 import { FormField } from '@/features/auth/components/form-field';
 import { PasswordField } from '@/features/auth/components/password-field';
@@ -38,6 +40,9 @@ const GENERIC_ERROR_MESSAGE =
 const PASSWORD_CHANGED_MESSAGE =
 	'Senha alterada. Você será desconectado de todos os aparelhos, incluindo este.';
 const PASSWORD_LOGOUT_DELAY_MS = 1800;
+const AVATAR_UPLOAD_ERROR_MESSAGE =
+	'Não foi possível enviar a foto agora. Tente novamente.';
+const ACCEPTED_AVATAR_TYPES = 'image/png,image/jpeg,image/webp';
 
 function ProfilePage() {
 	const ready = useRequireAuth();
@@ -46,12 +51,20 @@ function ProfilePage() {
 	const logoutMutation = useLogoutMutation();
 	const updateProfileMutation = useUpdateProfileMutation();
 	const changePasswordMutation = useChangePasswordMutation();
+	const requestAvatarUploadUrlMutation = useRequestAvatarUploadUrlMutation();
 
 	const [profileError, setProfileError] = useState<string | null>(null);
 	const [profileSaved, setProfileSaved] = useState(false);
 	const [avatarFailed, setAvatarFailed] = useState(false);
 	const [passwordError, setPasswordError] = useState<string | null>(null);
 	const [passwordChanged, setPasswordChanged] = useState(false);
+	const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+	const [avatarUploadPercent, setAvatarUploadPercent] = useState<number | null>(
+		null,
+	);
+	const [avatarUploadError, setAvatarUploadError] = useState<string | null>(
+		null,
+	);
 
 	const user = currentUserQuery.data;
 	const initials = getInitials(user?.name ?? null);
@@ -104,6 +117,38 @@ function ProfilePage() {
 				},
 			},
 		);
+	}
+
+	async function handleAvatarFileChange(
+		event: React.ChangeEvent<HTMLInputElement>,
+	) {
+		const file = event.target.files?.[0] ?? null;
+		event.target.value = '';
+
+		if (!file) {
+			return;
+		}
+
+		setAvatarUploadError(null);
+		setIsUploadingAvatar(true);
+		setAvatarUploadPercent(0);
+		try {
+			const { uploadUrl, publicUrl } =
+				await requestAvatarUploadUrlMutation.mutateAsync({
+					fileName: file.name,
+					contentType: file.type,
+					sizeBytes: file.size,
+				});
+			await uploadFileToStorage(uploadUrl, file, {
+				onProgress: setAvatarUploadPercent,
+			});
+			profileForm.setValue('avatarUrl', publicUrl, { shouldValidate: true });
+			setAvatarFailed(false);
+		} catch {
+			setAvatarUploadError(AVATAR_UPLOAD_ERROR_MESSAGE);
+		} finally {
+			setIsUploadingAvatar(false);
+		}
 	}
 
 	function handlePasswordSubmit(values: ChangePasswordFormValues) {
@@ -236,18 +281,39 @@ function ProfilePage() {
 							/>
 
 							<div>
-								<FormField
-									id="avatarUrl"
-									label="URL da foto"
-									autoComplete="off"
-									placeholder="https://..."
-									error={profileForm.formState.errors.avatarUrl?.message}
-									{...profileForm.register('avatarUrl')}
+								<div className="mb-2.25 font-heading text-[11px] tracking-[0.14em] text-foreground/45 uppercase">
+									Foto de perfil
+								</div>
+								<input
+									type="file"
+									accept={ACCEPTED_AVATAR_TYPES}
+									onChange={handleAvatarFileChange}
+									disabled={isUploadingAvatar}
+									className="w-full rounded-md border border-foreground/12 bg-surface-2 px-4 py-3.25 font-sans text-[13px] font-light text-foreground file:mr-3 file:rounded-full file:border-0 file:bg-foreground file:px-3.5 file:py-1.5 file:font-sans file:text-[12px] file:text-background disabled:opacity-60"
 								/>
-								<p className="mt-2 text-[11.5px] font-light text-foreground/35">
-									Use o link direto do arquivo de imagem (terminando em .jpg,
-									.png etc.), não o link de uma página.
-								</p>
+								{isUploadingAvatar ? (
+									<div className="mt-2.5 flex items-center gap-2.5">
+										<span className="block h-[3px] flex-1 overflow-hidden rounded-full bg-foreground/14">
+											<span
+												className="block h-[3px] bg-[oklch(0.72_0.1_248)]"
+												style={{ width: `${avatarUploadPercent ?? 0}%` }}
+											/>
+										</span>
+										<span className="font-sans text-[11px] font-light text-foreground/45">
+											{avatarUploadPercent ?? 0}%
+										</span>
+									</div>
+								) : null}
+								{avatarUploadError ? (
+									<p className="mt-2 text-[12.5px] text-[oklch(0.704_0.191_22.216)]">
+										{avatarUploadError}
+									</p>
+								) : null}
+								{profileForm.formState.errors.avatarUrl?.message ? (
+									<p className="mt-2 text-[12.5px] text-[oklch(0.704_0.191_22.216)]">
+										{profileForm.formState.errors.avatarUrl.message}
+									</p>
+								) : null}
 							</div>
 
 							{profileError ? (

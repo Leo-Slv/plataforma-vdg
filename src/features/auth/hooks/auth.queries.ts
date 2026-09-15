@@ -7,6 +7,7 @@ import { confirmEmail } from '@/features/auth/api/confirm-email';
 import { resendConfirmation } from '@/features/auth/api/resend-confirmation';
 import { getCurrentUser } from '@/features/auth/api/get-current-user';
 import { updateProfile } from '@/features/auth/api/update-profile';
+import { requestAvatarUploadUrl } from '@/features/auth/api/request-avatar-upload-url';
 import { changePassword } from '@/features/auth/api/change-password';
 import { logoutUser } from '@/features/auth/api/logout';
 
@@ -60,6 +61,12 @@ function useChangePasswordMutation() {
 	});
 }
 
+function useRequestAvatarUploadUrlMutation() {
+	return useMutation({
+		mutationFn: requestAvatarUploadUrl,
+	});
+}
+
 export {
 	useRegisterMutation,
 	useLoginMutation,
@@ -69,4 +76,5 @@ export {
 	useLogoutMutation,
 	useUpdateProfileMutation,
 	useChangePasswordMutation,
+	useRequestAvatarUploadUrlMutation,
 };
