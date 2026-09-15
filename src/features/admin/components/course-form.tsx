@@ -14,6 +14,7 @@ import { AdminTextareaField } from '@/features/admin/components/admin-textarea-f
 import { AdminSelect } from '@/features/admin/components/admin-select';
 import { PricingModelPicker } from '@/features/admin/components/pricing-model-picker';
 import { StatusToggle } from '@/features/admin/components/status-toggle';
+import { ImageUploadField } from '@/features/admin/components/image-upload-field';
 import type { Area } from '@/features/admin/model/area';
 
 type CourseFormProps = {
@@ -28,6 +29,9 @@ type CourseFormProps = {
 	submitError?: string | null;
 	onDelete?: () => void;
 	isDeleting?: boolean;
+	onRequestThumbnailUpload?: (
+		file: File,
+	) => Promise<{ uploadUrl: string; publicUrl: string }>;
 };
 
 function CourseForm({
@@ -42,6 +46,7 @@ function CourseForm({
 	submitError,
 	onDelete,
 	isDeleting,
+	onRequestThumbnailUpload,
 }: CourseFormProps) {
 	const form = useForm<CourseFormValues>({
 		resolver: zodResolver(courseFormSchema),
@@ -132,18 +137,18 @@ function CourseForm({
 						{...form.register('description')}
 					/>
 
-					<div>
-						<AdminField
-							label="Capa do curso (URL)"
-							placeholder="https://…"
-							error={form.formState.errors.thumbnailUrl?.message}
-							{...form.register('thumbnailUrl')}
-						/>
-						<p className="mt-2 text-[11.5px] font-light text-foreground/35">
-							Use o link direto do arquivo de imagem (terminando em .jpg, .png
-							etc.), não o link de uma página.
-						</p>
-					</div>
+					<ImageUploadField
+						label="Capa do curso"
+						imageUrl={form.watch('thumbnailUrl') || null}
+						disabled={mode === 'create' || !onRequestThumbnailUpload}
+						disabledHint="Salve o curso primeiro para poder enviar a capa."
+						onRequestUpload={(file) => onRequestThumbnailUpload!(file)}
+						onUploaded={(publicUrl) =>
+							form.setValue('thumbnailUrl', publicUrl, {
+								shouldValidate: true,
+							})
+						}
+					/>
 
 					<PricingModelPicker
 						value={form.watch('pricingModel')}

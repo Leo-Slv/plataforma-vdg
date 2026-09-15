@@ -18,6 +18,7 @@ import {
 	usePublishCourseMutation,
 	useUnpublishCourseMutation,
 	useUpdateCourseMutation,
+	useRequestCourseThumbnailUploadUrlMutation,
 } from '@/features/admin/hooks/admin.queries';
 import { slugify } from '@/features/admin/lib/slugify';
 import { resolvePriceAmount } from '@/features/admin/lib/resolve-price-amount';
@@ -46,6 +47,8 @@ function CourseFormPage(props: CourseFormPageProps) {
 	const updateMutation = useUpdateCourseMutation();
 	const publishMutation = usePublishCourseMutation();
 	const unpublishMutation = useUnpublishCourseMutation();
+	const requestThumbnailUploadUrlMutation =
+		useRequestCourseThumbnailUploadUrlMutation();
 	const [submitError, setSubmitError] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -294,6 +297,17 @@ function CourseFormPage(props: CourseFormPageProps) {
 				submitError={submitError}
 				onDelete={props.mode === 'edit' ? handleDelete : undefined}
 				isDeleting={props.mode === 'edit' && unpublishMutation.isPending}
+				onRequestThumbnailUpload={
+					props.mode === 'edit'
+						? (file) =>
+								requestThumbnailUploadUrlMutation.mutateAsync({
+									courseId: props.courseId,
+									fileName: file.name,
+									contentType: file.type,
+									sizeBytes: file.size,
+								})
+						: undefined
+				}
 			/>
 		</div>
 	);
