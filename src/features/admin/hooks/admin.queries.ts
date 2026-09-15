@@ -8,15 +8,18 @@ import { getAreas } from '@/features/admin/api/get-areas';
 import { getArea } from '@/features/admin/api/get-area';
 import { createArea } from '@/features/admin/api/create-area';
 import { updateArea } from '@/features/admin/api/update-area';
+import { requestAreaImageUploadUrl } from '@/features/admin/api/request-area-image-upload-url';
 import { getCourses } from '@/features/admin/api/get-courses';
 import { getAuditLogs } from '@/features/admin/api/get-audit-logs';
 import { createCourse } from '@/features/admin/api/create-course';
 import { updateCourse } from '@/features/admin/api/update-course';
+import { requestCourseThumbnailUploadUrl } from '@/features/admin/api/request-course-thumbnail-upload-url';
 import { publishCourse } from '@/features/admin/api/publish-course';
 import { unpublishCourse } from '@/features/admin/api/unpublish-course';
 import { getCourseModules } from '@/features/admin/api/get-course-modules';
 import { createCourseModule } from '@/features/admin/api/create-course-module';
 import { updateCourseModule } from '@/features/admin/api/update-course-module';
+import { requestModuleImageUploadUrl } from '@/features/admin/api/request-module-image-upload-url';
 import { deleteCourseModule } from '@/features/admin/api/delete-course-module';
 import { reorderCourseModules } from '@/features/admin/api/reorder-course-modules';
 import { createLesson } from '@/features/admin/api/create-lesson';
@@ -322,6 +325,24 @@ function useRequestVideoUploadUrlMutation() {
 	});
 }
 
+function useRequestCourseThumbnailUploadUrlMutation() {
+	return useMutation({
+		mutationFn: requestCourseThumbnailUploadUrl,
+	});
+}
+
+function useRequestModuleImageUploadUrlMutation() {
+	return useMutation({
+		mutationFn: requestModuleImageUploadUrl,
+	});
+}
+
+function useRequestAreaImageUploadUrlMutation() {
+	return useMutation({
+		mutationFn: requestAreaImageUploadUrl,
+	});
+}
+
 function useLessonQuestionsQuery(
 	lessonId: string,
 	options: { enabled: boolean },
@@ -584,6 +605,9 @@ export {
 	useRemoveLessonMaterialMutation,
 	useReplaceLessonVideoMutation,
 	useRequestVideoUploadUrlMutation,
+	useRequestCourseThumbnailUploadUrlMutation,
+	useRequestModuleImageUploadUrlMutation,
+	useRequestAreaImageUploadUrlMutation,
 	useMarkVideoReadyMutation,
 	useDeleteLessonVideoMutation,
 	useVideosQuery,
