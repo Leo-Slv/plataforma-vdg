@@ -99,11 +99,14 @@ Mirrors [`Docs/specs/auth/profile.md`](../../specs/auth/profile.md).
   `POST /api/auth/me/avatar-upload-url` (presigned S3, self-service —
   always the caller's own account, no id in the request), following the
   same pattern video/material uploads already used. "Foto de perfil" is a
-  real `<input type="file">` now, not a URL text field — see
+  real `<input type="file">` now, not a URL text field. The bucket stays
+  private (2026-09-15 revision) — `AvatarUrl` stores a bare storage key,
+  resolved to a fresh presigned GET URL whenever `CurrentUserResponse` is
+  built, same mechanism video playback already uses. See
   `Docs/backend-pendencies/admin/image-uploads.md` for the shared writeup
   (this + course thumbnail + area/module covers) and its remaining
-  Config-severity pendency (S3 bucket needs public-read on these key
-  prefixes).
+  Config-severity pendency (the IAM credential's `s3:PutObject` needs the
+  new key prefixes — unrelated to the read side above).
 
 ## 4. Phone number — no field — CLOSED
 

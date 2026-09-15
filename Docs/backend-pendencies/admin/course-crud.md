@@ -119,16 +119,17 @@ skip decision separately).
   curso" field as a plain URL input instead of a drag-and-drop upload. No
   code change; this is a deliberate scope choice, not a gap to revisit
   unless the product direction changes.
-- **Resolved (2026-09-14)**: CourseCore now has
+- **Resolved (2026-09-14, revised 2026-09-15)**: CourseCore now has
   `POST /api/courses/{courseId}/thumbnail-upload-url` (real S3 presigned
   upload, same pattern as video/material uploads), so the field is a real
-  file picker now, not a URL input — see
-  `Docs/backend-pendencies/admin/image-uploads.md` for the shared
-  writeup covering this and three siblings (area cover, module cover,
-  user avatar), including a new Config-severity pendency (the S3 bucket
-  needs a public-read policy for these specific key prefixes, since
-  — unlike video/materials — these URLs are embedded directly as
-  `<img src>` across public pages).
+  file picker now, not a URL input. The bucket stays private —
+  `ThumbnailUrl` stores a bare storage key, resolved to a fresh presigned
+  GET URL whenever a course response is built, same mechanism video
+  playback already uses. See `Docs/backend-pendencies/admin/image-uploads.md`
+  for the shared writeup covering this and three siblings (area cover,
+  module cover, user avatar), including the remaining Config-severity
+  pendency (the IAM credential's `s3:PutObject` needs the new key
+  prefixes).
 
 ## 5. No delete-course endpoint
 
