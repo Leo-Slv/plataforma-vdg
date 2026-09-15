@@ -83,6 +83,12 @@ Shared shell: same `AdminSidebar` (`active="areas"`) as the areas list.
   (`AreaValidationLimits.DescriptionMaxLength`).
 - **Cor de destaque**: 4 preset swatches, one selected — see "Open
   decisions" for the swatch → `AreaAccentColor` enum mapping.
+- **Capa da área** (added 2026-09-14): a file upload, edit mode only —
+  picking an image uploads it to S3 immediately
+  (`POST /api/areas/{areaId}/image-upload-url`) and fills the area's new
+  `imageUrl` field with the resulting public URL. Disabled with a "save
+  the area first" hint in create mode, since the upload endpoint needs an
+  existing `areaId`. See `Docs/backend-pendencies/admin/image-uploads.md`.
 
 ### Form — right column
 
@@ -91,7 +97,7 @@ Shared shell: same `AdminSidebar` (`active="areas"`) as the areas list.
 - **Ordem de exibição**: required integer input (`DisplayOrder`).
 - **Cursos nesta área** (edit mode only, only rendered when the area has
   at least one course): read-only list of `{ title, Publicado |
-  Rascunho }` from `GET /api/areas/{id}`'s `courses` field.
+Rascunho }` from `GET /api/areas/{id}`'s `courses` field.
 - **Excluir área** (edit mode only): confirm, then `PUT` with
   `Active: false`, then redirect to `/admin/areas`.
 
@@ -141,7 +147,7 @@ re-litigated, just applied here):
   value name, never shown to an end user) — noted here instead of
   re-opening the backend pendency.
 - **"Excluir área" = deactivate, not delete.** No real `DELETE
-  /api/areas/{id}` exists; deactivating is the shipped behavior (see
+/api/areas/{id}` exists; deactivating is the shipped behavior (see
   `areas-crud.md` pendency 1).
 
 ## Acceptance criteria

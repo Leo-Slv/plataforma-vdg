@@ -100,20 +100,24 @@ public/
   já usadas por outras telas (catálogo filtrado + detalhes/progresso por
   curso possuído) — nenhum endpoint novo. Sem duração ou certificado em
   lugar nenhum. Spec em `Docs/specs/catalog/my-courses.md`.
-- **Perfil** (`/profile`) — tela somente leitura: nome, e-mail e status de
-  confirmação vindos de `GET /api/auth/me` (endpoint novo no backend, fecha
-  o gap de "current user" que antes forçava o gate de autenticação a ser
-  100% client-side), e um "Sair da conta" que chama `POST /api/auth/logout`
-  de verdade (revoga o refresh token no servidor) antes de limpar o token
-  local — o mesmo fluxo agora usado pelo "Sair" do menu de perfil no
-  `AppNav`. Sem edição de nome/e-mail, troca de senha em sessão ou upload de
-  foto: nenhuma dessas ações tem endpoint no backend hoje. Spec em
-  `Docs/specs/auth/profile.md`.
+- **Perfil** (`/profile`) — nome, telefone e foto editáveis (`PUT
+/api/auth/me`), e-mail e status de confirmação só leitura, vindos de
+  `GET /api/auth/me` (endpoint novo no backend, fecha o gap de "current
+  user" que antes forçava o gate de autenticação a ser 100%
+  client-side). A foto agora é upload real pro S3 (2026-09-14,
+  `POST /api/auth/me/avatar-upload-url`) — antes era um campo de URL.
+  Troca de senha é um formulário separado (`POST
+/api/auth/change-password`) que desloga a conta em todas as sessões ao
+  concluir. "Sair da conta" chama `POST /api/auth/logout` de verdade
+  (revoga o refresh token no servidor) antes de limpar o token local — o
+  mesmo fluxo agora usado pelo "Sair" do menu de perfil no `AppNav`. Spec
+  em `Docs/specs/auth/profile.md`.
 
 - **Admin — Áreas** (`/admin/areas`, `/admin/areas/new`,
   `/admin/areas/[areaId]/edit`) — lista todas as áreas (`GET /api/areas`)
   com contagem real de cursos, ordem de exibição e status, e permite
-  criar/editar (nome, descrição, cor de destaque, ordem, ativa/inativa) —
+  criar/editar (nome, descrição, cor de destaque, capa — upload real pro
+  S3 desde 2026-09-14, só no modo editar —, ordem, ativa/inativa) —
   o slug é sempre calculado a partir do nome, nunca digitado à mão.
   "Excluir área" desativa a área (`PUT` com `Active: false`), já que o
   backend não tem um delete de verdade. Acesso restrito a quem tem a
@@ -131,8 +135,9 @@ public/
   curso" e as linhas da tabela linkam para a tela de criar/editar. Spec
   em `Docs/specs/admin/courses-panel.md`.
 - **Admin — Curso, criar/editar** (`/admin/courses/new`,
-  `/admin/courses/[courseId]/edit`) — título, descrição, capa (URL, sem
-  upload), modelo de cobrança (gratuito/pago/por inscrição), área,
+  `/admin/courses/[courseId]/edit`) — título, descrição, capa (upload real
+  pro S3 desde 2026-09-14, só no modo editar — antes era um campo de URL),
+  modelo de cobrança (gratuito/pago/por inscrição), área,
   status, ordem, "emitir certificado" e "curso em destaque" (este
   último não está no mockup — adicionado porque é um campo real que a
   landing page já usa). Como `PUT /api/courses/{id}` não tem campo de
@@ -153,7 +158,9 @@ public/
   não dá pra prever (progresso de aluno não aparece na listagem), então
   o 409 vira um erro inline na própria aula. Vídeo de aula aparece só
   como status (tem/não tem, duração) — anexar/trocar vídeo é feito na
-  tela de edição de aula. Spec em `Docs/specs/admin/course-modules.md`.
+  tela de edição de aula. "Editar módulo" ganhou um upload real de capa
+  pro S3 em 2026-09-14 (campo novo, `imageUrl`, só disponível depois que
+  o módulo já existe). Spec em `Docs/specs/admin/course-modules.md`.
 - **Admin — Editar aula** (`/admin/courses/[courseId]/modules/[moduleId]/lessons/[lessonId]/edit`)
   — título, descrição/transcrição, "aula gratuita" e "publicada", mais um
   painel de vídeo (ver/registrar/substituir/remover, via

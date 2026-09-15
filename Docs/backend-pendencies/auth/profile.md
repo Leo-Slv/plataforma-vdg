@@ -72,7 +72,7 @@ Mirrors [`Docs/specs/auth/profile.md`](../../specs/auth/profile.md).
   `AuthResetPassword` — brute-forcing a known account's current password is
   the same risk class).
 
-## 3. Profile photo upload — no field, no endpoint — CLOSED (via decision: plain URL, no upload)
+## 3. Profile photo upload — no field, no endpoint — CLOSED (real upload as of 2026-09-14)
 
 - **Mockup expects**: an avatar image with an "Alterar foto" upload
   action, "JPG ou PNG, até 4MB".
@@ -95,6 +95,15 @@ Mirrors [`Docs/specs/auth/profile.md`](../../specs/auth/profile.md).
   settable via `PUT /api/auth/me`), exposed on `CurrentUserResponse`. No
   upload endpoint; the "Alterar foto" drop-zone affordance would need to
   ship as a URL field instead, same as the course-cover decision.
+- **Superseded (2026-09-14)**: CourseCore now has a real upload endpoint,
+  `POST /api/auth/me/avatar-upload-url` (presigned S3, self-service —
+  always the caller's own account, no id in the request), following the
+  same pattern video/material uploads already used. "Foto de perfil" is a
+  real `<input type="file">` now, not a URL text field — see
+  `Docs/backend-pendencies/admin/image-uploads.md` for the shared writeup
+  (this + course thumbnail + area/module covers) and its remaining
+  Config-severity pendency (S3 bucket needs public-read on these key
+  prefixes).
 
 ## 4. Phone number — no field — CLOSED
 
@@ -120,7 +129,7 @@ All four pendencies above are now implemented — see the revised
 - A successful password change is treated as a full logout (brief
   in-page message, then clear local auth state and hard-navigate to
   `/login`) — the backend's `IncrementTokenVersion` + `RevokeActiveByUserIdAsync`
-  invalidate the *current* session's access token too, not just other
+  invalidate the _current_ session's access token too, not just other
   devices'.
 - Avatar renders as an image (`avatarUrl`) when set, falling back to the
   existing initials-circle treatment otherwise — this is scoped to the

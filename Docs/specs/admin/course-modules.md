@@ -65,7 +65,13 @@ One card per module, ordered by `DisplayOrder`:
   "`{lessons.length}` aulas" subtitle.
 - Up/down reorder buttons (disabled at the first/last position).
 - "Editar módulo" — opens an edit-module modal (title, description,
-  published toggle).
+  published toggle, and — added 2026-09-14 — a "Capa do módulo" file
+  upload: picking an image uploads it to S3 immediately
+  (`POST /api/courses/{courseId}/modules/{moduleId}/image-upload-url`)
+  and fills the module's new `imageUrl` field with the resulting public
+  URL. Not offered in the create-module modal, since
+  `CreateCourseModuleRequest` has no `imageUrl` — see
+  `Docs/backend-pendencies/admin/image-uploads.md`).
 - Delete — per the backend's own conservative rule
   (`course-modules-lessons.md` pendency 1: "removing a module requires
   it have no lessons first, 409 otherwise"), this button is disabled
@@ -75,7 +81,7 @@ One card per module, ordered by `DisplayOrder`:
 Nested under each module, its lessons in `DisplayOrder`:
 
 - Title ("Aula `{n}` — `{title}}`"), "`{duration}` · `{vídeo pronto |
-  sem vídeo}`" subtitle (`DurationSeconds` formatted as `Xmin`;
+sem vídeo}`" subtitle (`DurationSeconds` formatted as `Xmin`;
   no video → "sem vídeo" instead of the mockup's implied-always-present
   status).
 - "Paga"/"Gratuita" badge from `FreePreview` (mirrors the mockup
@@ -124,7 +130,7 @@ screens' precedent):
   not separate routes** — the backend fields involved (title,
   description, a couple of booleans) don't warrant a dedicated screen
   the way area/course create-edit did, and the mockup itself never
-  draws one for either. Lesson *edit* is the one exception: once
+  draws one for either. Lesson _edit_ is the one exception: once
   `lesson-editor.md` shipped its own route (title, description, video,
   free preview, published, delete), "Editar" on this screen was
   repointed to navigate there instead of opening the old lightweight

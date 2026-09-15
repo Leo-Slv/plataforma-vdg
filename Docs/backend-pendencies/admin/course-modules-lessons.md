@@ -85,7 +85,7 @@ the new "Painel admin — CRUDs de entidades" mockup group.
   (`Modules/Media/Presentation/Requests/CreateVideoRequest.cs`) takes
   `StorageProvider`, `StorageKey`, `PlaybackUrl`, `ThumbnailUrl`,
   `DurationSeconds`, `SizeBytes` — it registers metadata for a video
-  *already placed* in external storage. There is no endpoint in
+  _already placed_ in external storage. There is no endpoint in
   CourseCore that accepts raw file bytes or issues a pre-signed upload URL
   for the admin's browser to upload to directly.
   `MarkVideoReadyUseCase` (`POST /api/videos/{id}/ready`) then flips a
@@ -103,7 +103,7 @@ the new "Painel admin — CRUDs de entidades" mockup group.
   storage provider. Added `YouTube` to `VideoStorageProvider`
   (`Modules/Media/Domain/Enums/VideoStorageProvider.cs`); an admin
   registers a lesson's video the same way as any other provider (`PUT
-  /api/videos/lessons/{lessonId}` with `storageProvider: "YouTube"` and
+/api/videos/lessons/{lessonId}` with `storageProvider: "YouTube"` and
   `storageKey` set to the YouTube video id) — no raw bytes ever pass
   through CourseCore. `VideoStorageService.GeneratePlaybackUrlAsync`
   returns a `youtube-nocookie.com/embed/{videoId}` URL for that provider
@@ -125,7 +125,7 @@ the new "Painel admin — CRUDs de entidades" mockup group.
   reorder — no `[HttpGet]` anywhere on either. The only place module/
   lesson data comes back in a response body is
   `GetCourseDetailsUseCase` (`GET /api/courses/{id}`, nested `Modules`
-  on `CourseDetailsResponse`) — but that's the *student-facing* detail
+  on `CourseDetailsResponse`) — but that's the _student-facing_ detail
   endpoint: it calls `CourseAccessService.CanUserAccessCourseAsync` for
   the requesting user and throws `ForbiddenException` (403) when they
   can't access the course. An admin with `ManageCourses` but no personal
@@ -148,9 +148,8 @@ the new "Painel admin — CRUDs de entidades" mockup group.
   `ListCourseModulesUseCase` loads the course via
   `ICourseRepository.FindDetailsByIdAsync` and does **not** call
   `CourseAccessService`, so an admin with `ManageCourses` but no personal
-  enrollment in the course gets the full module/lesson tree instead of a
-  403. Reuses the existing `CourseModuleOutput.FromModule(module,
-  videoInfoByLessonId, hasAccess: true)` overload (same one
+  enrollment in the course gets the full module/lesson tree instead of a 403. Reuses the existing `CourseModuleOutput.FromModule(module,
+videoInfoByLessonId, hasAccess: true)` overload (same one
   `GetCourseDetailsUseCase` uses for the student-facing endpoint) with
   `hasAccess` hardcoded `true` — an admin's response always includes each
   lesson's video info (`VideoId`/`DurationSeconds`) regardless of
@@ -167,3 +166,10 @@ the new "Painel admin — CRUDs de entidades" mockup group.
   creation (see pendency 1).
 - `POST /api/videos` + `POST /api/videos/{id}/ready`, `ManageVideos`
   policy — real, once a lesson to attach to already exists.
+- **Added 2026-09-14**: `CourseModule.ImageUrl` — a brand-new field, no
+  prior mockup coverage or pendency, added on request alongside a real S3
+  upload endpoint (`POST /api/courses/{courseId}/modules/{moduleId}/image-upload-url`,
+  see `Docs/backend-pendencies/admin/image-uploads.md`). Only settable on
+  update, not at module creation (`CreateCourseModuleRequest` has no
+  `ImageUrl`) — the frontend correspondingly only offers the upload
+  control once the module already exists.

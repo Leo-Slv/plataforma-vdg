@@ -42,8 +42,11 @@ and empty defaults, following the same reasoning applied there.
   "Área" dropdown with one selected value, not a multi-select; ship
   single-area selection (`AreaIds` becomes a one-element array) even
   though the backend's data model technically allows more.
-- Uploading a cover image file — per the already-resolved
-  `course-crud.md` pendency 4, this ships as a plain URL input.
+- ~~Uploading a cover image file — per the already-resolved
+  `course-crud.md` pendency 4, this ships as a plain URL input.~~
+  **Superseded 2026-09-14** — see "Capa do curso" above and
+  `Docs/backend-pendencies/admin/image-uploads.md`; this is now a real
+  upload.
 - A real permanent delete — see "Excluir curso" above.
 
 ## Page content
@@ -73,8 +76,14 @@ given screen actually needs).
   `slugify()` used by `area-form.md` (same backend `Slug` value object
   pattern) — no separate slug input, consistent with that precedent.
 - **Descrição curta**: textarea, matches `Course.Description`.
-- **Capa do curso**: a plain URL text input (not a drop zone — see
-  "Non-goals"), matches `Course.ThumbnailUrl` (optional).
+- **Capa do curso**: ~~a plain URL text input (not a drop zone — see
+  "Non-goals")~~ — **Changed 2026-09-14**: a real file upload, edit mode
+  only. Picking an image uploads it to S3 immediately
+  (`POST /api/courses/{courseId}/thumbnail-upload-url`) and fills
+  `Course.ThumbnailUrl` with the resulting public URL. Disabled with a
+  "save the course first" hint in create mode, since the upload endpoint
+  needs an existing `courseId`. See
+  `Docs/backend-pendencies/admin/image-uploads.md`.
 - **Modelo de cobrança**: three radio options — "Gratuito para a área"
   (`Free`), "Pago" (`Paid`, reveals a price input in BRL when selected),
   "Por inscrição (turma controlada)" (`EnrollmentControlled`, no price
@@ -137,8 +146,8 @@ Resolved with the user on 2026-09-07:
 Carried over from `Docs/backend-pendencies/admin/course-crud.md` and
 `course-modules-lessons.md` (not re-litigated, just applied here):
 
-- **Cover image is a URL field, not an upload** (course-crud.md
-  pendency 4).
+- ~~**Cover image is a URL field, not an upload**~~ (course-crud.md
+  pendency 4) — superseded 2026-09-14, now a real S3 upload.
 - **"Excluir curso" unpublishes** rather than deleting (course-crud.md
   pendency 5).
 - **No module/lesson count or management here** — no backend read path
@@ -148,7 +157,7 @@ Carried over from `Docs/backend-pendencies/admin/course-crud.md` and
 Derived without needing to ask (mechanical, low-stakes):
 
 - **No single-course admin fetch endpoint exists** (`GET
-  /api/courses/{id}` is the student-facing `GetCourseDetailsUseCase`,
+/api/courses/{id}` is the student-facing `GetCourseDetailsUseCase`,
   which 403s an admin with no personal access to the course — confirmed
   by reading it, not assumed). **Decision: reuse the admin course list**
   (`GET /api/courses`, already fetched by the courses panel) and find
@@ -172,7 +181,7 @@ Derived without needing to ask (mechanical, low-stakes):
   immediately; redirects to `/admin/courses` on success.
 - `/admin/courses/{id}/edit` locates the course in the admin course
   list, pre-fills the form, and submitting calls `PUT
-  /api/courses/{id}` followed by `.../publish` or `.../unpublish` only
+/api/courses/{id}` followed by `.../publish` or `.../unpublish` only
   when the status actually changed; redirects to `/admin/courses` on
   success.
 - The slug shown always matches `slugify(title)` live.

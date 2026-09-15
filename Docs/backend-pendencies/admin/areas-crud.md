@@ -93,3 +93,9 @@ No spec was written for these screens yet — same status as
   `GET /api/areas/{id}`, `GET /api/areas` — all behind `ManageAreas`,
   covering name, slug, description, active/inactive, and display order.
   These back the bulk of both `1l` and `1m` already.
+- **Added 2026-09-14**: `Area.ImageUrl` — a brand-new field, no prior
+  mockup coverage or pendency, added on request alongside a real S3
+  upload endpoint (`POST /api/areas/{areaId}/image-upload-url`, see
+  `Docs/backend-pendencies/admin/image-uploads.md`). Editable only once
+  the area already exists (same "create first" limitation as course
+  thumbnails).

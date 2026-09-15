@@ -81,7 +81,7 @@ skip decision separately).
   issuance is unconditional: `RegisterLessonProgressUseCase`
   (`Modules/Progress/Application/UseCases/RegisterLessonProgressUseCase.cs`,
   line ~140) calls `Certificate.Issue` automatically whenever a user
-  reaches 100% completion on *any* course. `Course`
+  reaches 100% completion on _any_ course. `Course`
   (`Modules/Courses/Domain/Entities/Course.cs`) has no
   `HasCertificate`/`IssuesCertificate` flag or equivalent — there is no way
   to turn certificate issuance off for a specific course.
@@ -119,6 +119,16 @@ skip decision separately).
   curso" field as a plain URL input instead of a drag-and-drop upload. No
   code change; this is a deliberate scope choice, not a gap to revisit
   unless the product direction changes.
+- **Resolved (2026-09-14)**: CourseCore now has
+  `POST /api/courses/{courseId}/thumbnail-upload-url` (real S3 presigned
+  upload, same pattern as video/material uploads), so the field is a real
+  file picker now, not a URL input — see
+  `Docs/backend-pendencies/admin/image-uploads.md` for the shared
+  writeup covering this and three siblings (area cover, module cover,
+  user avatar), including a new Config-severity pendency (the S3 bucket
+  needs a public-read policy for these specific key prefixes, since
+  — unlike video/materials — these URLs are embedded directly as
+  `<img src>` across public pages).
 
 ## 5. No delete-course endpoint
 

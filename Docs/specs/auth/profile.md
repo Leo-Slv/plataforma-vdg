@@ -45,15 +45,18 @@ link).
   see "Backend / API contract" in `CLAUDE.md` and this screen's own
   pendency doc. The field stays read-only with its Confirmado/Pendente
   badge.
-- **Uploading a profile photo file.** `User.AvatarUrl` is a plain URL
+- **Uploading a profile photo file.** ~~`User.AvatarUrl` is a plain URL
   string — CourseCore still has no binary upload/storage pipeline
-  anywhere (same standing decision as course cover images and lesson
-  videos). "URL da foto" ships as a text field instead of `1z`'s
-  "Alterar foto" drop-zone affordance.
+  anywhere~~ **Resolved 2026-09-14**: `POST /api/auth/me/avatar-upload-url`
+  now exists (same presigned-S3 pattern as video/material uploads, see
+  `Docs/backend-pendencies/admin/image-uploads.md`), so this field is a
+  real file picker, not a URL text input — closer to `1z`'s "Alterar foto"
+  affordance than originally scoped, though still a plain `<input
+type="file">` rather than a drag-and-drop zone.
 - **A single combined "Salvar alterações" covering the password too.**
   `1z`'s mockup draws one form with an inline "Nova senha (deixe em
   branco para manter a atual)" field, but the real endpoints have
-  different shapes (`change-password` needs the *current* password too,
+  different shapes (`change-password` needs the _current_ password too,
   for verification) and different consequences (a name/phone/avatar
   save is silent; a password change force-logs-out every session). They
   ship as two independent forms/actions instead of one combined submit.
@@ -73,8 +76,10 @@ Route: `/profile`. No shared shell (matches `1z`'s own layout, and
     badge next to it — "Confirmado" / "Pendente" from `EmailVerifiedAt`.
   - **Telefone**: editable, optional, plain string (no format/country
     validation — matches the backend's own `Phone` field).
-  - **URL da foto**: editable, optional, must be a valid URL when
-    non-empty.
+  - **Foto de perfil**: a file upload (2026-09-14) — picking an image
+    uploads it to S3 immediately and fills the hidden `avatarUrl` field
+    with the resulting public URL; still saved together with the rest of
+    the form on "Salvar alterações", not on pick.
   - **Salvar alterações**: `PUT /api/auth/me`. Only this session's local
     auth state (cached name) and the `GET /api/auth/me` query cache are
     updated on success — other sessions are untouched, matching the
@@ -134,7 +139,7 @@ already set this session):
 
 - `/profile` renders the real name, email, phone, avatar, and the
   correct Confirmado/Pendente badge from `GET /api/auth/me`.
-- Editing name/phone/avatar URL and saving persists via
+- Editing name/phone and uploading a new avatar, then saving, persists via
   `PUT /api/auth/me` and updates the page without a full reload.
 - Email has no editable control anywhere on the page.
 - Changing password with a correct current password succeeds, shows the
