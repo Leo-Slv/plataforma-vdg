@@ -13,6 +13,7 @@ import { AdminTextareaField } from '@/features/admin/components/admin-textarea-f
 import { AccentColorPicker } from '@/features/admin/components/accent-color-picker';
 import { StatusToggle } from '@/features/admin/components/status-toggle';
 import { AreaCoursesPanel } from '@/features/admin/components/area-courses-panel';
+import { ImageUploadField } from '@/features/admin/components/image-upload-field';
 import type { Area } from '@/features/admin/model/area';
 
 type AreaFormProps = {
@@ -25,6 +26,9 @@ type AreaFormProps = {
 	submitError?: string | null;
 	onDelete?: () => void;
 	isDeleting?: boolean;
+	onRequestImageUpload?: (
+		file: File,
+	) => Promise<{ uploadUrl: string; publicUrl: string }>;
 };
 
 function AreaForm({
@@ -37,6 +41,7 @@ function AreaForm({
 	submitError,
 	onDelete,
 	isDeleting,
+	onRequestImageUpload,
 }: AreaFormProps) {
 	const form = useForm<AreaFormValues>({
 		resolver: zodResolver(areaFormSchema),
@@ -121,6 +126,17 @@ function AreaForm({
 						value={form.watch('accentColor')}
 						onChange={(value) =>
 							form.setValue('accentColor', value, { shouldValidate: true })
+						}
+					/>
+
+					<ImageUploadField
+						label="Capa da área"
+						imageUrl={form.watch('imageUrl')}
+						disabled={mode === 'create' || !onRequestImageUpload}
+						disabledHint="Salve a área primeiro para poder enviar a capa."
+						onRequestUpload={(file) => onRequestImageUpload!(file)}
+						onUploaded={(publicUrl) =>
+							form.setValue('imageUrl', publicUrl, { shouldValidate: true })
 						}
 					/>
 				</div>

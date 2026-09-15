@@ -15,6 +15,7 @@ const areaSchema = z.object({
 	active: z.boolean(),
 	displayOrder: z.number(),
 	accentColor: z.string(),
+	imageUrl: z.string().nullable(),
 	courseCount: z.number(),
 	courses: z.array(areaCourseSummarySchema),
 	createdAt: z.string(),

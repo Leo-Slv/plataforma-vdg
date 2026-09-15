@@ -15,6 +15,7 @@ function buildArea(overrides: Partial<Area>): Area {
 		active: true,
 		displayOrder: 0,
 		accentColor: '#000000',
+		imageUrl: null,
 		courseCount: 0,
 		courses: [],
 		createdAt: '2026-01-01T00:00:00.000Z',

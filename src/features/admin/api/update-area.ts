@@ -10,6 +10,7 @@ type UpdateAreaPayload = {
 	displayOrder: number;
 	active: boolean;
 	accentColor: AccentColorValue;
+	imageUrl: string | null;
 };
 
 async function updateArea(

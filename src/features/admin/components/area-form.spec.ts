@@ -13,6 +13,7 @@ const baseValues: AreaFormValues = {
 	displayOrder: 2,
 	accentColor: 'Blue',
 	active: true,
+	imageUrl: null,
 };
 
 const noop = () => {};

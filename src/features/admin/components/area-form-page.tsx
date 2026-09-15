@@ -15,6 +15,7 @@ import {
 	useAreaQuery,
 	useCreateAreaMutation,
 	useUpdateAreaMutation,
+	useRequestAreaImageUploadUrlMutation,
 } from '@/features/admin/hooks/admin.queries';
 import { slugify } from '@/features/admin/lib/slugify';
 import { DEFAULT_ACCENT_COLOR } from '@/features/admin/lib/accent-color';
@@ -39,6 +40,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 	});
 	const createMutation = useCreateAreaMutation();
 	const updateMutation = useUpdateAreaMutation();
+	const requestImageUploadUrlMutation = useRequestAreaImageUploadUrlMutation();
 	const [submitError, setSubmitError] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -99,6 +101,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 					displayOrder: values.displayOrder,
 					active: values.active,
 					accentColor: values.accentColor,
+					imageUrl: values.imageUrl,
 				},
 			},
 			{
@@ -135,6 +138,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 					displayOrder: area.displayOrder,
 					active: false,
 					accentColor: area.accentColor as AreaFormValues['accentColor'],
+					imageUrl: area.imageUrl,
 				},
 			},
 			{
@@ -163,6 +167,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 					accentColor: areaQuery.data
 						.accentColor as AreaFormValues['accentColor'],
 					active: areaQuery.data.active,
+					imageUrl: areaQuery.data.imageUrl,
 				}
 			: {
 					name: '',
@@ -170,6 +175,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 					displayOrder: 0,
 					accentColor: DEFAULT_ACCENT_COLOR,
 					active: true,
+					imageUrl: null,
 				};
 
 	return (
@@ -222,6 +228,17 @@ function AreaFormPage(props: AreaFormPageProps) {
 					submitError={submitError}
 					onDelete={props.mode === 'edit' ? handleDelete : undefined}
 					isDeleting={props.mode === 'edit' && updateMutation.isPending}
+					onRequestImageUpload={
+						props.mode === 'edit'
+							? (file) =>
+									requestImageUploadUrlMutation.mutateAsync({
+										areaId: props.areaId,
+										fileName: file.name,
+										contentType: file.type,
+										sizeBytes: file.size,
+									})
+							: undefined
+					}
 				/>
 			)}
 		</div>
