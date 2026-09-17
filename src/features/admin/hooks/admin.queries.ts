@@ -46,6 +46,7 @@ import { unlistVideo } from '@/features/admin/api/unlist-video';
 import { getUsers } from '@/features/admin/api/get-users';
 import { createUser } from '@/features/admin/api/create-user';
 import { getUserAreaAccess } from '@/features/admin/api/get-user-area-access';
+import { getRoleAreaAccess } from '@/features/admin/api/get-role-area-access';
 import { getUser } from '@/features/admin/api/get-user';
 import { updateUser } from '@/features/admin/api/update-user';
 import { grantUserAreaAccess } from '@/features/admin/api/grant-user-area-access';
@@ -484,6 +485,19 @@ function useUserAreaAccessQuery(userId: string, options: { enabled: boolean }) {
 	});
 }
 
+function useRoleAreaAccessQueries(
+	roleIds: string[],
+	options: { enabled: boolean },
+) {
+	return useQueries({
+		queries: roleIds.map((roleId) => ({
+			queryKey: queryKeys.admin.roleAreaAccess(roleId),
+			queryFn: () => getRoleAreaAccess(roleId),
+			enabled: options.enabled,
+		})),
+	});
+}
+
 function useUserQuery(userId: string, options: { enabled: boolean }) {
 	return useQuery({
 		queryKey: queryKeys.admin.user(userId),
@@ -618,6 +632,7 @@ export {
 	useUsersQuery,
 	useCreateUserMutation,
 	useUserAreaAccessQuery,
+	useRoleAreaAccessQueries,
 	useUserQuery,
 	useUsersByIdsQueries,
 	useUpdateUserMutation,

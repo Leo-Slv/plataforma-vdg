@@ -50,6 +50,8 @@ const queryKeys = {
 			['admin', 'users', page, pageSize, search] as const,
 		userAreaAccess: (userId: string) =>
 			['admin', 'users', userId, 'area-access'] as const,
+		roleAreaAccess: (roleId: string) =>
+			['admin', 'roles', roleId, 'area-access'] as const,
 		user: (userId: string) => ['admin', 'users', userId] as const,
 		grantedCourseAccess: (userId: string) =>
 			['admin', 'users', userId, 'granted-courses'] as const,

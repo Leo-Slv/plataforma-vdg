@@ -32,6 +32,7 @@ test('renders one toggle per area', () => {
 				buildArea({ id: 'b', name: 'Liderança' }),
 			],
 			pendingGrantedAreaIds: new Set<string>(),
+			roleGrantedAreaIds: new Set<string>(),
 			onToggle: () => {},
 		}),
 	);
@@ -44,6 +45,7 @@ test('marks a granted area as checked', () => {
 		createElement(AreaAccessToggleList, {
 			areas: [buildArea({ id: 'a', name: 'Discipulado' })],
 			pendingGrantedAreaIds: new Set<string>(['a']),
+			roleGrantedAreaIds: new Set<string>(),
 			onToggle: () => {},
 		}),
 	);
@@ -55,8 +57,35 @@ test('marks a non-granted area as unchecked', () => {
 		createElement(AreaAccessToggleList, {
 			areas: [buildArea({ id: 'a', name: 'Família' })],
 			pendingGrantedAreaIds: new Set<string>(),
+			roleGrantedAreaIds: new Set<string>(),
 			onToggle: () => {},
 		}),
 	);
 	assert.match(html, /aria-checked="false"/);
+});
+
+test('marks a role-granted area as checked, disabled, with an explanatory note', () => {
+	const html = renderToStaticMarkup(
+		createElement(AreaAccessToggleList, {
+			areas: [buildArea({ id: 'a', name: 'Admin' })],
+			pendingGrantedAreaIds: new Set<string>(),
+			roleGrantedAreaIds: new Set<string>(['a']),
+			onToggle: () => {},
+		}),
+	);
+	assert.match(html, /aria-checked="true"/);
+	assert.match(html, /disabled=""/);
+	assert.match(html, /Liberada pelo papel do usuário/);
+});
+
+test('a role-granted area stays checked even without an individual grant', () => {
+	const html = renderToStaticMarkup(
+		createElement(AreaAccessToggleList, {
+			areas: [buildArea({ id: 'a', name: 'Admin' })],
+			pendingGrantedAreaIds: new Set<string>(),
+			roleGrantedAreaIds: new Set<string>(['a']),
+			onToggle: () => {},
+		}),
+	);
+	assert.doesNotMatch(html, /aria-checked="false"/);
 });

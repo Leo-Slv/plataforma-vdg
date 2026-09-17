@@ -78,6 +78,13 @@ Route: `/admin/users/{userId}/edit`. Shared shell: `AdminSidebar`
   state only; "Salvar alterações" diffs against the loaded grant list and
   fires a grant (`POST /api/access/user-area`) or revoke
   (`DELETE /api/access/user-area/{userId}/{areaId}`) per changed area.
+  **Since 2026-09-17**: an area also shows as checked when it comes from
+  one of the user's roles instead of an individual grant (fetched via
+  `GET /api/access/role-area/{roleId}` for each assigned role) — that
+  toggle renders disabled with a "Liberada pelo papel do usuário" note,
+  since flipping it would only write/revoke `UserAreaAccess` and has no
+  effect on the role's own access. See `Docs/backend-pendencies/admin/users-panel.md`
+  pendency 10 for the user-reported confusion this fixes.
 
 ### Right column
 

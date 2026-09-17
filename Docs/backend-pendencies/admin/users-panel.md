@@ -262,6 +262,38 @@ new "Painel admin — CRUDs de entidades" mockup group.
   `POST`/`DELETE /api/users/{userId}/roles/{roleId}` for each change,
   batched alongside the existing area-grant and active-status saves.
 
+## 10. "Áreas liberadas" toggles only reflected per-user grants, not the role's own area access — CLOSED
+
+- **User-reported (2026-09-17)**: an Admin user reported having access to
+  every area in practice, yet the "Áreas liberadas" toggle grid on their
+  own edit screen showed every toggle off (gray) — looked like a bug.
+- **Root cause**: not a bug in the sense of broken code — `UserAreaAccess`
+  (what the toggle grid reads/writes, via `GET/POST/DELETE
+  /api/access/user-area/...`, pendency 2) and `RoleAreaAccess` (what
+  actually grants the Admin role access to every area, seeded at startup —
+  `CourseCoreDatabaseSeeder.EnsureAdminRoleAreaAccesses`) are two
+  independent grant mechanisms. `CourseAccessService.CanUserAccessCourseAsync`
+  checks both and allows access if either says yes, so an Admin's access is
+  real — but this screen only ever read/wrote the first one, so it had no
+  way to show "this area is actually open, just via your role, not an
+  individual grant." Confusing on its own, and actively misleading if an
+  operator tried to toggle it off expecting to restrict a role member —
+  nothing would change, since the role grant is untouched by this screen.
+- **What was missing**: no read endpoint existed for `RoleAreaAccess` at
+  all — `AreasController` only had `POST /api/access/role-area` (grant),
+  no `GET`.
+- **Resolved**: added `GET /api/access/role-area/{roleId}`
+  (`ListRoleAreaAccessUseCase`, same `ManageRoleAreaAccess` policy already
+  guarding the POST route). The frontend now fetches this for each role
+  the user is assigned (`useRoleAreaAccessQueries`) and, in
+  `AreaAccessToggleList`, renders an area as checked-and-disabled with a
+  "Liberada pelo papel do usuário — este controle não tem efeito aqui."
+  note whenever the area comes from a role grant, instead of showing it
+  identically to an untouched, ungranted area. Toggling still only ever
+  writes `UserAreaAccess` (per-user grants) — this doesn't add a way to
+  revoke a role's own area access from this screen, which was never in
+  scope here (that's `RoleAreaAccess` management, a role-editing concern).
+
 ## What's already real
 
 - `POST /api/users` (create), `PUT /api/users/{id}` (update, including the

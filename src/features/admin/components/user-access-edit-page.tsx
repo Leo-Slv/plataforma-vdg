@@ -19,6 +19,7 @@ import {
 	useRemoveUserRoleMutation,
 	useAreasQuery,
 	useUserAreaAccessQuery,
+	useRoleAreaAccessQueries,
 	useGrantUserAreaAccessMutation,
 	useRevokeUserAreaAccessMutation,
 	useGrantedCourseAccessQuery,
@@ -52,6 +53,24 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 		enabled: ready,
 	});
 	const coursesQuery = useCoursesQuery({ enabled: ready });
+
+	// Roles can grant area access on their own (RoleAreaAccess) independent
+	// of any per-user grant below — the Admin role, for one, is seeded with
+	// access to every area. Fetched here (one query per assigned role) so
+	// the toggle list can tell "granted via this role" apart from "granted
+	// individually to this user", instead of showing every role-covered
+	// area as if it had no access at all.
+	const assignedRoleIds = (rolesQuery.data ?? [])
+		.filter((role) => userQuery.data?.roleNames.includes(role.name))
+		.map((role) => role.id);
+	const roleAreaAccessQueries = useRoleAreaAccessQueries(assignedRoleIds, {
+		enabled: ready,
+	});
+	const roleGrantedAreaIds = new Set(
+		roleAreaAccessQueries.flatMap(
+			(query) => query.data?.map((access) => access.areaId) ?? [],
+		),
+	);
 
 	const updateUserMutation = useUpdateUserMutation();
 	const assignRoleMutation = useAssignUserRoleMutation();
@@ -356,6 +375,7 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 								<AreaAccessToggleList
 									areas={areas}
 									pendingGrantedAreaIds={pendingAreaIds ?? new Set()}
+									roleGrantedAreaIds={roleGrantedAreaIds}
 									onToggle={toggleArea}
 								/>
 							</div>
