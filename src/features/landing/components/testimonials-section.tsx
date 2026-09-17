@@ -1,8 +1,10 @@
 'use client';
 
 import { useRef } from 'react';
+import { motion } from 'motion/react';
 
 import { AvatarImage } from '@/components/avatar-image';
+import { cardScrollRevealAnimation } from '@/lib/motion/card-reveal';
 import type { Testimonial } from '@/features/landing/model/testimonial';
 
 type TestimonialsSectionProps = {
@@ -58,10 +60,11 @@ function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
 						'linear-gradient(to right, #000 0, #000 96%, transparent 100%)',
 				}}
 			>
-				{testimonials.map((testimonial) => (
-					<div
+				{testimonials.map((testimonial, index) => (
+					<motion.div
 						key={testimonial.id}
 						className="flex w-[86%] flex-none snap-start flex-col gap-4.5 rounded-xl bg-surface-2 p-7.5 sm:w-[calc((100%-3.5rem)/3)]"
+						{...cardScrollRevealAnimation(index)}
 					>
 						<span
 							aria-hidden
@@ -83,7 +86,7 @@ function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
 								{testimonial.authorName}
 							</div>
 						</div>
-					</div>
+					</motion.div>
 				))}
 			</div>
 		</section>

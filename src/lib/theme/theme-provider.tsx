@@ -1,6 +1,7 @@
 'use client';
 
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { MotionConfig } from 'motion/react';
 
 function ThemeProvider({ children }: { children: React.ReactNode }) {
 	return (
@@ -10,7 +11,10 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
 			enableSystem={false}
 			storageKey="vdg-theme"
 		>
-			{children}
+			{/* Respects prefers-reduced-motion for every motion.* animation in
+			    the app: transforms (our y-offset fade-ups included) are skipped,
+			    opacity fades still play. */}
+			<MotionConfig reducedMotion="user">{children}</MotionConfig>
 		</NextThemesProvider>
 	);
 }

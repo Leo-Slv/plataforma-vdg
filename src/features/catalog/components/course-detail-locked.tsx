@@ -1,3 +1,6 @@
+import { motion } from 'motion/react';
+
+import { cardScrollRevealAnimation } from '@/lib/motion/card-reveal';
 import { PreviewModuleCard } from '@/features/catalog/components/preview-module-card';
 import {
 	formatCurrencyBrl,
@@ -180,12 +183,16 @@ function CourseDetailLocked({
 					{details ? (
 						<div className="mt-6 grid grid-cols-1 gap-5.5 sm:grid-cols-2">
 							{details.modules.map((module, index) => (
-								<PreviewModuleCard
+								<motion.div
 									key={module.id}
-									module={module}
-									position={index + 1}
-									slug={course.slug}
-								/>
+									{...cardScrollRevealAnimation(index)}
+								>
+									<PreviewModuleCard
+										module={module}
+										position={index + 1}
+										slug={course.slug}
+									/>
+								</motion.div>
 							))}
 						</div>
 					) : (

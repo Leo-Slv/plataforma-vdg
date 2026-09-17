@@ -1,3 +1,6 @@
+import { motion } from 'motion/react';
+
+import { cardScrollRevealAnimation } from '@/lib/motion/card-reveal';
 import {
 	howItWorksIntro,
 	howItWorksSteps,
@@ -18,11 +21,12 @@ function HowItWorksSection() {
 
 				<div className="flex flex-col">
 					{howItWorksSteps.map((item, index) => (
-						<div
+						<motion.div
 							key={item.step}
 							className={`flex gap-5 border-t border-foreground/12 py-5.5 ${
 								index === howItWorksSteps.length - 1 ? 'border-b' : ''
 							}`}
+							{...cardScrollRevealAnimation(index)}
 						>
 							<span className="w-6.5 font-heading text-[15px] font-light text-foreground/35">
 								{item.step}
@@ -33,7 +37,7 @@ function HowItWorksSection() {
 									{item.description}
 								</div>
 							</div>
-						</div>
+						</motion.div>
 					))}
 				</div>
 			</div>

@@ -1,3 +1,6 @@
+import { motion } from 'motion/react';
+
+import { cardScrollRevealAnimation } from '@/lib/motion/card-reveal';
 import { ModuleCard } from '@/features/catalog/components/module-card';
 import type { CourseDetails } from '@/features/catalog/model/course-details';
 
@@ -63,12 +66,12 @@ function CourseDetailOwned({
 				{details ? (
 					<div className="mt-6 grid grid-cols-1 gap-5.5 sm:grid-cols-2">
 						{modules.map((module, index) => (
-							<ModuleCard
+							<motion.div
 								key={module.id}
-								module={module}
-								position={index + 1}
-								slug={slug}
-							/>
+								{...cardScrollRevealAnimation(index)}
+							>
+								<ModuleCard module={module} position={index + 1} slug={slug} />
+							</motion.div>
 						))}
 					</div>
 				) : (

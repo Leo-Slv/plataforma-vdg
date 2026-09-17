@@ -3,11 +3,13 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { motion } from 'motion/react';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { getUserName } from '@/lib/auth/access-token';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { isApiError } from '@/lib/http/api-error';
+import { cardEnterAnimation } from '@/lib/motion/card-reveal';
 import { AppNav } from '@/components/app-nav';
 import { LoadingScreen } from '@/components/loading-screen';
 import { useCurrentUserQuery } from '@/features/auth/hooks/auth.queries';
@@ -178,23 +180,28 @@ function MyCoursesPage() {
 								</div>
 
 								<div className="mt-7 grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
-									{sortedResolved.map((entry) => (
-										<OwnedCourseCard
-											key={entry.course.id}
-											course={entry.course}
-											areaName={entry.areaName}
-											slug={entry.course.slug}
-											state={computeCardState(entry.details, entry.progress)}
-										/>
+									{sortedResolved.map((entry, index) => (
+										<motion.div key={entry.course.id} {...cardEnterAnimation(index)}>
+											<OwnedCourseCard
+												course={entry.course}
+												areaName={entry.areaName}
+												slug={entry.course.slug}
+												state={computeCardState(entry.details, entry.progress)}
+											/>
+										</motion.div>
 									))}
-									{loading.map(({ course, areaName }) => (
-										<OwnedCourseCard
+									{loading.map(({ course, areaName }, index) => (
+										<motion.div
 											key={course.id}
-											course={course}
-											areaName={areaName}
-											slug={course.slug}
-											state={{ kind: 'loading' }}
-										/>
+											{...cardEnterAnimation(sortedResolved.length + index)}
+										>
+											<OwnedCourseCard
+												course={course}
+												areaName={areaName}
+												slug={course.slug}
+												state={{ kind: 'loading' }}
+											/>
+										</motion.div>
 									))}
 								</div>
 							</div>

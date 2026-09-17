@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { motion } from 'motion/react';
 
 import { appRoutes } from '@/lib/routes/app-routes';
+import { cardScrollRevealAnimation } from '@/lib/motion/card-reveal';
 import { featuredCourses } from '@/features/landing/lib/landing-content';
 import { FeaturedCourseCard } from '@/features/landing/components/featured-course-card';
 import type { PublicFeaturedCourse } from '@/features/landing/model/public-catalog-summary';
@@ -26,16 +28,14 @@ function FeaturedCoursesSection({ liveCourses }: FeaturedCoursesSectionProps) {
 			</div>
 
 			<div className="mt-4.5 grid grid-cols-1 gap-3.5 sm:mt-7.5 sm:grid-cols-3 sm:gap-7">
-				{featuredCourses.map((course) => {
+				{featuredCourses.map((course, index) => {
 					const match = liveCourses?.find(
 						(liveCourse) => liveCourse.slug === course.slug,
 					);
 					return (
-						<FeaturedCourseCard
-							key={course.slug}
-							course={course}
-							live={match}
-						/>
+						<motion.div key={course.slug} {...cardScrollRevealAnimation(index)}>
+							<FeaturedCourseCard course={course} live={match} />
+						</motion.div>
 					);
 				})}
 			</div>

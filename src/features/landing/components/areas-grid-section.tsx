@@ -2,8 +2,10 @@
 
 import { useRef } from 'react';
 import Link from 'next/link';
+import { motion } from 'motion/react';
 
 import { appRoutes } from '@/lib/routes/app-routes';
+import { cardScrollRevealAnimation } from '@/lib/motion/card-reveal';
 import type { PublicAreaSummary } from '@/features/landing/model/public-catalog-summary';
 
 const MAX_VISIBLE = 6;
@@ -22,8 +24,9 @@ function AreaCard({
 	className?: string;
 }) {
 	return (
-		<div
+		<motion.div
 			className={`flex flex-col gap-3.5 rounded-lg border border-foreground/8 bg-canvas-alt p-5 ${className ?? ''}`}
+			{...cardScrollRevealAnimation(index)}
 		>
 			<span className="font-heading text-[30px] font-extralight text-foreground/25">
 				{String(index + 1).padStart(2, '0')}
@@ -38,7 +41,7 @@ function AreaCard({
 						: `${area.publishedCourseCount} cursos`}
 				</div>
 			</div>
-		</div>
+		</motion.div>
 	);
 }
 
