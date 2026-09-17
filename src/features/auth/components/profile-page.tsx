@@ -14,6 +14,7 @@ import { performLogout } from '@/lib/auth/logout';
 import { clearAccessToken, setUserName } from '@/lib/auth/access-token';
 import { isApiError } from '@/lib/http/api-error';
 import { LoadingScreen } from '@/components/loading-screen';
+import { UserAvatar } from '@/components/user-avatar';
 import {
 	useCurrentUserQuery,
 	useLogoutMutation,
@@ -55,7 +56,6 @@ function ProfilePage() {
 
 	const [profileError, setProfileError] = useState<string | null>(null);
 	const [profileSaved, setProfileSaved] = useState(false);
-	const [avatarFailed, setAvatarFailed] = useState(false);
 	const [passwordError, setPasswordError] = useState<string | null>(null);
 	const [passwordChanged, setPasswordChanged] = useState(false);
 	const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -108,7 +108,6 @@ function ProfilePage() {
 					queryClient.setQueryData(queryKeys.auth.currentUser, updated);
 					setUserName(updated.name);
 					setProfileSaved(true);
-					setAvatarFailed(false);
 					toast.success('Perfil atualizado.');
 				},
 				onError: () => {
@@ -143,7 +142,6 @@ function ProfilePage() {
 				onProgress: setAvatarUploadPercent,
 			});
 			profileForm.setValue('avatarUrl', storageKey, { shouldValidate: true });
-			setAvatarFailed(false);
 		} catch {
 			setAvatarUploadError(AVATAR_UPLOAD_ERROR_MESSAGE);
 		} finally {
@@ -200,20 +198,11 @@ function ProfilePage() {
 				</Link>
 
 				<div className="mt-6.5 flex items-center gap-4">
-					{user?.avatarUrl && !avatarFailed ? (
-						// eslint-disable-next-line @next/next/no-img-element -- external, unconfigured media host
-						<img
-							key={user.avatarUrl}
-							src={user.avatarUrl}
-							alt=""
-							className="size-14 flex-none rounded-full object-cover"
-							onError={() => setAvatarFailed(true)}
-						/>
-					) : (
-						<span className="flex size-14 flex-none items-center justify-center rounded-full bg-surface-3 font-heading text-lg">
-							{initials}
-						</span>
-					)}
+					<UserAvatar
+						avatarUrl={user?.avatarUrl ?? null}
+						initials={initials}
+						className="size-14 font-heading text-lg"
+					/>
 					<h1 className="font-heading text-[28px] leading-[1.2] font-extralight">
 						Perfil
 					</h1>
