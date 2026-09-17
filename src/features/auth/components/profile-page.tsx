@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -65,9 +65,20 @@ function ProfilePage() {
 	const [avatarUploadError, setAvatarUploadError] = useState<string | null>(
 		null,
 	);
+	const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(
+		null,
+	);
 
 	const user = currentUserQuery.data;
 	const initials = getInitials(user?.name ?? null);
+
+	useEffect(() => {
+		return () => {
+			if (avatarPreviewUrl) {
+				URL.revokeObjectURL(avatarPreviewUrl);
+			}
+		};
+	}, [avatarPreviewUrl]);
 
 	const profileForm = useForm<ProfileFormValues>({
 		resolver: zodResolver(profileFormSchema),
@@ -108,6 +119,7 @@ function ProfilePage() {
 					queryClient.setQueryData(queryKeys.auth.currentUser, updated);
 					setUserName(updated.name);
 					setProfileSaved(true);
+					setAvatarPreviewUrl(null);
 					toast.success('Perfil atualizado.');
 				},
 				onError: () => {
@@ -129,6 +141,7 @@ function ProfilePage() {
 		}
 
 		setAvatarUploadError(null);
+		setAvatarPreviewUrl(URL.createObjectURL(file));
 		setIsUploadingAvatar(true);
 		setAvatarUploadPercent(0);
 		try {
@@ -142,8 +155,11 @@ function ProfilePage() {
 				onProgress: setAvatarUploadPercent,
 			});
 			profileForm.setValue('avatarUrl', storageKey, { shouldValidate: true });
+			toast.success('Foto enviada. Clique em "Salvar alterações" para confirmar.');
 		} catch {
 			setAvatarUploadError(AVATAR_UPLOAD_ERROR_MESSAGE);
+			toast.error(AVATAR_UPLOAD_ERROR_MESSAGE);
+			setAvatarPreviewUrl(null);
 		} finally {
 			setIsUploadingAvatar(false);
 		}
@@ -273,13 +289,20 @@ function ProfilePage() {
 								<div className="mb-2.25 font-heading text-[11px] tracking-[0.14em] text-foreground/45 uppercase">
 									Foto de perfil
 								</div>
-								<input
-									type="file"
-									accept={ACCEPTED_AVATAR_TYPES}
-									onChange={handleAvatarFileChange}
-									disabled={isUploadingAvatar}
-									className="w-full rounded-md border border-foreground/12 bg-surface-2 px-4 py-3.25 font-sans text-[13px] font-light text-foreground file:mr-3 file:rounded-full file:border-0 file:bg-foreground file:px-3.5 file:py-1.5 file:font-sans file:text-[12px] file:text-background disabled:opacity-60"
-								/>
+								<div className="flex items-center gap-3.5">
+									<UserAvatar
+										avatarUrl={avatarPreviewUrl ?? user?.avatarUrl ?? null}
+										initials={initials}
+										className="size-12.5 font-heading text-base"
+									/>
+									<input
+										type="file"
+										accept={ACCEPTED_AVATAR_TYPES}
+										onChange={handleAvatarFileChange}
+										disabled={isUploadingAvatar}
+										className="flex-1 rounded-md border border-foreground/12 bg-surface-2 px-4 py-3.25 font-sans text-[13px] font-light text-foreground file:mr-3 file:rounded-full file:border-0 file:bg-foreground file:px-3.5 file:py-1.5 file:font-sans file:text-[12px] file:text-background disabled:opacity-60"
+									/>
+								</div>
 								{isUploadingAvatar ? (
 									<div className="mt-2.5 flex items-center gap-2.5">
 										<span className="block h-[3px] flex-1 overflow-hidden rounded-full bg-foreground/14">
