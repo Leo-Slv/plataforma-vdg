@@ -104,3 +104,27 @@ arn:aws:s3:::<bucket>/avatars/*
 The user confirmed (2026-09-15) this is being handled separately on the
 AWS side — the presigned-read change above doesn't touch it either way,
 since read and write are governed by independent IAM permissions.
+
+## Bug (fixed 2026-09-17): saving a module/course with the new storage-key `ImageUrl`/`ThumbnailUrl` was rejected as invalid
+
+**Severity: was Blocking** for the module-cover upload flow specifically.
+
+`CourseInputValidator` (`Modules/Courses/Application/Validation/CourseInputValidator.cs`)
+validated `ModuleImageUrl`/`ThumbnailUrl` with a private `IsValidHttpUrl`
+helper that required `Uri.TryCreate(..., UriKind.Absolute, ...)` with an
+`http`/`https` scheme — a leftover from before the revision above, when
+these fields were still pasted URLs. Once the revision made them store a
+bare S3 storage key instead (e.g.
+`module-covers/9f600ce28869449eb2af4ef8154a7c5c/....jpg`), every
+`PUT /api/courses/{courseId}/modules/{moduleId}` (and, by the same
+codepath, `PUT /api/courses/{courseId}`) that included a freshly uploaded
+cover/thumbnail failed with `400 { "message": "Course payload is
+invalid." }` — the validator's generic fallback message, giving no hint
+the actual failing field was the image. `Area`'s equivalent validator
+(`UpdateAreaUseCase`) had already been fixed to a length-only check when
+its own cover-upload field shipped; `CourseInputValidator` was missed.
+Fixed by dropping `IsValidHttpUrl` and reusing the existing
+length-only `IsValidOptional` check for both fields (matching `Area`'s
+pattern) — a legacy full URL (containing `://`) still passes the length
+check fine, `ImageUrlResolver` on the read side already treats that case
+as pass-through per the revision above.
