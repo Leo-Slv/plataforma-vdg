@@ -1,4 +1,6 @@
+import { UserAvatar } from '@/components/user-avatar';
 import { formatRelativeTime } from '@/features/catalog/lib/format-relative-time';
+import { getInitials } from '@/features/catalog/lib/user-display';
 import type { LessonQuestion } from '@/features/catalog/model/lesson-question';
 
 type LessonQuestionReplyProps = {
@@ -22,7 +24,12 @@ function LessonQuestionItem({ question, reply }: LessonQuestionItemProps) {
 	return (
 		<div className="border-b border-foreground/8 py-4.5 last:border-b-0">
 			<div className="flex items-baseline justify-between gap-3">
-				<span className="font-sans text-[13px] text-foreground/85">
+				<span className="flex items-center gap-2 font-sans text-[13px] text-foreground/85">
+					<UserAvatar
+						avatarUrl={question.askedByAvatarUrl}
+						initials={getInitials(question.askedByName)}
+						className="size-6 text-[10px]"
+					/>
 					{question.askedByName}
 				</span>
 				<span className="flex-none font-sans text-[11.5px] font-light text-foreground/35">
@@ -35,7 +42,12 @@ function LessonQuestionItem({ question, reply }: LessonQuestionItemProps) {
 
 			{question.answerText ? (
 				<div className="mt-3 border-l-2 border-[oklch(0.62_0.1_248)] pl-3.5">
-					<span className="font-sans text-[12px] text-[oklch(0.72_0.1_248)]">
+					<span className="flex items-center gap-2 font-sans text-[12px] text-[oklch(0.72_0.1_248)]">
+						<UserAvatar
+							avatarUrl={question.answeredByAvatarUrl}
+							initials={getInitials(question.answeredByName)}
+							className="size-5.5 text-[9.5px]"
+						/>
 						{question.answeredByName}
 					</span>
 					<p className="mt-1 font-sans text-[13px] leading-[1.6] font-light text-foreground/60">

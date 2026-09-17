@@ -5,6 +5,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { queryKeys } from '@/lib/constants/query-keys';
+import { UserAvatar } from '@/components/user-avatar';
+import { getInitials } from '@/features/catalog/lib/user-display';
 import { formatRelativeTime } from '@/features/admin/lib/format-relative-time';
 import {
 	useAnswerLessonQuestionMutation,
@@ -97,7 +99,12 @@ function LessonQuestionsPanel({ lessonId }: LessonQuestionsPanelProps) {
 								className="rounded-[10px] border border-foreground/12 p-4"
 							>
 								<div className="flex items-baseline justify-between gap-3">
-									<span className="font-sans text-[12.5px] text-foreground">
+									<span className="flex items-center gap-2 font-sans text-[12.5px] text-foreground">
+										<UserAvatar
+											avatarUrl={question.askedByAvatarUrl}
+											initials={getInitials(question.askedByName)}
+											className="size-5.5 text-[9.5px]"
+										/>
 										{question.askedByName}
 									</span>
 									<span className="flex-none font-sans text-[11px] font-light text-foreground/35">
@@ -110,7 +117,12 @@ function LessonQuestionsPanel({ lessonId }: LessonQuestionsPanelProps) {
 
 								{question.answerText ? (
 									<div className="mt-3 border-l-2 border-[oklch(0.62_0.1_248)] pl-3.5">
-										<span className="font-sans text-[11.5px] text-[oklch(0.72_0.1_248)]">
+										<span className="flex items-center gap-2 font-sans text-[11.5px] text-[oklch(0.72_0.1_248)]">
+											<UserAvatar
+												avatarUrl={question.answeredByAvatarUrl}
+												initials={getInitials(question.answeredByName)}
+												className="size-5 text-[9px]"
+											/>
 											{question.answeredByName}
 										</span>
 										<p className="mt-1 font-sans text-[12.5px] leading-[1.6] font-light text-foreground/60">

@@ -9,9 +9,11 @@ import type { LessonQuestion } from '@/features/catalog/model/lesson-question';
 const BASE_QUESTION: LessonQuestion = {
 	id: 'q1',
 	askedByName: 'Maria Souza',
+	askedByAvatarUrl: null,
 	questionText: 'Qual a diferença entre chamado e função?',
 	answerText: null,
 	answeredByName: null,
+	answeredByAvatarUrl: null,
 	createdAt: new Date().toISOString(),
 };
 
@@ -44,6 +46,32 @@ test('renders the answerer name and answer text once answered', () => {
 
 	assert.match(html, /Pr\. João/);
 	assert.match(html, /O chamado vem antes de qualquer cargo\./);
+});
+
+test('renders initials avatars for asker and answerer when no avatar photo is set', () => {
+	const answered: LessonQuestion = {
+		...BASE_QUESTION,
+		answerText: 'O chamado vem antes de qualquer cargo.',
+		answeredByName: 'Pr. João',
+	};
+	const html = renderToStaticMarkup(
+		createElement(LessonQuestionItem, { question: answered }),
+	);
+
+	assert.match(html, />MS</);
+	assert.match(html, />PJ</);
+});
+
+test('renders the real avatar photo for the asker when askedByAvatarUrl is set', () => {
+	const withAvatar: LessonQuestion = {
+		...BASE_QUESTION,
+		askedByAvatarUrl: 'https://example.com/maria.jpg',
+	};
+	const html = renderToStaticMarkup(
+		createElement(LessonQuestionItem, { question: withAvatar }),
+	);
+
+	assert.match(html, /<img[^>]*src="https:\/\/example\.com\/maria\.jpg"/);
 });
 
 const NOOP_REPLY = {
