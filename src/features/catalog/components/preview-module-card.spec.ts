@@ -31,6 +31,7 @@ function courseModule(overrides: Partial<CourseModule>): CourseModule {
 		description: '',
 		displayOrder: 1,
 		published: true,
+		imageUrl: null,
 		lessons: [],
 		...overrides,
 	};
@@ -61,6 +62,21 @@ test('links to the first free lesson and shows its known duration when the modul
 	assert.match(html, /Assistir aula grátis/);
 	assert.match(html, /20min/);
 	assert.match(html, /1 aula grátis/);
+});
+
+test('renders the module cover image when imageUrl is set', () => {
+	const html = renderToStaticMarkup(
+		createElement(PreviewModuleCard, {
+			module: courseModule({
+				imageUrl: 'https://example.com/module-cover.jpg',
+				lessons: [lesson({ id: 'l1', freePreview: true })],
+			}),
+			position: 1,
+			slug: 'escola-de-lideres',
+		}),
+	);
+
+	assert.match(html, /<img[^>]*src="https:\/\/example\.com\/module-cover\.jpg"/);
 });
 
 test('renders "Bloqueado" with no link when the module has no free lesson', () => {

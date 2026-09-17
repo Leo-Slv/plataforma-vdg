@@ -38,6 +38,7 @@ const details: CourseDetails = {
 			description: '',
 			displayOrder: 1,
 			published: true,
+			imageUrl: null,
 			lessons: [
 				lesson('l1', 'O caráter do líder', 1),
 				lesson('l2', 'Servindo com integridade', 2),
@@ -49,6 +50,7 @@ const details: CourseDetails = {
 			description: '',
 			displayOrder: 2,
 			published: true,
+			imageUrl: null,
 			lessons: [lesson('l3', 'Fundamentos da fé', 1)],
 		},
 	],

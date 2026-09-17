@@ -15,6 +15,7 @@ type CourseModule = {
 	description: string;
 	displayOrder: number;
 	published: boolean;
+	imageUrl: string | null;
 	lessons: Lesson[];
 };
 

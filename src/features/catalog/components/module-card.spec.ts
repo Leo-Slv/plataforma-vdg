@@ -12,6 +12,7 @@ const module1: CourseModule = {
 	description: 'O ponto de partida da formação.',
 	displayOrder: 1,
 	published: true,
+	imageUrl: null,
 	lessons: [
 		{
 			id: 'l1',
@@ -71,6 +72,22 @@ test('is not a link when the module has no lessons', () => {
 		}),
 	);
 	assert.doesNotMatch(html, /<a /);
+});
+
+test('renders the module cover image when imageUrl is set', () => {
+	const withCover: CourseModule = {
+		...module1,
+		imageUrl: 'https://example.com/module-cover.jpg',
+	};
+	const html = renderToStaticMarkup(
+		createElement(ModuleCard, {
+			module: withCover,
+			position: 1,
+			slug: 'escola-de-lideres',
+		}),
+	);
+
+	assert.match(html, /<img[^>]*src="https:\/\/example\.com\/module-cover\.jpg"/);
 });
 
 test('uses the singular "aula" for a module with exactly one lesson', () => {

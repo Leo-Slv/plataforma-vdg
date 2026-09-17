@@ -17,6 +17,7 @@ const courseModuleSchema = z.object({
 	description: z.string(),
 	displayOrder: z.number(),
 	published: z.boolean(),
+	imageUrl: z.string().nullable(),
 	lessons: z.array(lessonSchema),
 });
 

@@ -44,6 +44,7 @@ function makeDetails(): CourseDetails {
 				description: '',
 				displayOrder: 1,
 				published: true,
+				imageUrl: null,
 				lessons: [lesson('l1', 1, 'O caráter do líder'), lesson('l2', 2)],
 			},
 			{
@@ -52,6 +53,7 @@ function makeDetails(): CourseDetails {
 				description: '',
 				displayOrder: 2,
 				published: true,
+				imageUrl: null,
 				lessons: [lesson('l3', 1)],
 			},
 		],

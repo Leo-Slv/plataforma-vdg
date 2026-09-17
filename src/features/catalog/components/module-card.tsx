@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { appRoutes } from '@/lib/routes/app-routes';
+import { CoverImage } from '@/components/cover-image';
 import type { CourseModule } from '@/features/catalog/model/course-details';
 
 type ModuleCardProps = {
@@ -17,13 +18,9 @@ function ModuleCard({ module, position, slug }: ModuleCardProps) {
 
 	const content = (
 		<>
-			<div
-				className="aspect-video"
-				style={{
-					backgroundImage:
-						'repeating-linear-gradient(135deg, var(--stripe-1) 0 8px, var(--stripe-2) 8px 16px)',
-				}}
-			/>
+			<div className="relative aspect-video">
+				<CoverImage src={module.imageUrl} />
+			</div>
 			<div className="p-5">
 				<div className="font-heading text-[10px] tracking-[0.14em] text-[oklch(0.75_0.1_248)] uppercase">
 					Módulo {label} · {lessonCount} {lessonWord}

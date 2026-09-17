@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
+import { CoverImage } from '@/components/cover-image';
 import { formatDuration } from '@/features/catalog/lib/format-duration';
 import type { CourseModule } from '@/features/catalog/model/course-details';
 
@@ -30,13 +31,9 @@ function PreviewModuleCard({ module, position, slug }: PreviewModuleCardProps) {
 				!hasFreeLesson && 'opacity-60',
 			)}
 		>
-			<div
-				className="aspect-video"
-				style={{
-					backgroundImage:
-						'repeating-linear-gradient(135deg, var(--stripe-1) 0 8px, var(--stripe-2) 8px 16px)',
-				}}
-			/>
+			<div className="relative aspect-video">
+				<CoverImage src={module.imageUrl} />
+			</div>
 			<div className="p-5">
 				<div
 					className={cn(

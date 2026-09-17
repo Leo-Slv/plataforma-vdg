@@ -144,6 +144,7 @@ test('renders one preview card per module once details load', () => {
 				description: '',
 				displayOrder: 1,
 				published: true,
+				imageUrl: null,
 				lessons: [
 					{
 						id: 'l1',
@@ -163,6 +164,7 @@ test('renders one preview card per module once details load', () => {
 				description: '',
 				displayOrder: 2,
 				published: true,
+				imageUrl: null,
 				lessons: [
 					{
 						id: 'l2',

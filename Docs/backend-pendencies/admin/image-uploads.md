@@ -128,3 +128,26 @@ length-only `IsValidOptional` check for both fields (matching `Area`'s
 pattern) — a legacy full URL (containing `://`) still passes the length
 check fine, `ImageUrlResolver` on the read side already treats that case
 as pass-through per the revision above.
+
+## Bug (fixed 2026-09-17): module cover saved correctly but never rendered on the course detail page
+
+**Severity: was Feature gap** — the backend was correct; the frontend
+simply never consumed the field.
+
+`GET /api/courses/{id}` (`GetCourseDetailsUseCase` → `CoursePresenter`)
+already resolves each module's `ImageUrl` through `ImageUrlResolver`
+exactly like `ThumbnailUrl`/`AvatarUrl` — no backend bug here. The
+frontend's `courseModuleSchema`/`CourseModule` (catalog feature,
+`schemas/course-details.schema.ts` and `model/course-details.ts`) never
+declared an `imageUrl` field at all, so Zod silently stripped it from
+every parsed response, and `ModuleCard`/`PreviewModuleCard`
+(`src/features/catalog/components/`) always rendered the same fixed
+diagonal-stripe placeholder `<div>` — never an `<img>` — regardless of
+what the API sent. Fixed by adding `imageUrl: string | null` to both the
+schema and the model, and switching both card components to the existing
+`CoverImage` component (`src/components/cover-image.tsx`, already used
+for course thumbnails on `CourseCard`), which renders the real photo when
+present and falls back to the same stripe placeholder otherwise. The
+admin module list (`AdminModuleCard`) is a text-only row by design and
+was left untouched — this only affected the two student-facing module
+cards on `/courses/[slug]`.

@@ -40,6 +40,7 @@ const details: CourseDetails = {
 			description: '',
 			displayOrder: 1,
 			published: true,
+			imageUrl: null,
 			lessons: [lesson('l1', 1), lesson('l2', 2)],
 		},
 		{
@@ -48,6 +49,7 @@ const details: CourseDetails = {
 			description: '',
 			displayOrder: 2,
 			published: true,
+			imageUrl: null,
 			lessons: [lesson('l3', 1)],
 		},
 	],
