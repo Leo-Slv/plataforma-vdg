@@ -87,7 +87,11 @@ public/
   **Perguntas** é um mural público por aula, visível a qualquer aluno com
   acesso ao curso (`GET`/`POST /api/questions/lessons/{id}`), com um botão
   "Responder" inline que só aparece pra quem tem `courses.manage`
-  (`POST /api/questions/{id}/answer`). Aulas hospedadas no S3 (vídeo
+  (`POST /api/questions/{id}/answer`). Cada pergunta/resposta mostra a foto
+  de avatar real de quem perguntou/respondeu (2026-09-17,
+  `askedByAvatarUrl`/`answeredByAvatarUrl`, resolvidos ao vivo a partir do
+  `User.AvatarUrl` atual — não congelados junto do nome), com fallback pras
+  iniciais quando não há foto. Aulas hospedadas no S3 (vídeo
   nativo, não YouTube) reportam progresso automaticamente pelo evento
   `timeupdate`/`ended` do próprio `<video>` — sem precisar clicar em
   nada, throttled a cada 5s — enquanto aulas do YouTube continuam
@@ -111,7 +115,11 @@ public/
   concluir. "Sair da conta" chama `POST /api/auth/logout` de verdade
   (revoga o refresh token no servidor) antes de limpar o token local — o
   mesmo fluxo agora usado pelo "Sair" do menu de perfil no `AppNav`. Spec
-  em `Docs/specs/auth/profile.md`.
+  em `Docs/specs/auth/profile.md`. A foto de avatar (quando existe) agora
+  também aparece no `AppNav` (2026-09-17) — antes ficava só nesta tela; um
+  `UserAvatar` compartilhado (`src/components/user-avatar.tsx`) resolve a
+  foto com fallback pras iniciais e é reusado no `AppNav` e no painel de
+  Perguntas da aula.
 
 - **Admin — Áreas** (`/admin/areas`, `/admin/areas/new`,
   `/admin/areas/[areaId]/edit`) — lista todas as áreas (`GET /api/areas`)
@@ -184,7 +192,8 @@ public/
   (`DELETE /api/questions/{id}`) qualquer pergunta — esse último sem gate
   extra de permissão, já que ambas as rotas exigem exatamente
   `courses.manage`, a
-  mesma claim que já protege a tela inteira. Spec em
+  mesma claim que já protege a tela inteira — mesmo avatar real/fallback de
+  iniciais do painel público de Perguntas na tela de aula. Spec em
   `Docs/specs/admin/lesson-editor.md`.
 - **Admin — Usuários** (`/admin/users`) — lista paginada e pesquisável
   (nome/e-mail) de `GET /api/users`, com contagem real de cadastrados/
