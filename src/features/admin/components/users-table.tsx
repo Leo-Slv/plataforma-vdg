@@ -1,10 +1,12 @@
-import Link from 'next/link';
+import { AnimatePresence } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
 import { formatRoleNames } from '@/features/admin/lib/format-role-names';
 import { formatDateBr } from '@/features/admin/lib/format-date-br';
+import { rowEnterAnimation } from '@/features/admin/lib/row-stagger';
 import { AreaChips } from '@/features/admin/components/area-chips';
+import { MotionLink } from '@/features/admin/components/motion-link';
 import type { User } from '@/features/admin/model/user';
 
 type UsersTableProps = {
@@ -37,44 +39,47 @@ function UsersTable({ users }: UsersTableProps) {
 				<span>Cadastro</span>
 			</div>
 
-			{users.map((user) => (
-				<Link
-					key={user.id}
-					href={appRoutes.admin.userEdit(user.id)}
-					className={cn(
-						'grid min-w-[680px] items-center gap-4 border-b border-foreground/7 py-4 font-sans text-[13px] text-foreground/75 hover:bg-foreground/3',
-						COLUMNS,
-					)}
-				>
-					<div>
-						<div className="font-heading text-[14px] text-foreground">
-							{user.name}
-						</div>
-						<div className="mt-1 font-sans text-[11px] font-light text-foreground/35">
-							{user.email}
-						</div>
-					</div>
-					<span className="text-foreground/55">
-						{formatRoleNames(user.roleNames)}
-					</span>
-					<AreaChips
-						status={user.roleNames.includes('Admin') ? 'admin' : 'ready'}
-						names={user.areaNames}
-					/>
-					<span
+			<AnimatePresence>
+				{users.map((user, index) => (
+					<MotionLink
+						key={user.id}
+						href={appRoutes.admin.userEdit(user.id)}
 						className={cn(
-							user.emailVerifiedAt
-								? 'text-[oklch(0.75_0.1_248)]'
-								: 'text-foreground/40',
+							'grid min-w-[680px] items-center gap-4 border-b border-foreground/7 py-4 font-sans text-[13px] text-foreground/75 hover:bg-foreground/3',
+							COLUMNS,
 						)}
+						{...rowEnterAnimation(index)}
 					>
-						{user.emailVerifiedAt ? 'Confirmado' : 'Pendente'}
-					</span>
-					<span className="text-foreground/40">
-						{formatDateBr(user.createdAt)}
-					</span>
-				</Link>
-			))}
+						<div>
+							<div className="font-heading text-[14px] text-foreground">
+								{user.name}
+							</div>
+							<div className="mt-1 font-sans text-[11px] font-light text-foreground/35">
+								{user.email}
+							</div>
+						</div>
+						<span className="text-foreground/55">
+							{formatRoleNames(user.roleNames)}
+						</span>
+						<AreaChips
+							status={user.roleNames.includes('Admin') ? 'admin' : 'ready'}
+							names={user.areaNames}
+						/>
+						<span
+							className={cn(
+								user.emailVerifiedAt
+									? 'text-[oklch(0.75_0.1_248)]'
+									: 'text-foreground/40',
+							)}
+						>
+							{user.emailVerifiedAt ? 'Confirmado' : 'Pendente'}
+						</span>
+						<span className="text-foreground/40">
+							{formatDateBr(user.createdAt)}
+						</span>
+					</MotionLink>
+				))}
+			</AnimatePresence>
 		</div>
 	);
 }

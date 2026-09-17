@@ -1,7 +1,10 @@
+import { AnimatePresence, motion } from 'motion/react';
+
 import { cn } from '@/lib/utils';
 import { resolveAuditDetail } from '@/features/admin/lib/resolve-audit-detail';
 import { auditActionTone } from '@/features/admin/lib/audit-action-tone';
 import { formatRelativeTime } from '@/features/admin/lib/format-relative-time';
+import { rowEnterAnimation } from '@/features/admin/lib/row-stagger';
 import type { AuditLog } from '@/features/admin/model/audit-log';
 import type { Course } from '@/features/admin/model/course';
 import type { Area } from '@/features/admin/model/area';
@@ -64,33 +67,36 @@ function AuditLogTable({
 				<span>Quando</span>
 			</div>
 
-			{entries.map((entry) => (
-				<div
-					key={entry.id}
-					className={cn(
-						'grid min-w-[640px] items-center gap-4 border-b border-foreground/7 py-4 font-sans text-[13px] text-foreground/75',
-						COLUMNS,
-					)}
-				>
-					<span
+			<AnimatePresence>
+				{entries.map((entry, index) => (
+					<motion.div
+						key={entry.id}
 						className={cn(
-							'font-mono text-[12.5px]',
-							auditActionTone(entry.action) === 'destructive'
-								? 'text-[oklch(0.65_0.16_25)]'
-								: 'text-foreground/70',
+							'grid min-w-[640px] items-center gap-4 border-b border-foreground/7 py-4 font-sans text-[13px] text-foreground/75',
+							COLUMNS,
 						)}
+						{...rowEnterAnimation(index)}
 					>
-						{entry.action}
-					</span>
-					<span className="text-foreground/55">
-						{resolveAuditDetail(entry, courses, areas)}
-					</span>
-					<span>{userLabel(entry, userEmailById, userLookupReady)}</span>
-					<span className="text-foreground/40">
-						{formatRelativeTime(entry.createdAt, now)}
-					</span>
-				</div>
-			))}
+						<span
+							className={cn(
+								'font-mono text-[12.5px]',
+								auditActionTone(entry.action) === 'destructive'
+									? 'text-[oklch(0.65_0.16_25)]'
+									: 'text-foreground/70',
+							)}
+						>
+							{entry.action}
+						</span>
+						<span className="text-foreground/55">
+							{resolveAuditDetail(entry, courses, areas)}
+						</span>
+						<span>{userLabel(entry, userEmailById, userLookupReady)}</span>
+						<span className="text-foreground/40">
+							{formatRelativeTime(entry.createdAt, now)}
+						</span>
+					</motion.div>
+				))}
+			</AnimatePresence>
 		</div>
 	);
 }

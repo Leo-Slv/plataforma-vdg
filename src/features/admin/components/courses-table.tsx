@@ -1,7 +1,9 @@
-import Link from 'next/link';
+import { AnimatePresence } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
+import { MotionLink } from '@/features/admin/components/motion-link';
+import { rowEnterAnimation } from '@/features/admin/lib/row-stagger';
 import { sortCoursesByDisplayOrder } from '@/features/admin/lib/sort-courses';
 import { formatCurrencyBrl } from '@/features/admin/lib/format-currency-brl';
 import type { Course } from '@/features/admin/model/course';
@@ -60,37 +62,42 @@ function CoursesTable({ courses, areas }: CoursesTableProps) {
 				<span>Ordem</span>
 			</div>
 
-			{sorted.map((course) => (
-				<Link
-					key={course.id}
-					href={appRoutes.admin.courseEdit(course.id)}
-					className={cn(
-						'grid min-w-[700px] items-center gap-4 border-b border-foreground/7 py-4.5 font-sans text-[13.5px] text-foreground/75 hover:bg-foreground/3',
-						COLUMNS,
-					)}
-				>
-					<div>
-						<div className="font-heading text-[15px] text-foreground">
-							{course.title}
-						</div>
-						<div className="mt-1.5 font-mono text-[10.5px] text-foreground/30">
-							/{course.slug}
-						</div>
-					</div>
-					<span className="text-foreground/55">{areaNames(course, areas)}</span>
-					<span>{pricingLabel(course)}</span>
-					<span
+			<AnimatePresence>
+				{sorted.map((course, index) => (
+					<MotionLink
+						key={course.id}
+						href={appRoutes.admin.courseEdit(course.id)}
 						className={cn(
-							course.published
-								? 'text-[oklch(0.75_0.1_248)]'
-								: 'text-foreground/45',
+							'grid min-w-[700px] items-center gap-4 border-b border-foreground/7 py-4.5 font-sans text-[13.5px] text-foreground/75 hover:bg-foreground/3',
+							COLUMNS,
 						)}
+						{...rowEnterAnimation(index)}
 					>
-						{course.published ? 'Publicado' : 'Rascunho'}
-					</span>
-					<span className="text-foreground/40">{course.displayOrder}</span>
-				</Link>
-			))}
+						<div>
+							<div className="font-heading text-[15px] text-foreground">
+								{course.title}
+							</div>
+							<div className="mt-1.5 font-mono text-[10.5px] text-foreground/30">
+								/{course.slug}
+							</div>
+						</div>
+						<span className="text-foreground/55">
+							{areaNames(course, areas)}
+						</span>
+						<span>{pricingLabel(course)}</span>
+						<span
+							className={cn(
+								course.published
+									? 'text-[oklch(0.75_0.1_248)]'
+									: 'text-foreground/45',
+							)}
+						>
+							{course.published ? 'Publicado' : 'Rascunho'}
+						</span>
+						<span className="text-foreground/40">{course.displayOrder}</span>
+					</MotionLink>
+				))}
+			</AnimatePresence>
 		</div>
 	);
 }
