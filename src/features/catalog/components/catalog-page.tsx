@@ -10,6 +10,7 @@ import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { isApiError } from '@/lib/http/api-error';
 import { AppNav } from '@/components/app-nav';
 import { LoadingScreen } from '@/components/loading-screen';
+import { useCurrentUserQuery } from '@/features/auth/hooks/auth.queries';
 import { useCourseCatalogQuery } from '@/features/catalog/hooks/catalog.queries';
 import {
 	filterCourses,
@@ -29,6 +30,7 @@ function CatalogPage() {
 	const [search, setSearch] = useState('');
 
 	const query = useCourseCatalogQuery({ enabled: ready });
+	const currentUserQuery = useCurrentUserQuery({ enabled: ready });
 
 	useEffect(() => {
 		if (
@@ -49,7 +51,12 @@ function CatalogPage() {
 
 	return (
 		<div className="min-h-screen bg-background text-foreground">
-			<AppNav displayName={displayName} initials={initials} active="catalog" />
+			<AppNav
+				displayName={displayName}
+				initials={initials}
+				avatarUrl={currentUserQuery.data?.avatarUrl ?? null}
+				active="catalog"
+			/>
 
 			{query.isPending ? (
 				<p className="px-5 py-16 text-center font-sans text-sm font-light text-foreground/50 sm:px-10">

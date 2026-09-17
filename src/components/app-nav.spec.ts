@@ -10,6 +10,7 @@ test('renders both nav items as real links', () => {
 		createElement(AppNav, {
 			displayName: 'Ana',
 			initials: 'AB',
+			avatarUrl: null,
 			active: 'catalog',
 		}),
 	);
@@ -23,6 +24,7 @@ test('active="catalog" underlines only Catálogo', () => {
 		createElement(AppNav, {
 			displayName: 'Ana',
 			initials: 'AB',
+			avatarUrl: null,
 			active: 'catalog',
 		}),
 	);
@@ -39,6 +41,7 @@ test('active="my-courses" underlines only Meus cursos', () => {
 		createElement(AppNav, {
 			displayName: 'Ana',
 			initials: 'AB',
+			avatarUrl: null,
 			active: 'my-courses',
 		}),
 	);
@@ -55,6 +58,7 @@ test('renders the profile menu trigger, closed by default', () => {
 		createElement(AppNav, {
 			displayName: 'Ana',
 			initials: 'AB',
+			avatarUrl: null,
 			active: 'catalog',
 		}),
 	);
@@ -70,6 +74,7 @@ test('closed menu markup is absent, so its "Editar perfil" link is not present e
 		createElement(AppNav, {
 			displayName: 'Ana',
 			initials: 'AB',
+			avatarUrl: null,
 			active: 'catalog',
 		}),
 	);
@@ -82,9 +87,23 @@ test('does not render "Painel admin" for a user with no admin permission claims'
 		createElement(AppNav, {
 			displayName: 'Ana',
 			initials: 'AB',
+			avatarUrl: null,
 			active: 'catalog',
 		}),
 	);
 
 	assert.doesNotMatch(html, />Painel admin</);
+});
+
+test('renders the real avatar photo when avatarUrl is provided', () => {
+	const html = renderToStaticMarkup(
+		createElement(AppNav, {
+			displayName: 'Ana',
+			initials: 'AB',
+			avatarUrl: 'https://example.com/avatar.jpg',
+			active: 'catalog',
+		}),
+	);
+
+	assert.match(html, /<img[^>]*src="https:\/\/example\.com\/avatar\.jpg"/);
 });

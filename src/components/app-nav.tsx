@@ -13,10 +13,12 @@ import { decodeAccessTokenClaims, hasPermission } from '@/lib/auth/jwt-claims';
 import { performLogout } from '@/lib/auth/logout';
 import { logoutUser } from '@/features/auth/api/logout';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { UserAvatar } from '@/components/user-avatar';
 
 type AppNavProps = {
 	displayName: string;
 	initials: string;
+	avatarUrl: string | null;
 	active: 'catalog' | 'my-courses';
 };
 
@@ -28,7 +30,7 @@ const ADMIN_PANEL_PERMISSIONS = [
 	authPermissions.readAudit,
 ];
 
-function AppNav({ displayName, initials, active }: AppNavProps) {
+function AppNav({ displayName, initials, avatarUrl, active }: AppNavProps) {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [navOpen, setNavOpen] = useState(false);
 
@@ -119,9 +121,13 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 					onClick={() => setMenuOpen((current) => !current)}
 					aria-haspopup="menu"
 					aria-expanded={menuOpen}
-					className="flex size-7.5 items-center justify-center rounded-full bg-surface-3 font-heading text-xs"
+					className="rounded-full"
 				>
-					{initials}
+					<UserAvatar
+						avatarUrl={avatarUrl}
+						initials={initials}
+						className="size-7.5 font-heading text-xs"
+					/>
 				</button>
 			</div>
 
@@ -136,9 +142,11 @@ function AppNav({ displayName, initials, active }: AppNavProps) {
 						className="absolute top-[calc(100%+8px)] right-5 z-50 w-[260px] overflow-hidden rounded-[10px] border border-foreground/10 bg-surface-2 shadow-[0_12px_30px_rgba(0,0,0,0.5)] sm:right-10"
 					>
 						<div className="flex items-center gap-3 border-b border-foreground/8 p-4.5">
-							<span className="flex size-9.5 flex-none items-center justify-center rounded-full bg-surface-3 font-heading text-xs">
-								{initials}
-							</span>
+							<UserAvatar
+								avatarUrl={avatarUrl}
+								initials={initials}
+								className="size-9.5 font-heading text-xs"
+							/>
 							<div className="min-w-0">
 								<div className="truncate font-sans text-[13.5px] text-foreground">
 									{displayName}

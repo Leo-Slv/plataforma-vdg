@@ -10,6 +10,7 @@ import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { isApiError } from '@/lib/http/api-error';
 import { AppNav } from '@/components/app-nav';
 import { LoadingScreen } from '@/components/loading-screen';
+import { useCurrentUserQuery } from '@/features/auth/hooks/auth.queries';
 import {
 	useCourseCatalogQuery,
 	useOwnedCourseDetailsQueries,
@@ -34,6 +35,7 @@ function MyCoursesPage() {
 	const ready = useRequireAuth();
 
 	const catalogQuery = useCourseCatalogQuery({ enabled: ready });
+	const currentUserQuery = useCurrentUserQuery({ enabled: ready });
 
 	useEffect(() => {
 		if (
@@ -70,6 +72,7 @@ function MyCoursesPage() {
 			<AppNav
 				displayName={displayName}
 				initials={initials}
+				avatarUrl={currentUserQuery.data?.avatarUrl ?? null}
 				active="my-courses"
 			/>
 

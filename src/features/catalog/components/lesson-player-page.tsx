@@ -22,6 +22,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
+import { useCurrentUserQuery } from '@/features/auth/hooks/auth.queries';
 import {
 	useCourseCatalogQuery,
 	useCourseDetailsQuery,
@@ -71,6 +72,7 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 	const ready = useRequireAuth();
 
 	const catalogQuery = useCourseCatalogQuery({ enabled: ready });
+	const currentUserQuery = useCurrentUserQuery({ enabled: ready });
 
 	useEffect(() => {
 		if (
@@ -219,7 +221,12 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 
 	return (
 		<div className="min-h-screen bg-background text-foreground">
-			<AppNav displayName={displayName} initials={initials} active="catalog" />
+			<AppNav
+				displayName={displayName}
+				initials={initials}
+				avatarUrl={currentUserQuery.data?.avatarUrl ?? null}
+				active="catalog"
+			/>
 
 			{catalogQuery.isPending ? (
 				<p className="px-5 py-16 text-center font-sans text-sm font-light text-foreground/50 sm:px-10">
