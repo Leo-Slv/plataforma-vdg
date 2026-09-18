@@ -9,6 +9,7 @@ type UpdateAreaPayload = {
 	description: string;
 	displayOrder: number;
 	active: boolean;
+	isPublic: boolean;
 	accentColor: AccentColorValue;
 	imageUrl: string | null;
 };

@@ -22,6 +22,7 @@ const areaFormSchema = z.object({
 		.min(0, 'Use um número maior ou igual a 0.'),
 	accentColor: z.enum(accentColorValues),
 	active: z.boolean(),
+	isPublic: z.boolean(),
 	imageUrl: z.string().nullable(),
 });
 

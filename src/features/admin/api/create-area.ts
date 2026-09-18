@@ -9,6 +9,7 @@ type CreateAreaPayload = {
 	description: string;
 	displayOrder: number;
 	accentColor: AccentColorValue;
+	isPublic: boolean;
 };
 
 async function createArea(payload: CreateAreaPayload): Promise<Area> {

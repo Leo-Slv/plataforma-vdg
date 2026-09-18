@@ -78,6 +78,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 					description: values.description,
 					displayOrder: values.displayOrder,
 					accentColor: values.accentColor,
+					isPublic: values.isPublic,
 				},
 				{
 					onSuccess: () => {
@@ -100,6 +101,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 					description: values.description,
 					displayOrder: values.displayOrder,
 					active: values.active,
+					isPublic: values.isPublic,
 					accentColor: values.accentColor,
 					imageUrl: values.imageUrl,
 				},
@@ -137,6 +139,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 					description: area.description,
 					displayOrder: area.displayOrder,
 					active: false,
+					isPublic: area.isPublic,
 					accentColor: area.accentColor as AreaFormValues['accentColor'],
 					imageUrl: area.imageUrl,
 				},
@@ -167,6 +170,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 					accentColor: areaQuery.data
 						.accentColor as AreaFormValues['accentColor'],
 					active: areaQuery.data.active,
+					isPublic: areaQuery.data.isPublic,
 					imageUrl: areaQuery.data.imageUrl,
 				}
 			: {
@@ -175,6 +179,7 @@ function AreaFormPage(props: AreaFormPageProps) {
 					displayOrder: 0,
 					accentColor: DEFAULT_ACCENT_COLOR,
 					active: true,
+					isPublic: false,
 					imageUrl: null,
 				};
 

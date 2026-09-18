@@ -13,6 +13,7 @@ const areaSchema = z.object({
 	slug: z.string(),
 	description: z.string(),
 	active: z.boolean(),
+	isPublic: z.boolean(),
 	displayOrder: z.number(),
 	accentColor: z.string(),
 	imageUrl: z.string().nullable(),
