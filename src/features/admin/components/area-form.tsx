@@ -152,6 +152,15 @@ function AreaForm({
 						/>
 					) : null}
 
+					<StatusToggle
+						label="Área pública"
+						helperText="Cursos gratuitos desta área ficam liberados para todos os usuários, mesmo sem acesso concedido. Cursos pagos continuam exigindo liberação individual."
+						checked={form.watch('isPublic')}
+						onChange={(checked) =>
+							form.setValue('isPublic', checked, { shouldValidate: true })
+						}
+					/>
+
 					<AdminField
 						label="Ordem de exibição"
 						type="number"

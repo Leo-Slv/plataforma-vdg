@@ -11,7 +11,7 @@ type AreasTableProps = {
 	areas: Area[];
 };
 
-const COLUMNS = 'grid-cols-[2fr_1.4fr_0.8fr_0.6fr_0.8fr]';
+const COLUMNS = 'grid-cols-[2fr_1.4fr_0.8fr_0.6fr_0.8fr_0.7fr]';
 
 function AreasTable({ areas }: AreasTableProps) {
 	if (areas.length === 0) {
@@ -37,6 +37,7 @@ function AreasTable({ areas }: AreasTableProps) {
 				<span>Cursos</span>
 				<span>Ordem</span>
 				<span>Status</span>
+				<span>Acesso</span>
 			</div>
 
 			<AnimatePresence>
@@ -72,6 +73,19 @@ function AreasTable({ areas }: AreasTableProps) {
 							/>
 							{area.active ? 'Ativa' : 'Inativa'}
 						</span>
+						{area.isPublic ? (
+							<span
+								className={cn(
+									'flex w-fit items-center gap-1.75',
+									'text-[oklch(0.7_0.13_145)]',
+								)}
+							>
+								<span className="size-1.5 rounded-full bg-[oklch(0.7_0.13_145)]" />
+								Pública
+							</span>
+						) : (
+							<span className="text-foreground/40">—</span>
+						)}
 					</MotionLink>
 				))}
 			</AnimatePresence>
