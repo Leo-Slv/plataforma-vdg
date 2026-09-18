@@ -13,6 +13,7 @@ function buildArea(overrides: Partial<Area>): Area {
 		slug: 'discipulado',
 		description: '',
 		active: true,
+		isPublic: false,
 		displayOrder: 0,
 		accentColor: '#000000',
 		imageUrl: null,

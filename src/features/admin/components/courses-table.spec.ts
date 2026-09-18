@@ -36,6 +36,7 @@ function buildArea(overrides: Partial<Area>): Area {
 		slug: 'area',
 		description: '',
 		active: true,
+		isPublic: false,
 		displayOrder: 0,
 		accentColor: 'Blue',
 		imageUrl: null,

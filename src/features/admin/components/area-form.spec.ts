@@ -13,6 +13,7 @@ const baseValues: AreaFormValues = {
 	displayOrder: 2,
 	accentColor: 'Blue',
 	active: true,
+	isPublic: false,
 	imageUrl: null,
 };
 
@@ -101,4 +102,37 @@ test('renders the submit error banner when present', () => {
 	);
 
 	assert.match(html, /Já existe uma área com um nome parecido\./);
+});
+
+test('renders the "Área pública" toggle with its helper text in create mode', () => {
+	const html = renderToStaticMarkup(
+		createElement(AreaForm, {
+			mode: 'create',
+			defaultValues: { ...baseValues, name: '' },
+			onCancel: noop,
+			onSubmit: noop,
+			isSubmitting: false,
+		}),
+	);
+
+	assert.match(html, /Área pública/);
+	assert.match(
+		html,
+		/Cursos gratuitos desta área ficam liberados para todos os usuários/,
+	);
+});
+
+test('renders the "Área pública" toggle in edit mode', () => {
+	const html = renderToStaticMarkup(
+		createElement(AreaForm, {
+			mode: 'edit',
+			defaultValues: { ...baseValues, isPublic: true },
+			onCancel: noop,
+			onSubmit: noop,
+			isSubmitting: false,
+			onDelete: noop,
+		}),
+	);
+
+	assert.match(html, /Área pública/);
 });

@@ -131,6 +131,7 @@ test('renders one option per area in the Área select', () => {
 					slug: 'lideranca',
 					description: '',
 					active: true,
+					isPublic: false,
 					displayOrder: 0,
 					accentColor: 'Blue',
 					imageUrl: null,

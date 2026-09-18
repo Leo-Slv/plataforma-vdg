@@ -14,6 +14,7 @@ function buildArea(overrides: Partial<Area>): Area {
 		slug: 'area',
 		description: '',
 		active: true,
+		isPublic: false,
 		displayOrder: 0,
 		accentColor: 'Blue',
 		imageUrl: null,
@@ -75,4 +76,16 @@ test('renders "Ativa" for an active area and "Inativa" for an inactive one', () 
 	);
 	assert.match(html, /Ativa/);
 	assert.match(html, /Inativa/);
+});
+
+test('renders "Pública" for a public area and no badge for a non-public one', () => {
+	const html = renderToStaticMarkup(
+		createElement(AreasTable, {
+			areas: [
+				buildArea({ id: 'a', name: 'Public area', isPublic: true }),
+				buildArea({ id: 'b', name: 'Private area', isPublic: false }),
+			],
+		}),
+	);
+	assert.match(html, /Pública/);
 });

@@ -43,6 +43,7 @@ const area: Area = {
 	slug: 'lideranca',
 	description: '',
 	active: true,
+	isPublic: false,
 	displayOrder: 0,
 	accentColor: 'Blue',
 	imageUrl: null,
