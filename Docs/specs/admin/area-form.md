@@ -94,6 +94,14 @@ Shared shell: same `AdminSidebar` (`active="areas"`) as the areas list.
 
 - **Status**: "Área ativa" toggle (edit mode only — see "Open
   decisions" on create-mode default).
+- **Área pública** (added 2026-09-18): a second toggle, available in both
+  create and edit mode, backed by the new `IsPublic` field on `Area`
+  (defaults to `false`). Marking an area public makes that area's
+  **free** courses accessible to every user, bypassing the normal
+  per-user/per-role area-access grants (`UserAreaAccess`/
+  `RoleAreaAccess`) — paid courses in the area are unaffected and still
+  require an explicit grant. Rendered with a short helper line explaining
+  this in plain language, same pattern as other toggles' helper text.
 - **Ordem de exibição**: required integer input (`DisplayOrder`).
 - **Cursos nesta área** (edit mode only, only rendered when the area has
   at least one course): read-only list of `{ title, Publicado |
