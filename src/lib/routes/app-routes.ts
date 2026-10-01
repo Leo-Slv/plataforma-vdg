@@ -18,6 +18,10 @@ const appRoutes = {
 	testimonials: {
 		new: (courseId: string) => `/testimonials/new?courseId=${courseId}`,
 	},
+	visitors: {
+		// Deliberate pt-BR path: shared with visitors via QR code/printed material.
+		firstVisit: '/primeira-vez',
+	},
 	profile: {
 		index: '/profile',
 	},
