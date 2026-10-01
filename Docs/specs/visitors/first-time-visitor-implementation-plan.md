@@ -1,7 +1,7 @@
 # First-Time Visitor Page — Implementation Plan
 
 Implements [`first-time-visitor.md`](first-time-visitor.md).
-**Status:** Approved (2026-10-01) — spec decisions resolved: `/primeira-vez`
+**Status:** Implemented (2026-10-01) — spec decisions resolved: `/primeira-vez`
 (**[D1]**), no landing link (**[D2]**), no reception screen.
 
 ## Route constant
@@ -167,14 +167,14 @@ they match the mockup (`bg-background` = `#0a0a0b`, `bg-surface` ≈
   - Input: `rounded-[10px]`, 1px `foreground/12` border, padding
     `15px 16px`, 15px DM Sans (16px on mobile to avoid iOS zoom).
   - Background flips by breakpoint with Tailwind classes, not a prop
-    (`bg-surface md:bg-background`): `#111113` on mobile, `#0a0a0b` inside
+    (`bg-surface lg:bg-background`): `#111113` on mobile, `#0a0a0b` inside
     the desktop card.
   - Focus border uses the accent. An `invalid` boolean switches the
     border to `oklch(0.65 0.12 30)`, the mockup's error border, with
     `aria-invalid`.
   - Spreads `ComponentProps<'input'>`, like `FormField`.
 - **`first-visit-header.tsx`** — brand mark (`next/image`, 36px desktop /
-  32px mobile) + wordmark; `SERVICE_TIMES` with `hidden md:block`.
+  32px mobile) + wordmark; `SERVICE_TIMES` with `hidden lg:block`.
 - **`first-visit-hero.tsx`** — badge, heading (the `<br>` only on desktop),
   lede. Takes no props.
 - **`first-visit-success.tsx`** — `{ name, phone, onReset }`; check
@@ -182,12 +182,12 @@ they match the mockup (`bg-background` = `#0a0a0b`, `bg-surface` ≈
   outline pill "Cadastrar outra pessoa" calling `onReset`. Container gets
   `role="status"`, so screen readers announce it.
 - **Layout approach: one form instance, responsive via Tailwind.** Never
-  two form trees toggled by `hidden md:block`, which would mount two
+  two form trees toggled by `hidden lg:block`, which would mount two
   `<form>`s and two Turnstile widgets at once. A `useMediaQuery` variant
   switch is also out: it causes a hydration flash. Breakpoint differences
-  are handled with `md:` classes:
+  are handled with `lg:` classes:
   - card chrome and the "Seus dados" title/subtitle on desktop only;
-  - Telefone and E-mail side by side on desktop only (`md:grid-cols-2`);
+  - Telefone and E-mail side by side on desktop only (`lg:grid-cols-2`);
   - the privacy note under the button on mobile only.
 - **`first-visit-form.tsx`** (`'use client'`) — owns all form state:
   - `useForm` + `zodResolver`, `mode: 'onSubmit'`. Phone uses
@@ -209,11 +209,11 @@ they match the mockup (`bg-background` = `#0a0a0b`, `bg-surface` ≈
     calls `turnstileRef.current?.reset()`.
   - Exposes `onSubmittedChange(submitted: boolean)` so the page can hide
     the hero heading/lede on mobile in the success state (mockup `1b`).
-    On desktop the hero stays (`md:block` overrides the hide).
+    On desktop the hero stays (`lg:block` overrides the hide).
 - **`first-visit-layout.tsx`** (`'use client'`, small) — holds the
   `submitted` flag from `onSubmittedChange`. It renders the hero (with
-  `hidden md:block` while submitted) and the form in a single tree:
-  - two-column grid on desktop (`md:grid-cols-[1fr_520px] md:gap-20`);
+  `hidden lg:block` while submitted) and the form in a single tree:
+  - two-column grid on desktop (`lg:grid-cols-[1fr_520px] lg:gap-20`);
   - a stacked column on mobile.
 - **`first-visit-page.tsx`** (server) — `bg-background min-h-screen` shell
   with the header, `<FirstVisitLayout />`, and the decorative faded mark
@@ -283,3 +283,25 @@ Same tooling as the rest of the repo: `tsx --test`, `node:test` +
     - docs.
 
     No `Co-Authored-By` trailer.
+
+## Implementation notes (2026-10-01)
+
+- **Breakpoint is `lg:` (1024px), not `md:`.** At 768px the desktop grid
+  (`1fr 520px`, 80px gap, 44px gutters) leaves the hero column only ~80px
+  wide, so tablets get the stacked mobile layout instead.
+- **Phone validation counts every digit, not the mask-capped 11.**
+  `phoneDigits()` caps at 11 for the mask. Reusing it in the schema let
+  `+55 (11) 98765-4321` (13 digits) pass client-side, which the backend
+  rejects. The schema now strips non-digits without capping.
+- **Phone re-validation after masking.** RHF validates the raw keystroke
+  before the `onChange` mask runs, so the masked value is set with
+  `shouldValidate: formState.isSubmitted`. Without that, a fixed phone kept
+  its red border after the first failed submit.
+- Manual check done against a local CourseCore backend (Turnstile unset):
+  - desktop `1a`: empty submit shows the single error and red borders,
+    which clear as fields become valid;
+  - the mask caps typing at 11 digits;
+  - a valid submit gets `201` and shows the success state;
+  - "Cadastrar outra pessoa" brings back an empty form;
+  - mobile `1b`: the landline mask works and the success state hides the
+    heading.

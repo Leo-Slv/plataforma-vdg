@@ -50,6 +50,13 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
   CRUD has no working upload/list/download path yet; see
   `Docs/backend-pendencies/admin/lesson-materials.md`.
 
+- `visitors/` — maps to the backend's Visitors module. Currently the
+  public `/primeira-vez` contact form (first-time church visitors leave
+  name/phone/e-mail/address for the reception team — no account, no
+  token). One responsive form instance for both mockup breakpoints (`lg:`
+  classes) so only one Turnstile widget ever mounts; see
+  `Docs/specs/visitors/first-time-visitor.md`.
+
 - `admin/` — the admin panel, mapping to whichever CourseCore module the
   current screen manages (starts with Access's areas endpoints). Currently
   `/admin/areas` (list), `/admin/areas/new`, and

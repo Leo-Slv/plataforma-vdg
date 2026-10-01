@@ -44,6 +44,11 @@ public/
 - **Cadastro** (`/register`) — formulário público de registro (nome, e-mail,
   senha, CAPTCHA Cloudflare Turnstile), chama `POST /api/auth/register`.
   Spec em `Docs/specs/auth/register.md`.
+- **Primeira vez** (`/primeira-vez`) — formulário público para quem visita a
+  igreja pela primeira vez deixar nome, telefone (com máscara), e-mail e
+  endereço opcional; chama `POST /api/visitors`. Não cria conta nem login —
+  só coleta dados para a equipe de recepção. Spec em
+  `Docs/specs/visitors/first-time-visitor.md`.
 - **Login** (`/login`) — formulário de acesso (e-mail, senha), chama
   `POST /api/auth/login` e redireciona para `/catalog` (rota stub) no
   sucesso. Spec em `Docs/specs/auth/login.md`.
