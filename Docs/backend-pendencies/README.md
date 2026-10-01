@@ -19,17 +19,18 @@ require, the workaround shipped instead, and a rough severity:
 
 ## Index
 
-| Screen                                               | File                                                   | Worst severity                                                                                                       |
-| ---------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| Landing (`/`)                                        | [landing/landing-page.md](landing/landing-page.md)     | Cosmetic (pendency 4)                                                                                                |
-| Register (`/register`)                               | [auth/register.md](auth/register.md)                   | Config                                                                                                               |
-| Login (`/login`)                                     | [auth/login.md](auth/login.md)                         | Feature gap                                                                                                          |
-| Confirm email (`/confirm-email`)                     | [auth/confirm-email.md](auth/confirm-email.md)         | Feature gap                                                                                                          |
-| Catalog (`/catalog`)                                 | [catalog/course-catalog.md](catalog/course-catalog.md) | Feature gap                                                                                                          |
-| Course detail (`/courses/[slug]`)                    | [catalog/course-detail.md](catalog/course-detail.md)   | Feature gap (pendencies 5-7 remain: installments, checkout, course "kind")                                           |
-| Lesson player (`/courses/[slug]/lessons/[lessonId]`) | [catalog/lesson-player.md](catalog/lesson-player.md)   | All CLOSED as of 2026-09-14 — was **Blocking** (pendency 1, video playback), materials/notes/Q&A closed the same day |
-| My courses (`/my-courses`)                           | [catalog/my-courses.md](catalog/my-courses.md)         | Feature gap                                                                                                          |
-| Profile (`/profile`)                                 | [auth/profile.md](auth/profile.md)                     | Feature gap                                                                                                          |
+| Screen                                               | File                                                             | Worst severity                                                                                                       |
+| ---------------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Landing (`/`)                                        | [landing/landing-page.md](landing/landing-page.md)               | Cosmetic (pendency 4)                                                                                                |
+| Register (`/register`)                               | [auth/register.md](auth/register.md)                             | Config                                                                                                               |
+| Login (`/login`)                                     | [auth/login.md](auth/login.md)                                   | Feature gap                                                                                                          |
+| Confirm email (`/confirm-email`)                     | [auth/confirm-email.md](auth/confirm-email.md)                   | Feature gap                                                                                                          |
+| Catalog (`/catalog`)                                 | [catalog/course-catalog.md](catalog/course-catalog.md)           | Feature gap                                                                                                          |
+| Course detail (`/courses/[slug]`)                    | [catalog/course-detail.md](catalog/course-detail.md)             | Feature gap (pendencies 5-7 remain: installments, checkout, course "kind")                                           |
+| Lesson player (`/courses/[slug]/lessons/[lessonId]`) | [catalog/lesson-player.md](catalog/lesson-player.md)             | All CLOSED as of 2026-09-14 — was **Blocking** (pendency 1, video playback), materials/notes/Q&A closed the same day |
+| My courses (`/my-courses`)                           | [catalog/my-courses.md](catalog/my-courses.md)                   | Feature gap                                                                                                          |
+| Profile (`/profile`)                                 | [auth/profile.md](auth/profile.md)                               | Feature gap                                                                                                          |
+| First-time visitor (`/primeira-vez`)                 | [visitors/first-time-visitor.md](visitors/first-time-visitor.md) | Config (Turnstile keys, shared with `/register`)                                                                     |
 
 ## Skipped screens
 
