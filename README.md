@@ -245,6 +245,8 @@ public/
 
 - **Ações em cursos bloqueados, e-mail e sessão** — o card de preço de um curso bloqueado oferece sempre um próximo passo real: Comprar agora (pago com preço), Solicitar acesso (`POST /api/access/requests`, para "Por inscrição" ou pago sem preço; mostra "Solicitação enviada" / "Solicitar novamente"), aviso "liberado pela equipe" (gratuito em área privada) ou Confirmar e-mail. Usuário com e-mail não confirmado cai em `/confirm-email` no login e vê uma faixa de aviso no app. `/forgot-password` e `/reset-password?token=…` implementam a recuperação de senha. O `apiFetch` renova a sessão em silêncio (`POST /api/auth/refresh-token`, uma vez por 401) e o React Query não repete respostas 4xx. Spec em `Docs/specs/catalog/locked-course-actions.md`.
 
+- **Certificados, termos e rodapé** — `/certificates` lista os certificados do aluno (`GET /api/certificates/mine`) e `/certificates/{id}` mostra o certificado com "Imprimir / salvar PDF" (A4 paisagem, pelo navegador). `/termos` e `/privacidade` trazem textos-minuta (marcados para revisão jurídica) ligados ao cadastro e ao rodapé; "Suporte" no rodapé só aparece com `NEXT_PUBLIC_SUPPORT_WHATSAPP` ou `NEXT_PUBLIC_SUPPORT_EMAIL` definidos. Spec em `Docs/specs/certificates/certificates-and-legal-pages.md`.
+
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
 
