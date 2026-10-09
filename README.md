@@ -243,6 +243,8 @@ public/
 
 - **Admin — Primeira vez** (`/admin/visitors`) — lista paginada e pesquisável (nome, e-mail ou telefone) de `GET /api/visitors`, com um checkbox por linha para a equipe marcar quem já foi contatado (`PUT /api/visitors/{id}/contacted`, mostra a data/hora do contato) e filtro Pendentes (padrão) / Já contatados / Todos (`?contacted=`). Exige a permissão `visitors.read` para abrir e `visitors.manage` para marcar (o Admin tem as duas; o backend é a autorização real). Item "Primeira vez" no menu lateral do admin. Spec em `Docs/specs/admin/visitors-list.md`.
 
+- **Ações em cursos bloqueados, e-mail e sessão** — o card de preço de um curso bloqueado oferece sempre um próximo passo real: Comprar agora (pago com preço), Solicitar acesso (`POST /api/access/requests`, para "Por inscrição" ou pago sem preço; mostra "Solicitação enviada" / "Solicitar novamente"), aviso "liberado pela equipe" (gratuito em área privada) ou Confirmar e-mail. Usuário com e-mail não confirmado cai em `/confirm-email` no login e vê uma faixa de aviso no app. `/forgot-password` e `/reset-password?token=…` implementam a recuperação de senha. O `apiFetch` renova a sessão em silêncio (`POST /api/auth/refresh-token`, uma vez por 401) e o React Query não repete respostas 4xx. Spec em `Docs/specs/catalog/locked-course-actions.md`.
+
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
 
