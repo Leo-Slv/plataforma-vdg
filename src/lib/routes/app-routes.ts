@@ -15,6 +15,13 @@ const appRoutes = {
 	myCourses: {
 		index: '/my-courses',
 	},
+	orders: {
+		index: '/orders',
+	},
+	checkout: {
+		success: (orderId: string) => `/checkout/success?orderId=${orderId}`,
+		cancel: (orderId: string) => `/checkout/cancel?orderId=${orderId}`,
+	},
 	testimonials: {
 		new: (courseId: string) => `/testimonials/new?courseId=${courseId}`,
 	},

@@ -19,7 +19,7 @@ type AppNavProps = {
 	displayName: string;
 	initials: string;
 	avatarUrl: string | null;
-	active: 'catalog' | 'my-courses';
+	active: 'catalog' | 'my-courses' | 'orders';
 };
 
 const ADMIN_PANEL_PERMISSIONS = [
@@ -166,6 +166,13 @@ function AppNav({ displayName, initials, avatarUrl, active }: AppNavProps) {
 							>
 								Editar perfil
 							</Link>
+							<Link
+								href={appRoutes.orders.index}
+								onClick={() => setMenuOpen(false)}
+								className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-foreground/55 hover:bg-foreground/5"
+							>
+								Minhas compras
+							</Link>
 							<span className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-foreground/55">
 								Certificados
 							</span>
@@ -240,6 +247,18 @@ function AppNav({ displayName, initials, avatarUrl, active }: AppNavProps) {
 								)}
 							>
 								Meus cursos
+							</Link>
+							<Link
+								href={appRoutes.orders.index}
+								onClick={() => setNavOpen(false)}
+								className={cn(
+									'rounded-md px-2.5 py-2.75',
+									active === 'orders'
+										? 'bg-foreground/6 text-foreground'
+										: 'text-foreground/55 hover:bg-foreground/5',
+								)}
+							>
+								Minhas compras
 							</Link>
 							<span className="rounded-md px-2.5 py-2.75 text-foreground/55">
 								Certificados

@@ -194,3 +194,70 @@ test('renders one preview card per module once details load', () => {
 	assert.match(html, /Assistir aula grátis/);
 	assert.match(html, /Bloqueado/);
 });
+
+test('offers "Comprar agora" for a priced paid course when a buy handler is given', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({ pricingModel: 'Paid', priceAmount: 149 }),
+			areaName: 'Liderança',
+			onBuy: () => {},
+		}),
+	);
+
+	assert.match(html, /Comprar agora/);
+	assert.match(html, /Stripe/);
+	assert.doesNotMatch(html, /Inscrever-se agora/);
+});
+
+test('shows the redirecting label and disables the button while the checkout starts', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({ pricingModel: 'Paid', priceAmount: 149 }),
+			areaName: 'Liderança',
+			onBuy: () => {},
+			isBuying: true,
+		}),
+	);
+
+	assert.match(html, /Redirecionando para o pagamento/);
+	assert.match(html, /disabled/);
+});
+
+test('shows the checkout error next to the buy button', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({ pricingModel: 'Paid', priceAmount: 149 }),
+			areaName: 'Liderança',
+			onBuy: () => {},
+			buyError: 'Confirme seu e-mail para poder comprar este curso.',
+		}),
+	);
+
+	assert.match(html, /role="alert"/);
+	assert.match(html, /Confirme seu e-mail/);
+});
+
+test('keeps the enrollment button for free courses even if a buy handler is passed', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({ pricingModel: 'Free' }),
+			areaName: 'Discipulado',
+			onBuy: () => {},
+		}),
+	);
+
+	assert.match(html, /Inscrever-se agora/);
+	assert.doesNotMatch(html, /Comprar agora/);
+});
+
+test('does not offer a purchase for a paid course without a price', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({ pricingModel: 'Paid', priceAmount: null }),
+			areaName: 'Liderança',
+			onBuy: () => {},
+		}),
+	);
+
+	assert.doesNotMatch(html, /Comprar agora/);
+});

@@ -12,7 +12,14 @@ import type { CourseDetails } from '@/features/catalog/model/course-details';
 
 const INSTALLMENTS = 3;
 
-type CourseDetailLockedProps = {
+type PurchaseProps = {
+	/** Starts the Stripe checkout. When omitted, no purchase button is offered. */
+	onBuy?: () => void;
+	isBuying?: boolean;
+	buyError?: string | null;
+};
+
+type CourseDetailLockedProps = PurchaseProps & {
 	course: CourseCatalogItem;
 	areaName: string | null;
 	details?: CourseDetails;
@@ -90,7 +97,22 @@ function AccessBadge({ course }: { course: CourseCatalogItem }) {
 	);
 }
 
-function PriceCard({ course }: { course: CourseCatalogItem }) {
+function canBuy(course: CourseCatalogItem): boolean {
+	return (
+		course.pricingModel === 'Paid' &&
+		course.priceAmount !== null &&
+		course.priceAmount > 0
+	);
+}
+
+function PriceCard({
+	course,
+	onBuy,
+	isBuying = false,
+	buyError = null,
+}: { course: CourseCatalogItem } & PurchaseProps) {
+	const purchasable = Boolean(onBuy) && canBuy(course);
+
 	return (
 		<div className="overflow-hidden rounded-[10px] border border-foreground/12 bg-surface sm:sticky sm:top-5">
 			<div
@@ -108,10 +130,29 @@ function PriceCard({ course }: { course: CourseCatalogItem }) {
 				<PriceLine course={course} />
 				<button
 					type="button"
-					className="mt-5.5 block w-full rounded-full bg-foreground py-4.25 text-center font-sans text-[15px] text-background"
+					onClick={purchasable ? onBuy : undefined}
+					disabled={purchasable && isBuying}
+					className="mt-5.5 block w-full rounded-full bg-foreground py-4.25 text-center font-sans text-[15px] text-background disabled:opacity-60"
 				>
-					Inscrever-se agora
+					{purchasable
+						? isBuying
+							? 'Redirecionando para o pagamento…'
+							: 'Comprar agora'
+						: 'Inscrever-se agora'}
 				</button>
+				{purchasable && buyError ? (
+					<p
+						role="alert"
+						className="mt-3 text-[12.5px] text-[oklch(0.704_0.191_22.216)]"
+					>
+						{buyError}
+					</p>
+				) : null}
+				{purchasable ? (
+					<p className="mt-3 text-center text-[11.5px] font-light text-foreground/40">
+						Pagamento seguro processado pelo Stripe.
+					</p>
+				) : null}
 				<div className="mt-6.5 flex flex-col gap-3 border-t border-foreground/9 pt-5.5 text-[13px] font-light text-foreground/55">
 					<div>Acesso vitalício ao conteúdo</div>
 					{course.certificateIssued ? (
@@ -127,6 +168,9 @@ function CourseDetailLocked({
 	course,
 	areaName,
 	details,
+	onBuy,
+	isBuying,
+	buyError,
 }: CourseDetailLockedProps) {
 	const moduleWord = course.moduleCount === 1 ? 'módulo' : 'módulos';
 	const lessonWord = course.lessonCount === 1 ? 'aula' : 'aulas';
@@ -203,7 +247,12 @@ function CourseDetailLocked({
 				</div>
 
 				<div>
-					<PriceCard course={course} />
+					<PriceCard
+						course={course}
+						onBuy={onBuy}
+						isBuying={isBuying}
+						buyError={buyError}
+					/>
 				</div>
 			</div>
 		</div>

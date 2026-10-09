@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -23,6 +23,8 @@ import {
 	getDisplayName,
 	getInitials,
 } from '@/features/catalog/lib/user-display';
+import { useCreateCheckoutMutation } from '@/features/payments/hooks/payments.queries';
+import { checkoutErrorMessage } from '@/features/payments/lib/checkout-error';
 import { CourseDetailLocked } from '@/features/catalog/components/course-detail-locked';
 import { CourseDetailOwned } from '@/features/catalog/components/course-detail-owned';
 
@@ -54,6 +56,23 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 	const detailsQuery = useCourseDetailsQuery(course?.id ?? '', {
 		enabled: ready && Boolean(course),
 	});
+
+	const checkoutMutation = useCreateCheckoutMutation();
+	const [buyError, setBuyError] = useState<string | null>(null);
+
+	function handleBuy() {
+		if (!course) {
+			return;
+		}
+
+		setBuyError(null);
+		checkoutMutation.mutate(course.id, {
+			// Hand the browser over to Stripe's hosted checkout. Access is only
+			// granted later, by the webhook, and shown on /checkout/success.
+			onSuccess: ({ checkoutUrl }) => window.location.assign(checkoutUrl),
+			onError: (error) => setBuyError(checkoutErrorMessage(error)),
+		});
+	}
 
 	if (!ready) {
 		return <LoadingScreen />;
@@ -113,6 +132,11 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 								course={course}
 								areaName={areaName}
 								details={detailsQuery.isSuccess ? detailsQuery.data : undefined}
+								onBuy={handleBuy}
+								isBuying={
+									checkoutMutation.isPending || checkoutMutation.isSuccess
+								}
+								buyError={buyError}
 							/>
 						);
 					}

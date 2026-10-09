@@ -11,8 +11,12 @@ const centsFormatter = new Intl.NumberFormat('pt-BR', {
 	maximumFractionDigits: 2,
 });
 
+// Whole amounts stay compact (R$ 149); anything with cents keeps them (R$ 49,90)
+// so the price shown is always the price Stripe will charge.
 function formatCurrencyBrl(amount: number): string {
-	return wholeFormatter.format(amount);
+	return Number.isInteger(amount)
+		? wholeFormatter.format(amount)
+		: centsFormatter.format(amount);
 }
 
 function formatCurrencyBrlWithCents(amount: number): string {

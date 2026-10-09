@@ -14,3 +14,7 @@ test('formatCurrencyBrlWithCents always shows two decimal places', () => {
 	assert.match(formatCurrencyBrlWithCents(149 / 3), /R\$\s?49,67/);
 	assert.match(formatCurrencyBrlWithCents(50), /R\$\s?50,00/);
 });
+
+test('formatCurrencyBrl keeps the cents of a fractional price', () => {
+	assert.match(formatCurrencyBrl(49.9), /R\$\s?49,90/);
+});
