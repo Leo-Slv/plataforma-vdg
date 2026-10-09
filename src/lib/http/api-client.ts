@@ -1,5 +1,11 @@
 import { getAccessToken } from '@/lib/auth/access-token';
-import { env } from '@/lib/env';
+import { appRoutes } from '@/lib/routes/app-routes';
+import { buildApiUrl } from '@/lib/http/build-api-url';
+import {
+	endExpiredSession,
+	isRefreshablePath,
+	refreshSession,
+} from '@/lib/http/refresh-session';
 
 import { ApiError, type ApiErrorPayload } from './api-error';
 
@@ -7,11 +13,6 @@ type ApiFetchOptions = Omit<RequestInit, 'body'> & {
 	body?: BodyInit | FormData | URLSearchParams | Record<string, unknown> | null;
 	timeoutMs?: number;
 };
-
-function buildApiUrl(path: string) {
-	const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-	return `${env.apiUrl.replace(/\/$/, '')}${normalizedPath}`;
-}
 
 function isPlainObjectBody(
 	body: ApiFetchOptions['body'],
@@ -68,7 +69,10 @@ async function parseResponseBody(response: Response) {
  * Shared/Presentation/Responses/ApiErrorResponse.cs and
  * ExceptionHandlingMiddleware.cs in the backend repo).
  */
-async function apiFetch<TData>(path: string, options: ApiFetchOptions = {}) {
+async function performRequest<TData>(
+	path: string,
+	options: ApiFetchOptions = {},
+) {
 	const headers = new Headers(options.headers);
 	headers.set('Accept', 'application/json');
 	const accessToken = getAccessToken();
@@ -117,6 +121,41 @@ async function apiFetch<TData>(path: string, options: ApiFetchOptions = {}) {
 		throw error;
 	} finally {
 		clearTimeout(timeoutId);
+	}
+}
+
+/**
+ * Same as a plain request, plus one silent session refresh: if an
+ * authenticated call comes back 401 (the 60-minute access token expired) the
+ * refresh-token cookie is exchanged for a new access token and the call is
+ * retried once. If that fails the session is over, so the stored token is
+ * dropped and the user is sent to the login page.
+ */
+async function apiFetch<TData>(path: string, options: ApiFetchOptions = {}) {
+	try {
+		return await performRequest<TData>(path, options);
+	} catch (error) {
+		const hadSession = Boolean(getAccessToken());
+		const explicitAuthorization = new Headers(options.headers).has(
+			'Authorization',
+		);
+
+		if (
+			!(error instanceof ApiError) ||
+			error.status !== 401 ||
+			!hadSession ||
+			explicitAuthorization ||
+			!isRefreshablePath(path)
+		) {
+			throw error;
+		}
+
+		if (!(await refreshSession())) {
+			endExpiredSession(appRoutes.auth.login);
+			throw error;
+		}
+
+		return performRequest<TData>(path, options);
 	}
 }
 
