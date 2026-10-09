@@ -18,6 +18,14 @@ const appRoutes = {
 	orders: {
 		index: '/orders',
 	},
+	certificates: {
+		index: '/certificates',
+		detail: (certificateId: string) => `/certificates/${certificateId}`,
+	},
+	legal: {
+		terms: '/termos',
+		privacy: '/privacidade',
+	},
 	checkout: {
 		success: (orderId: string) => `/checkout/success?orderId=${orderId}`,
 		cancel: (orderId: string) => `/checkout/cancel?orderId=${orderId}`,

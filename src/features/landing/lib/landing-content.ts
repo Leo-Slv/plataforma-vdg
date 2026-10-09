@@ -1,3 +1,4 @@
+import { appRoutes } from '@/lib/routes/app-routes';
 import type { FeaturedCourse } from '@/features/landing/model/featured-course';
 
 const heroContent = {
@@ -69,7 +70,10 @@ const howItWorksSteps = [
 const footerContent = {
 	orgName: 'Igreja Viver da Graça',
 	schoolName: 'Escola de Discipulado',
-	linkLabels: ['Termos', 'Privacidade', 'Suporte'],
+	links: [
+		{ label: 'Termos', href: appRoutes.legal.terms },
+		{ label: 'Privacidade', href: appRoutes.legal.privacy },
+	],
 	copyrightYear: 2026,
 } as const;
 

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
@@ -147,10 +148,22 @@ function RegisterForm() {
 
 			<p className="text-[12.5px] font-light text-foreground/42">
 				Ao criar a conta você aceita os{' '}
-				<a href="#" className="underline">
+				<Link
+					href={appRoutes.legal.terms}
+					target="_blank"
+					className="underline"
+				>
 					termos de uso
-				</a>{' '}
-				e a política de privacidade.
+				</Link>{' '}
+				e a{' '}
+				<Link
+					href={appRoutes.legal.privacy}
+					target="_blank"
+					className="underline"
+				>
+					política de privacidade
+				</Link>
+				.
 			</p>
 
 			<button
