@@ -11,6 +11,7 @@ import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { isApiError } from '@/lib/http/api-error';
 import { cardEnterAnimation } from '@/lib/motion/card-reveal';
 import { AppNav } from '@/components/app-nav';
+import { EmailVerificationBanner } from '@/components/email-verification-banner';
 import { LoadingScreen } from '@/components/loading-screen';
 import { useCurrentUserQuery } from '@/features/auth/hooks/auth.queries';
 import {
@@ -76,6 +77,11 @@ function MyCoursesPage() {
 				initials={initials}
 				avatarUrl={currentUserQuery.data?.avatarUrl ?? null}
 				active="my-courses"
+			/>
+			<EmailVerificationBanner
+				unverified={
+					currentUserQuery.isSuccess && !currentUserQuery.data.emailVerifiedAt
+				}
 			/>
 
 			{catalogQuery.isPending ? (
@@ -181,7 +187,10 @@ function MyCoursesPage() {
 
 								<div className="mt-7 grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
 									{sortedResolved.map((entry, index) => (
-										<motion.div key={entry.course.id} {...cardEnterAnimation(index)}>
+										<motion.div
+											key={entry.course.id}
+											{...cardEnterAnimation(index)}
+										>
 											<OwnedCourseCard
 												course={entry.course}
 												areaName={entry.areaName}

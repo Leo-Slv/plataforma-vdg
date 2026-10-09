@@ -1,29 +1,40 @@
+import Link from 'next/link';
 import { motion } from 'motion/react';
 
+import { appRoutes } from '@/lib/routes/app-routes';
 import { cardScrollRevealAnimation } from '@/lib/motion/card-reveal';
 import { PreviewModuleCard } from '@/features/catalog/components/preview-module-card';
-import {
-	formatCurrencyBrl,
-	formatCurrencyBrlWithCents,
-} from '@/features/catalog/lib/format-currency-brl';
+import { formatCurrencyBrl } from '@/features/catalog/lib/format-currency-brl';
 import { formatDuration } from '@/features/catalog/lib/format-duration';
+import { getLockedCta } from '@/features/catalog/lib/locked-cta';
 import type { CourseCatalogItem } from '@/features/catalog/model/course-catalog';
 import type { CourseDetails } from '@/features/catalog/model/course-details';
 
-const INSTALLMENTS = 3;
-
-type PurchaseProps = {
-	/** Starts the Stripe checkout. When omitted, no purchase button is offered. */
+type LockedActionProps = {
+	/** False when the user's e-mail is still unconfirmed (defaults to true). */
+	emailVerified?: boolean;
+	/** Starts the Stripe checkout for a purchasable course. */
 	onBuy?: () => void;
 	isBuying?: boolean;
 	buyError?: string | null;
+	/** Asks the church team for access (enrollment-controlled courses). */
+	onRequestAccess?: () => void;
+	isRequestingAccess?: boolean;
+	requestAccessError?: string | null;
+	/** Status of the user's latest access request for this course, if any. */
+	requestStatus?: string | null;
 };
 
-type CourseDetailLockedProps = PurchaseProps & {
+type CourseDetailLockedProps = LockedActionProps & {
 	course: CourseCatalogItem;
 	areaName: string | null;
 	details?: CourseDetails;
+	/** The content preview failed to load (e.g. the e-mail is unconfirmed). */
+	detailsUnavailable?: boolean;
 };
+
+const primaryButtonClass =
+	'mt-5.5 block w-full rounded-full bg-foreground py-4.25 text-center font-sans text-[15px] text-background disabled:opacity-60';
 
 function PriceLine({
 	course,
@@ -49,15 +60,9 @@ function PriceLine({
 	}
 
 	return (
-		<div className="flex items-baseline gap-2">
-			<span className="font-heading text-[38px] font-extralight">
-				{formatCurrencyBrl(course.priceAmount)}
-			</span>
-			<span className="text-[13px] font-light text-foreground/45">
-				ou {INSTALLMENTS}× de{' '}
-				{formatCurrencyBrlWithCents(course.priceAmount / INSTALLMENTS)}
-			</span>
-		</div>
+		<span className="font-heading text-[38px] font-extralight">
+			{formatCurrencyBrl(course.priceAmount)}
+		</span>
 	);
 }
 
@@ -97,22 +102,125 @@ function AccessBadge({ course }: { course: CourseCatalogItem }) {
 	);
 }
 
-function canBuy(course: CourseCatalogItem): boolean {
+function Note({ children }: { children: string }) {
 	return (
-		course.pricingModel === 'Paid' &&
-		course.priceAmount !== null &&
-		course.priceAmount > 0
+		<p className="mt-3 text-center text-[11.5px] font-light text-foreground/40">
+			{children}
+		</p>
 	);
+}
+
+function ErrorText({ children }: { children: string }) {
+	return (
+		<p
+			role="alert"
+			className="mt-3 text-[12.5px] text-[oklch(0.704_0.191_22.216)]"
+		>
+			{children}
+		</p>
+	);
+}
+
+function LockedAction({
+	course,
+	emailVerified = true,
+	onBuy,
+	isBuying = false,
+	buyError = null,
+	onRequestAccess,
+	isRequestingAccess = false,
+	requestAccessError = null,
+	requestStatus = null,
+}: LockedActionProps & { course: CourseCatalogItem }) {
+	const cta = getLockedCta(course, { emailVerified, requestStatus });
+
+	switch (cta.kind) {
+		case 'verify-email':
+			return (
+				<div className="mt-5.5">
+					<p className="text-[13px] leading-[1.6] font-light text-foreground/60">
+						Confirme seu e-mail para liberar este curso. Até lá, nenhuma aula
+						abre.
+					</p>
+					<Link
+						href={appRoutes.auth.confirmEmail}
+						className="mt-3.5 block w-full rounded-full bg-foreground py-4.25 text-center font-sans text-[15px] text-background"
+					>
+						Confirmar e-mail
+					</Link>
+				</div>
+			);
+
+		case 'buy':
+			return (
+				<>
+					<button
+						type="button"
+						onClick={onBuy}
+						disabled={!onBuy || isBuying}
+						className={primaryButtonClass}
+					>
+						{isBuying ? 'Redirecionando para o pagamento…' : 'Comprar agora'}
+					</button>
+					{buyError ? <ErrorText>{buyError}</ErrorText> : null}
+					<Note>Pagamento seguro processado pelo Stripe.</Note>
+				</>
+			);
+
+		case 'request':
+		case 'request-rejected':
+			return (
+				<>
+					{cta.kind === 'request-rejected' ? (
+						<p className="mt-5.5 text-[12.5px] font-light text-foreground/55">
+							Sua última solicitação não foi aprovada. Você pode pedir de novo.
+						</p>
+					) : null}
+					<button
+						type="button"
+						onClick={onRequestAccess}
+						disabled={!onRequestAccess || isRequestingAccess}
+						className={primaryButtonClass}
+					>
+						{isRequestingAccess
+							? 'Enviando solicitação…'
+							: cta.kind === 'request-rejected'
+								? 'Solicitar novamente'
+								: 'Solicitar acesso'}
+					</button>
+					{requestAccessError ? (
+						<ErrorText>{requestAccessError}</ErrorText>
+					) : null}
+					<Note>A equipe da igreja analisa o pedido e libera o acesso.</Note>
+				</>
+			);
+
+		case 'request-pending':
+			return (
+				<div className="mt-5.5 rounded-lg border border-foreground/12 px-4 py-3.5 text-center">
+					<div className="font-sans text-[14px] text-foreground">
+						Solicitação enviada
+					</div>
+					<p className="mt-1.5 text-[12.5px] font-light text-foreground/50">
+						Aguardando a equipe liberar o seu acesso.
+					</p>
+				</div>
+			);
+
+		case 'members-only':
+			return (
+				<p className="mt-5.5 rounded-lg border border-foreground/12 px-4 py-3.5 text-[13px] leading-[1.6] font-light text-foreground/60">
+					Este curso é gratuito, mas o acesso é liberado pela equipe da igreja.
+					Fale com a secretaria para ser incluído.
+				</p>
+			);
+	}
 }
 
 function PriceCard({
 	course,
-	onBuy,
-	isBuying = false,
-	buyError = null,
-}: { course: CourseCatalogItem } & PurchaseProps) {
-	const purchasable = Boolean(onBuy) && canBuy(course);
-
+	...actionProps
+}: { course: CourseCatalogItem } & LockedActionProps) {
 	return (
 		<div className="overflow-hidden rounded-[10px] border border-foreground/12 bg-surface sm:sticky sm:top-5">
 			<div
@@ -128,31 +236,7 @@ function PriceCard({
 			</div>
 			<div className="p-6.5">
 				<PriceLine course={course} />
-				<button
-					type="button"
-					onClick={purchasable ? onBuy : undefined}
-					disabled={purchasable && isBuying}
-					className="mt-5.5 block w-full rounded-full bg-foreground py-4.25 text-center font-sans text-[15px] text-background disabled:opacity-60"
-				>
-					{purchasable
-						? isBuying
-							? 'Redirecionando para o pagamento…'
-							: 'Comprar agora'
-						: 'Inscrever-se agora'}
-				</button>
-				{purchasable && buyError ? (
-					<p
-						role="alert"
-						className="mt-3 text-[12.5px] text-[oklch(0.704_0.191_22.216)]"
-					>
-						{buyError}
-					</p>
-				) : null}
-				{purchasable ? (
-					<p className="mt-3 text-center text-[11.5px] font-light text-foreground/40">
-						Pagamento seguro processado pelo Stripe.
-					</p>
-				) : null}
+				<LockedAction course={course} {...actionProps} />
 				<div className="mt-6.5 flex flex-col gap-3 border-t border-foreground/9 pt-5.5 text-[13px] font-light text-foreground/55">
 					<div>Acesso vitalício ao conteúdo</div>
 					{course.certificateIssued ? (
@@ -168,9 +252,8 @@ function CourseDetailLocked({
 	course,
 	areaName,
 	details,
-	onBuy,
-	isBuying,
-	buyError,
+	detailsUnavailable = false,
+	...actionProps
 }: CourseDetailLockedProps) {
 	const moduleWord = course.moduleCount === 1 ? 'módulo' : 'módulos';
 	const lessonWord = course.lessonCount === 1 ? 'aula' : 'aulas';
@@ -239,6 +322,10 @@ function CourseDetailLocked({
 								</motion.div>
 							))}
 						</div>
+					) : detailsUnavailable ? (
+						<p className="mt-4 font-sans text-sm font-light text-foreground/45">
+							A prévia do conteúdo não está disponível agora.
+						</p>
 					) : (
 						<p className="mt-4 font-sans text-sm font-light text-foreground/45">
 							Carregando conteúdo…
@@ -247,12 +334,7 @@ function CourseDetailLocked({
 				</div>
 
 				<div>
-					<PriceCard
-						course={course}
-						onBuy={onBuy}
-						isBuying={isBuying}
-						buyError={buyError}
-					/>
+					<PriceCard course={course} {...actionProps} />
 				</div>
 			</div>
 		</div>

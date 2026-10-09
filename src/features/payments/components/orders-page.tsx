@@ -8,6 +8,7 @@ import { getUserName } from '@/lib/auth/access-token';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { isApiError } from '@/lib/http/api-error';
 import { AppNav } from '@/components/app-nav';
+import { EmailVerificationBanner } from '@/components/email-verification-banner';
 import { LoadingScreen } from '@/components/loading-screen';
 import { useCurrentUserQuery } from '@/features/auth/hooks/auth.queries';
 import { useCourseCatalogQuery } from '@/features/catalog/hooks/catalog.queries';
@@ -55,6 +56,11 @@ function OrdersPage() {
 				initials={getInitials(getUserName())}
 				avatarUrl={currentUserQuery.data?.avatarUrl ?? null}
 				active="orders"
+			/>
+			<EmailVerificationBanner
+				unverified={
+					currentUserQuery.isSuccess && !currentUserQuery.data.emailVerifiedAt
+				}
 			/>
 
 			<div className="mx-auto max-w-[860px] px-5 py-11 sm:px-10">

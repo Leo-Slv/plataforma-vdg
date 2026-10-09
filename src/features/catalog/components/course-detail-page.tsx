@@ -2,19 +2,25 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { getUserName } from '@/lib/auth/access-token';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { isApiError } from '@/lib/http/api-error';
+import { queryKeys } from '@/lib/constants/query-keys';
 import { AppNav } from '@/components/app-nav';
+import { EmailVerificationBanner } from '@/components/email-verification-banner';
 import { LoadingScreen } from '@/components/loading-screen';
 import { useCurrentUserQuery } from '@/features/auth/hooks/auth.queries';
 import {
 	useCourseCatalogQuery,
 	useCourseDetailsQuery,
+	useMyAccessRequestsQuery,
+	useRequestCourseAccessMutation,
 } from '@/features/catalog/hooks/catalog.queries';
+import { latestRequestStatus } from '@/features/catalog/lib/latest-request-status';
 import {
 	findCourseBySlug,
 	findPrimaryAreaName,
@@ -32,8 +38,12 @@ type CourseDetailPageProps = {
 	slug: string;
 };
 
+const REQUEST_ERROR_MESSAGE =
+	'Não foi possível enviar a solicitação. Tente novamente.';
+
 function CourseDetailPage({ slug }: CourseDetailPageProps) {
 	const router = useRouter();
+	const queryClient = useQueryClient();
 	const ready = useRequireAuth();
 
 	const catalogQuery = useCourseCatalogQuery({ enabled: ready });
@@ -57,6 +67,12 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 		enabled: ready && Boolean(course),
 	});
 
+	const accessRequestsQuery = useMyAccessRequestsQuery({ enabled: ready });
+	const requestAccessMutation = useRequestCourseAccessMutation();
+	const [requestAccessError, setRequestAccessError] = useState<string | null>(
+		null,
+	);
+
 	const checkoutMutation = useCreateCheckoutMutation();
 	const [buyError, setBuyError] = useState<string | null>(null);
 
@@ -74,10 +90,42 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 		});
 	}
 
+	function handleRequestAccess() {
+		if (!course) {
+			return;
+		}
+
+		setRequestAccessError(null);
+		requestAccessMutation.mutate(course.id, {
+			onSuccess: () => {
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.catalog.accessRequests,
+				});
+			},
+			onError: (error) => {
+				if (isApiError(error) && error.status === 409) {
+					// A request is already pending: just show it as such.
+					queryClient.invalidateQueries({
+						queryKey: queryKeys.catalog.accessRequests,
+					});
+					return;
+				}
+
+				setRequestAccessError(
+					isApiError(error) && error.status === 403
+						? 'Confirme seu e-mail para poder solicitar acesso.'
+						: REQUEST_ERROR_MESSAGE,
+				);
+			},
+		});
+	}
+
 	if (!ready) {
 		return <LoadingScreen />;
 	}
 
+	const emailUnverified =
+		currentUserQuery.isSuccess && !currentUserQuery.data.emailVerifiedAt;
 	const displayName = getDisplayName(getUserName());
 	const initials = getInitials(getUserName());
 
@@ -89,6 +137,7 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 				avatarUrl={currentUserQuery.data?.avatarUrl ?? null}
 				active="catalog"
 			/>
+			<EmailVerificationBanner unverified={emailUnverified} />
 
 			{catalogQuery.isPending ? (
 				<p className="px-5 py-16 text-center font-sans text-sm font-light text-foreground/50 sm:px-10">
@@ -126,17 +175,43 @@ function CourseDetailPage({ slug }: CourseDetailPageProps) {
 				(() => {
 					const areaName = findPrimaryAreaName(catalogQuery.data.areas, course);
 
-					if (!course.hasAccess || detailsQuery.isError) {
+					if (course.hasAccess && detailsQuery.isError) {
+						return (
+							<div className="flex flex-col items-center gap-4 px-5 py-16 text-center sm:px-10">
+								<p className="font-sans text-sm font-light text-foreground/60">
+									Não foi possível carregar o conteúdo deste curso agora.
+								</p>
+								<button
+									type="button"
+									onClick={() => detailsQuery.refetch()}
+									className="rounded-full border border-foreground/20 px-6 py-3 font-sans text-[13px] text-foreground"
+								>
+									Tentar novamente
+								</button>
+							</div>
+						);
+					}
+
+					if (!course.hasAccess) {
 						return (
 							<CourseDetailLocked
 								course={course}
 								areaName={areaName}
 								details={detailsQuery.isSuccess ? detailsQuery.data : undefined}
+								detailsUnavailable={detailsQuery.isError}
+								emailVerified={!emailUnverified}
 								onBuy={handleBuy}
 								isBuying={
 									checkoutMutation.isPending || checkoutMutation.isSuccess
 								}
 								buyError={buyError}
+								onRequestAccess={handleRequestAccess}
+								isRequestingAccess={requestAccessMutation.isPending}
+								requestAccessError={requestAccessError}
+								requestStatus={latestRequestStatus(
+									accessRequestsQuery.data,
+									course.id,
+								)}
 							/>
 						);
 					}

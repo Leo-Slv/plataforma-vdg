@@ -40,7 +40,7 @@ test('renders "Gratuito" for a free course', () => {
 	assert.match(html, /Discipulado/);
 });
 
-test('renders the price (not "Pago") as the badge, plus installments in the price card', () => {
+test('renders the price (not "Pago") as the badge and in the price card, without fake installments', () => {
 	const html = renderToStaticMarkup(
 		createElement(CourseDetailLocked, {
 			course: course({ pricingModel: 'Paid', priceAmount: 149 }),
@@ -55,8 +55,9 @@ test('renders the price (not "Pago") as the badge, plus installments in the pric
 		2,
 		'expected the price in the badge and the price card',
 	);
-	assert.match(html, /3× de/);
-	assert.match(html, /R\$\s?49,67/);
+	// Stripe charges the full amount at once; no installment line may suggest otherwise.
+	assert.doesNotMatch(html, /3×/);
+	assert.doesNotMatch(html, /ou \d+×/);
 });
 
 test('falls back to a "Pago" badge for a paid course with no priceAmount set', () => {
@@ -237,7 +238,7 @@ test('shows the checkout error next to the buy button', () => {
 	assert.match(html, /Confirme seu e-mail/);
 });
 
-test('keeps the enrollment button for free courses even if a buy handler is passed', () => {
+test('a locked free course explains it is released by the team, with no dead button', () => {
 	const html = renderToStaticMarkup(
 		createElement(CourseDetailLocked, {
 			course: course({ pricingModel: 'Free' }),
@@ -246,8 +247,116 @@ test('keeps the enrollment button for free courses even if a buy handler is pass
 		}),
 	);
 
-	assert.match(html, /Inscrever-se agora/);
+	assert.match(html, /liberado pela equipe/);
 	assert.doesNotMatch(html, /Comprar agora/);
+	assert.doesNotMatch(html, /Inscrever-se agora/);
+	assert.doesNotMatch(html, /<button/);
+});
+
+test('an enrollment-controlled course offers "Solicitar acesso"', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({
+				pricingModel: 'EnrollmentControlled',
+				priceAmount: null,
+			}),
+			areaName: 'Liderança',
+			onRequestAccess: () => {},
+		}),
+	);
+
+	assert.match(html, /Solicitar acesso/);
+	assert.doesNotMatch(html, /Comprar agora/);
+	assert.doesNotMatch(html, /Inscrever-se agora/);
+});
+
+test('shows a pending request instead of the button', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({
+				pricingModel: 'EnrollmentControlled',
+				priceAmount: null,
+			}),
+			areaName: 'Liderança',
+			onRequestAccess: () => {},
+			requestStatus: 'Pending',
+		}),
+	);
+
+	assert.match(html, /Solicitação enviada/);
+	assert.doesNotMatch(html, /<button/);
+});
+
+test('lets the user ask again after a rejected request', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({
+				pricingModel: 'EnrollmentControlled',
+				priceAmount: null,
+			}),
+			areaName: 'Liderança',
+			onRequestAccess: () => {},
+			requestStatus: 'Rejected',
+		}),
+	);
+
+	assert.match(html, /não foi aprovada/);
+	assert.match(html, /Solicitar novamente/);
+});
+
+test('shows the sending state and the error of an access request', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({
+				pricingModel: 'EnrollmentControlled',
+				priceAmount: null,
+			}),
+			areaName: 'Liderança',
+			onRequestAccess: () => {},
+			isRequestingAccess: true,
+			requestAccessError: 'Não foi possível enviar a solicitação.',
+		}),
+	);
+
+	assert.match(html, /Enviando solicitação/);
+	assert.match(html, /disabled=""/);
+	assert.match(html, /role="alert"/);
+});
+
+test('an unconfirmed e-mail replaces every action with a link to confirm it', () => {
+	for (const overrides of [
+		{ pricingModel: 'Paid', priceAmount: 149 },
+		{ pricingModel: 'Free', priceAmount: null },
+		{ pricingModel: 'EnrollmentControlled', priceAmount: null },
+	] as const) {
+		const html = renderToStaticMarkup(
+			createElement(CourseDetailLocked, {
+				course: course(overrides),
+				areaName: 'Liderança',
+				emailVerified: false,
+				onBuy: () => {},
+				onRequestAccess: () => {},
+			}),
+		);
+
+		assert.match(html, /Confirme seu e-mail para liberar este curso/);
+		assert.match(html, /href="\/confirm-email"/);
+		assert.doesNotMatch(html, /Comprar agora/);
+		assert.doesNotMatch(html, /Solicitar acesso/);
+	}
+});
+
+test('says the preview is unavailable instead of loading forever', () => {
+	const html = renderToStaticMarkup(
+		createElement(CourseDetailLocked, {
+			course: course({}),
+			areaName: null,
+			detailsUnavailable: true,
+		}),
+	);
+
+	assert.match(html, /prévia do conteúdo não está disponível/);
+	assert.doesNotMatch(html, /Carregando conteúdo…/);
 });
 
 test('does not offer a purchase for a paid course without a price', () => {

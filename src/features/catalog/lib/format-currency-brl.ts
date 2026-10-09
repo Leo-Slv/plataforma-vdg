@@ -19,8 +19,4 @@ function formatCurrencyBrl(amount: number): string {
 		: centsFormatter.format(amount);
 }
 
-function formatCurrencyBrlWithCents(amount: number): string {
-	return centsFormatter.format(amount);
-}
-
-export { formatCurrencyBrl, formatCurrencyBrlWithCents };
+export { formatCurrencyBrl };

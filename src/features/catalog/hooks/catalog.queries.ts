@@ -2,6 +2,8 @@ import { useMutation, useQueries, useQuery } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/constants/query-keys';
 import { getCourseCatalog } from '@/features/catalog/api/get-course-catalog';
+import { getMyAccessRequests } from '@/features/catalog/api/get-my-access-requests';
+import { requestCourseAccess } from '@/features/catalog/api/request-course-access';
 import { getCourseDetails } from '@/features/catalog/api/get-course-details';
 import { getCourseProgress } from '@/features/catalog/api/get-course-progress';
 import { registerLessonProgress } from '@/features/catalog/api/register-lesson-progress';
@@ -31,6 +33,20 @@ function useCourseDetailsQuery(
 		queryKey: queryKeys.catalog.detail(courseId),
 		queryFn: () => getCourseDetails(courseId),
 		enabled: options.enabled && courseId.length > 0,
+	});
+}
+
+function useMyAccessRequestsQuery(options: { enabled: boolean }) {
+	return useQuery({
+		queryKey: queryKeys.catalog.accessRequests,
+		queryFn: getMyAccessRequests,
+		enabled: options.enabled,
+	});
+}
+
+function useRequestCourseAccessMutation() {
+	return useMutation({
+		mutationFn: requestCourseAccess,
 	});
 }
 
@@ -148,6 +164,8 @@ function useMaterialDownloadUrlMutation() {
 }
 
 export {
+	useMyAccessRequestsQuery,
+	useRequestCourseAccessMutation,
 	useCourseCatalogQuery,
 	useCourseDetailsQuery,
 	useCourseProgressQuery,
