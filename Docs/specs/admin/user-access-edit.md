@@ -1,5 +1,14 @@
 # Admin — User access edit
 
+> **Revised 2026-10-09 — per-Area access removed.** CourseCore replaced
+> `UserAreaAccess`/`RoleAreaAccess` with per-course access
+> (`UserCourseAccess`). The "granted areas" toggles, `user-area`/`role-area`
+> calls and "Todas" role-bypass wording below are historical: the screen now
+> lists and revokes per-course grants (`GET .../user-course/{userId}`,
+> `DELETE .../user-course/{userId}/{courseId}`), and `UserResponse.areaNames`
+> became `courseTitles`. See `Docs/specs/payments/course-purchase.md` and the
+> backend spec `stripe-course-purchase.md`.
+
 ## Why
 
 `Docs/specs/admin/users-list.md` (`1q`) deliberately left every row inert,

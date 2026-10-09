@@ -203,11 +203,11 @@ public/
 - **Admin — Usuários** (`/admin/users`) — lista paginada e pesquisável
   (nome/e-mail) de `GET /api/users`, com contagem real de cadastrados/
   confirmados no cabeçalho. Coluna "Papel" vem pronta no próprio
-  `UserResponse` (`RoleNames`); "Áreas liberadas" não tem endpoint em
-  lote (só `GET /api/access/user-area/{userId}`, um por usuário), então
-  cada linha da página atual busca a própria — um admin (`RoleNames`
-  inclui "Admin") mostra "Todas" sem chamada, já que o bypass de área é
-  por papel, não por concessão individual. O cabeçalho "E-mail" do
+  `UserResponse` (`RoleNames`); "Cursos liberados" vem pronto no próprio
+  `UserResponse` (`CourseTitles`, acesso por curso — a permissão por Area
+  deixou de existir no backend em 2026-10-09) — um admin (`RoleNames`
+  inclui "Admin") mostra "Todos", já que o acesso total é por papel, não
+  por concessão individual. O cabeçalho "E-mail" do
   mockup na verdade desenha Confirmado/Pendente — a coluna real virou
   "Status" com esse valor, e o e-mail passou a ser uma segunda linha sob
   o nome do usuário. "Convidar usuário" cria a conta na hora
@@ -216,24 +216,30 @@ public/
   para a tela de editar acesso (abaixo). Spec em
   `Docs/specs/admin/users-list.md`.
 - **Admin — Editar acesso do usuário** (`/admin/users/[userId]/edit`) —
-  papel (só leitura — não existe endpoint para listar papéis nem
-  descobrir o id de um papel, então os endpoints de atribuir/remover
-  papel existem mas não têm como ser chamados de uma UI), toggle por
-  área liberada, painel de "Cursos pagos concedidos"
-  (`GET /api/access/requests/users/{userId}/granted`, resolvido para
-  título via a lista de cursos já carregada) com "+ Conceder acesso a um
-  curso pago" (`POST /api/access/requests/grant`, dispara na hora, não
-  entra no "Salvar"), e status da conta (Ativa/Bloqueada, um toggle — o
-  botão "Bloquear usuário" do mockup foi removido por editar o mesmo
-  campo). Não existe endpoint em lote para conceder/revogar área, então
-  os toggles de área e o status ficam em estado local até "Salvar
-  alterações", que compara com o que foi carregado e dispara só as
-  chamadas necessárias. Toda ação aqui (`UsersController`,
-  `AreasController`'s user-area routes, `AccessRequestsController`'s
-  grant route) cai na mesma claim `users.manage` da tela — conferido no
-  código do backend antes de supor o contrário, então não precisou de
-  uma segunda permissão como a tela de aula. Spec em
-  `Docs/specs/admin/user-access-edit.md`.
+  papéis (toggles via `GET /api/roles`), painel de "Cursos liberados"
+  (`GET /api/access/user-course/{userId}`, com a origem de cada acesso —
+  Concedido / Comprado / Migrado — resolvida para título via a lista de
+  cursos já carregada) com "+ Conceder acesso a um curso"
+  (`POST /api/access/requests/grant`) e "Revogar" por curso
+  (`DELETE /api/access/user-course/{userId}/{courseId}`, com confirmação)
+  — ambos disparam na hora, não entram no "Salvar" — e status da conta
+  (Ativa/Bloqueada, um toggle). Papéis e status ficam em estado local até
+  "Salvar alterações", que compara com o que foi carregado e dispara só
+  as chamadas necessárias. A antiga permissão por Area (toggles de área,
+  `user-area`/`role-area`) foi removida junto com o backend. Toda ação
+  aqui cai na mesma claim `users.manage` da tela. Spec em
+  `Docs/specs/admin/user-access-edit.md` (com nota de revisão no topo).
+- **Compra de curso via Stripe** (`/checkout/success`, `/checkout/cancel`,
+  `/orders`) — o botão "Comprar agora" do detalhe de um curso pago com
+  preço (`POST /api/courses/{courseId}/checkout`) leva ao Checkout
+  hospedado do Stripe (modo teste). O acesso só é liberado pelo webhook
+  do backend, então `/checkout/success?orderId=…` consulta
+  `GET /api/orders/me` a cada 2 s (até 30 s) e mostra "Confirmando…" →
+  "Pagamento confirmado" (ou "ainda estamos confirmando" se passar do
+  prazo); `/checkout/cancel` explica que nada foi cobrado; `/orders`
+  ("Minhas compras", no menu do avatar) lista pedidos com status. Erros do
+  checkout têm mensagem própria (e-mail não confirmado, já tem acesso,
+  Stripe indisponível). Spec em `Docs/specs/payments/course-purchase.md`.
 
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
