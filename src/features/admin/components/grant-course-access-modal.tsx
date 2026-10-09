@@ -24,7 +24,7 @@ function GrantCourseAccessModal({
 	const [courseId, setCourseId] = useState('');
 
 	return (
-		<AdminModal title="Conceder acesso a um curso pago" onClose={onClose}>
+		<AdminModal title="Conceder acesso a um curso" onClose={onClose}>
 			<form
 				onSubmit={(event) => {
 					event.preventDefault();
@@ -36,7 +36,7 @@ function GrantCourseAccessModal({
 			>
 				{eligibleCourses.length === 0 ? (
 					<p className="font-sans text-[13px] font-light text-foreground/50">
-						Não há cursos pagos elegíveis para conceder no momento.
+						Não há cursos elegíveis para conceder no momento.
 					</p>
 				) : (
 					<AdminSelect

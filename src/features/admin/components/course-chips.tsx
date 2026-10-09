@@ -1,4 +1,4 @@
-type AreaChipsProps = {
+type CourseChipsProps = {
 	status: 'admin' | 'pending' | 'error' | 'ready';
 	names: string[];
 };
@@ -11,11 +11,11 @@ function Chip({ children }: { children: string }) {
 	);
 }
 
-function AreaChips({ status, names }: AreaChipsProps) {
+function CourseChips({ status, names }: CourseChipsProps) {
 	if (status === 'admin') {
 		return (
 			<div className="flex flex-wrap gap-1.5">
-				<Chip>Todas</Chip>
+				<Chip>Todos</Chip>
 			</div>
 		);
 	}
@@ -43,4 +43,4 @@ function AreaChips({ status, names }: AreaChipsProps) {
 	);
 }
 
-export { AreaChips };
+export { CourseChips };

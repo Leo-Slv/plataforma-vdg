@@ -17,18 +17,13 @@ import {
 	useRolesQuery,
 	useAssignUserRoleMutation,
 	useRemoveUserRoleMutation,
-	useAreasQuery,
-	useUserAreaAccessQuery,
-	useRoleAreaAccessQueries,
-	useGrantUserAreaAccessMutation,
-	useRevokeUserAreaAccessMutation,
-	useGrantedCourseAccessQuery,
+	useUserCourseAccessQuery,
+	useRevokeUserCourseAccessMutation,
 	useGrantCourseAccessMutation,
 	useCoursesQuery,
 } from '@/features/admin/hooks/admin.queries';
 import { AdminSidebar } from '@/features/admin/components/admin-sidebar';
 import { StatusToggle } from '@/features/admin/components/status-toggle';
-import { AreaAccessToggleList } from '@/features/admin/components/area-access-toggle-list';
 import { RoleAccessToggleList } from '@/features/admin/components/role-access-toggle-list';
 import { GrantedCoursesPanel } from '@/features/admin/components/granted-courses-panel';
 import { GrantCourseAccessModal } from '@/features/admin/components/grant-course-access-modal';
@@ -47,41 +42,17 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 
 	const userQuery = useUserQuery(userId, { enabled: ready });
 	const rolesQuery = useRolesQuery({ enabled: ready });
-	const areasQuery = useAreasQuery({ enabled: ready });
-	const areaAccessQuery = useUserAreaAccessQuery(userId, { enabled: ready });
-	const grantedCoursesQuery = useGrantedCourseAccessQuery(userId, {
+	const courseAccessQuery = useUserCourseAccessQuery(userId, {
 		enabled: ready,
 	});
 	const coursesQuery = useCoursesQuery({ enabled: ready });
 
-	// Roles can grant area access on their own (RoleAreaAccess) independent
-	// of any per-user grant below — the Admin role, for one, is seeded with
-	// access to every area. Fetched here (one query per assigned role) so
-	// the toggle list can tell "granted via this role" apart from "granted
-	// individually to this user", instead of showing every role-covered
-	// area as if it had no access at all.
-	const assignedRoleIds = (rolesQuery.data ?? [])
-		.filter((role) => userQuery.data?.roleNames.includes(role.name))
-		.map((role) => role.id);
-	const roleAreaAccessQueries = useRoleAreaAccessQueries(assignedRoleIds, {
-		enabled: ready,
-	});
-	const roleGrantedAreaIds = new Set(
-		roleAreaAccessQueries.flatMap(
-			(query) => query.data?.map((access) => access.areaId) ?? [],
-		),
-	);
-
 	const updateUserMutation = useUpdateUserMutation();
 	const assignRoleMutation = useAssignUserRoleMutation();
 	const removeRoleMutation = useRemoveUserRoleMutation();
-	const grantAreaMutation = useGrantUserAreaAccessMutation();
-	const revokeAreaMutation = useRevokeUserAreaAccessMutation();
+	const revokeCourseMutation = useRevokeUserCourseAccessMutation();
 	const grantCourseMutation = useGrantCourseAccessMutation();
 
-	const [pendingAreaIds, setPendingAreaIds] = useState<Set<string> | null>(
-		null,
-	);
 	const [pendingRoleIds, setPendingRoleIds] = useState<Set<string> | null>(
 		null,
 	);
@@ -90,15 +61,7 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 	const [isSaving, setIsSaving] = useState(false);
 	const [showGrantModal, setShowGrantModal] = useState(false);
 	const [grantError, setGrantError] = useState<string | null>(null);
-
-	useEffect(() => {
-		if (areaAccessQuery.data && pendingAreaIds === null) {
-			// eslint-disable-next-line react-hooks/set-state-in-effect
-			setPendingAreaIds(
-				new Set(areaAccessQuery.data.map((access) => access.areaId)),
-			);
-		}
-	}, [areaAccessQuery.data, pendingAreaIds]);
+	const [revokingCourseId, setRevokingCourseId] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (userQuery.data && rolesQuery.data && pendingRoleIds === null) {
@@ -127,22 +90,14 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 		}
 	}, [userQuery.isError, userQuery.error, router]);
 
-	function invalidateAreaAccess() {
+	function invalidateCourseAccess() {
 		queryClient.invalidateQueries({
-			queryKey: queryKeys.admin.userAreaAccess(userId),
+			queryKey: queryKeys.admin.userCourseAccess(userId),
 		});
-	}
-
-	function toggleArea(areaId: string) {
-		setPendingAreaIds((current) => {
-			const next = new Set(current ?? []);
-			if (next.has(areaId)) {
-				next.delete(areaId);
-			} else {
-				next.add(areaId);
-			}
-			return next;
-		});
+		queryClient.invalidateQueries({ queryKey: queryKeys.admin.user(userId) });
+		// Partial key match refreshes every cached page of the users list, whose
+		// "Cursos liberados" column reads the same grants.
+		queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
 	}
 
 	function toggleRole(roleId: string) {
@@ -158,27 +113,12 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 	}
 
 	async function handleSave() {
-		if (
-			!userQuery.data ||
-			pendingAreaIds === null ||
-			pendingRoleIds === null ||
-			pendingActive === null
-		) {
+		if (!userQuery.data || pendingRoleIds === null || pendingActive === null) {
 			return;
 		}
 
 		setSaveError(null);
 		setIsSaving(true);
-
-		const loadedAreaIds = new Set(
-			(areaAccessQuery.data ?? []).map((access) => access.areaId),
-		);
-		const toGrant = [...pendingAreaIds].filter(
-			(areaId) => !loadedAreaIds.has(areaId),
-		);
-		const toRevoke = [...loadedAreaIds].filter(
-			(areaId) => !pendingAreaIds.has(areaId),
-		);
 
 		const loadedRoleIds = new Set(
 			(rolesQuery.data ?? [])
@@ -193,12 +133,6 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 		);
 
 		const tasks: Promise<unknown>[] = [
-			...toGrant.map((areaId) =>
-				grantAreaMutation.mutateAsync({ userId, areaId }),
-			),
-			...toRevoke.map((areaId) =>
-				revokeAreaMutation.mutateAsync({ userId, areaId }),
-			),
 			...toAssign.map((roleId) =>
 				assignRoleMutation.mutateAsync({ userId, roleId }),
 			),
@@ -230,12 +164,11 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 			toast.success('Alterações salvas.');
 		}
 
-		invalidateAreaAccess();
-		queryClient.invalidateQueries({ queryKey: queryKeys.admin.user(userId) });
 		// Partial key match invalidates every cached page/search combo of the
-		// users list, not just the one that happened to be open last — role,
-		// area, and active-status changes made here otherwise show stale on
-		// /admin/users until a manual refresh.
+		// users list, not just the one that happened to be open last — role and
+		// active-status changes made here otherwise show stale on /admin/users
+		// until a manual refresh.
+		queryClient.invalidateQueries({ queryKey: queryKeys.admin.user(userId) });
 		queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
 	}
 
@@ -245,10 +178,7 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 			{ userId, courseId },
 			{
 				onSuccess: () => {
-					queryClient.invalidateQueries({
-						queryKey: queryKeys.admin.grantedCourseAccess(userId),
-					});
-					invalidateAreaAccess();
+					invalidateCourseAccess();
 					toast.success('Acesso ao curso concedido.');
 					setShowGrantModal(false);
 				},
@@ -260,6 +190,32 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 					setGrantError(message);
 					toast.error(message);
 				},
+			},
+		);
+	}
+
+	function handleRevokeCourse(courseId: string) {
+		const title = coursesQuery.data?.find((c) => c.id === courseId)?.title;
+		if (
+			!window.confirm(
+				`Revogar o acesso a "${title ?? 'este curso'}"? O usuário perde o acesso imediatamente.`,
+			)
+		) {
+			return;
+		}
+
+		setRevokingCourseId(courseId);
+		revokeCourseMutation.mutate(
+			{ userId, courseId },
+			{
+				onSuccess: () => {
+					invalidateCourseAccess();
+					toast.success('Acesso revogado.');
+				},
+				onError: () => {
+					toast.error(GENERIC_ERROR_MESSAGE);
+				},
+				onSettled: () => setRevokingCourseId(null),
 			},
 		);
 	}
@@ -298,14 +254,12 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 	const isLoading =
 		!userLoaded ||
 		rolesQuery.isPending ||
-		areasQuery.isPending ||
-		areaAccessQuery.isPending;
+		courseAccessQuery.isPending ||
+		coursesQuery.isPending;
 	const roles = rolesQuery.data ?? [];
-	const areas = areasQuery.data ?? [];
 	const courses = coursesQuery.data ?? [];
-	const grantedCourseIds = (grantedCoursesQuery.data ?? []).map(
-		(request) => request.courseId,
-	);
+	const grants = courseAccessQuery.data ?? [];
+	const grantedCourseIds = grants.map((grant) => grant.courseId);
 	const eligibleCourses = courses.filter(
 		(course) =>
 			course.published &&
@@ -368,24 +322,15 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 									onToggle={toggleRole}
 								/>
 							</div>
-							<div>
-								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
-									Áreas liberadas
-								</div>
-								<AreaAccessToggleList
-									areas={areas}
-									pendingGrantedAreaIds={pendingAreaIds ?? new Set()}
-									roleGrantedAreaIds={roleGrantedAreaIds}
-									onToggle={toggleArea}
-								/>
-							</div>
 						</div>
 
 						<div className="flex flex-col gap-5.5">
 							<GrantedCoursesPanel
-								grantedCourseIds={grantedCourseIds}
+								grants={grants}
 								courses={courses}
 								onGrant={() => setShowGrantModal(true)}
+								onRevoke={handleRevokeCourse}
+								revokingCourseId={revokingCourseId}
 							/>
 							<StatusToggle
 								label="Status da conta (Ativa)"

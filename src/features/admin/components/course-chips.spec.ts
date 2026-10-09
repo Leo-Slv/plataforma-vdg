@@ -3,40 +3,40 @@ import assert from 'node:assert/strict';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import { AreaChips } from '@/features/admin/components/area-chips';
+import { CourseChips } from '@/features/admin/components/course-chips';
 
-test('renders "Todas" for an admin, ignoring names', () => {
+test('renders "Todos" for an admin, ignoring names', () => {
 	const html = renderToStaticMarkup(
-		createElement(AreaChips, { status: 'admin', names: ['Discipulado'] }),
+		createElement(CourseChips, { status: 'admin', names: ['Discipulado'] }),
 	);
-	assert.match(html, /Todas/);
+	assert.match(html, /Todos/);
 	assert.doesNotMatch(html, /Discipulado/);
 });
 
 test('renders a placeholder while pending', () => {
 	const html = renderToStaticMarkup(
-		createElement(AreaChips, { status: 'pending', names: [] }),
+		createElement(CourseChips, { status: 'pending', names: [] }),
 	);
 	assert.match(html, /…/);
 });
 
 test('renders a dash on error', () => {
 	const html = renderToStaticMarkup(
-		createElement(AreaChips, { status: 'error', names: [] }),
+		createElement(CourseChips, { status: 'error', names: [] }),
 	);
 	assert.match(html, /—/);
 });
 
-test('renders "Nenhuma" when ready with no granted areas', () => {
+test('renders "Nenhuma" when ready with no granted courses', () => {
 	const html = renderToStaticMarkup(
-		createElement(AreaChips, { status: 'ready', names: [] }),
+		createElement(CourseChips, { status: 'ready', names: [] }),
 	);
 	assert.match(html, /Nenhuma/);
 });
 
-test('renders one chip per granted area name', () => {
+test('renders one chip per granted course title', () => {
 	const html = renderToStaticMarkup(
-		createElement(AreaChips, {
+		createElement(CourseChips, {
 			status: 'ready',
 			names: ['Discipulado', 'Liderança'],
 		}),

@@ -12,6 +12,9 @@ const queryKeys = {
 		list: ['catalog', 'list'] as const,
 		detail: (courseId: string) => ['catalog', 'detail', courseId] as const,
 	},
+	payments: {
+		orders: ['payments', 'orders'] as const,
+	},
 	progress: {
 		course: (courseId: string) => ['progress', 'course', courseId] as const,
 	},
@@ -48,13 +51,9 @@ const queryKeys = {
 			['admin', 'videos', page, pageSize] as const,
 		users: (page: number, pageSize: number, search: string) =>
 			['admin', 'users', page, pageSize, search] as const,
-		userAreaAccess: (userId: string) =>
-			['admin', 'users', userId, 'area-access'] as const,
-		roleAreaAccess: (roleId: string) =>
-			['admin', 'roles', roleId, 'area-access'] as const,
 		user: (userId: string) => ['admin', 'users', userId] as const,
-		grantedCourseAccess: (userId: string) =>
-			['admin', 'users', userId, 'granted-courses'] as const,
+		userCourseAccess: (userId: string) =>
+			['admin', 'users', userId, 'course-access'] as const,
 		testimonials: ['admin', 'testimonials'] as const,
 	},
 } as const;

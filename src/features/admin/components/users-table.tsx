@@ -5,7 +5,7 @@ import { appRoutes } from '@/lib/routes/app-routes';
 import { formatRoleNames } from '@/features/admin/lib/format-role-names';
 import { formatDateBr } from '@/features/admin/lib/format-date-br';
 import { rowEnterAnimation } from '@/features/admin/lib/row-stagger';
-import { AreaChips } from '@/features/admin/components/area-chips';
+import { CourseChips } from '@/features/admin/components/course-chips';
 import { MotionLink } from '@/features/admin/components/motion-link';
 import type { User } from '@/features/admin/model/user';
 
@@ -34,7 +34,7 @@ function UsersTable({ users }: UsersTableProps) {
 			>
 				<span>Usuário</span>
 				<span>Papel</span>
-				<span>Áreas liberadas</span>
+				<span>Cursos liberados</span>
 				<span>Status</span>
 				<span>Cadastro</span>
 			</div>
@@ -61,9 +61,9 @@ function UsersTable({ users }: UsersTableProps) {
 						<span className="text-foreground/55">
 							{formatRoleNames(user.roleNames)}
 						</span>
-						<AreaChips
+						<CourseChips
 							status={user.roleNames.includes('Admin') ? 'admin' : 'ready'}
-							names={user.areaNames}
+							names={user.courseTitles}
 						/>
 						<span
 							className={cn(

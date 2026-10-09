@@ -45,13 +45,10 @@ import { activateVideo } from '@/features/admin/api/activate-video';
 import { unlistVideo } from '@/features/admin/api/unlist-video';
 import { getUsers } from '@/features/admin/api/get-users';
 import { createUser } from '@/features/admin/api/create-user';
-import { getUserAreaAccess } from '@/features/admin/api/get-user-area-access';
-import { getRoleAreaAccess } from '@/features/admin/api/get-role-area-access';
 import { getUser } from '@/features/admin/api/get-user';
 import { updateUser } from '@/features/admin/api/update-user';
-import { grantUserAreaAccess } from '@/features/admin/api/grant-user-area-access';
-import { revokeUserAreaAccess } from '@/features/admin/api/revoke-user-area-access';
-import { getGrantedCourseAccess } from '@/features/admin/api/get-granted-course-access';
+import { revokeUserCourseAccess } from '@/features/admin/api/revoke-user-course-access';
+import { getUserCourseAccess } from '@/features/admin/api/get-user-course-access';
 import { grantCourseAccess } from '@/features/admin/api/grant-course-access';
 import { getTestimonials } from '@/features/admin/api/get-testimonials';
 import { publishTestimonial } from '@/features/admin/api/publish-testimonial';
@@ -477,27 +474,6 @@ function useCreateUserMutation() {
 	});
 }
 
-function useUserAreaAccessQuery(userId: string, options: { enabled: boolean }) {
-	return useQuery({
-		queryKey: queryKeys.admin.userAreaAccess(userId),
-		queryFn: () => getUserAreaAccess(userId),
-		enabled: options.enabled && userId.length > 0,
-	});
-}
-
-function useRoleAreaAccessQueries(
-	roleIds: string[],
-	options: { enabled: boolean },
-) {
-	return useQueries({
-		queries: roleIds.map((roleId) => ({
-			queryKey: queryKeys.admin.roleAreaAccess(roleId),
-			queryFn: () => getRoleAreaAccess(roleId),
-			enabled: options.enabled,
-		})),
-	});
-}
-
 function useUserQuery(userId: string, options: { enabled: boolean }) {
 	return useQuery({
 		queryKey: queryKeys.admin.user(userId),
@@ -533,28 +509,21 @@ function useUpdateUserMutation() {
 	});
 }
 
-function useGrantUserAreaAccessMutation() {
-	return useMutation({
-		mutationFn: ({ userId, areaId }: { userId: string; areaId: string }) =>
-			grantUserAreaAccess(userId, areaId),
-	});
-}
-
-function useRevokeUserAreaAccessMutation() {
-	return useMutation({
-		mutationFn: ({ userId, areaId }: { userId: string; areaId: string }) =>
-			revokeUserAreaAccess(userId, areaId),
-	});
-}
-
-function useGrantedCourseAccessQuery(
+function useUserCourseAccessQuery(
 	userId: string,
 	options: { enabled: boolean },
 ) {
 	return useQuery({
-		queryKey: queryKeys.admin.grantedCourseAccess(userId),
-		queryFn: () => getGrantedCourseAccess(userId),
+		queryKey: queryKeys.admin.userCourseAccess(userId),
+		queryFn: () => getUserCourseAccess(userId),
 		enabled: options.enabled && userId.length > 0,
+	});
+}
+
+function useRevokeUserCourseAccessMutation() {
+	return useMutation({
+		mutationFn: ({ userId, courseId }: { userId: string; courseId: string }) =>
+			revokeUserCourseAccess(userId, courseId),
 	});
 }
 
@@ -631,14 +600,11 @@ export {
 	useAllCourseModulesQueries,
 	useUsersQuery,
 	useCreateUserMutation,
-	useUserAreaAccessQuery,
-	useRoleAreaAccessQueries,
 	useUserQuery,
 	useUsersByIdsQueries,
 	useUpdateUserMutation,
-	useGrantUserAreaAccessMutation,
-	useRevokeUserAreaAccessMutation,
-	useGrantedCourseAccessQuery,
+	useRevokeUserCourseAccessMutation,
+	useUserCourseAccessQuery,
 	useGrantCourseAccessMutation,
 	useTestimonialsQuery,
 	usePublishTestimonialMutation,
