@@ -12,6 +12,8 @@ const authPermissions = {
 	manageVideos: 'videos.manage',
 	readProgress: 'progress.read',
 	readAudit: 'audit.read',
+	readVisitors: 'visitors.read',
+	manageVisitors: 'visitors.manage',
 } as const;
 
 export { authPermissions };

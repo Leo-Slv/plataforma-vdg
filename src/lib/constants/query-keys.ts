@@ -55,6 +55,12 @@ const queryKeys = {
 		userCourseAccess: (userId: string) =>
 			['admin', 'users', userId, 'course-access'] as const,
 		testimonials: ['admin', 'testimonials'] as const,
+		visitors: (
+			page: number,
+			pageSize: number,
+			search: string,
+			filter: string,
+		) => ['admin', 'visitors', page, pageSize, search, filter] as const,
 	},
 } as const;
 

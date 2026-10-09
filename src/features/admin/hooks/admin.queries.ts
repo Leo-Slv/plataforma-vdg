@@ -43,6 +43,9 @@ import { getVideos } from '@/features/admin/api/get-videos';
 import { getYouTubeVideoMetadata } from '@/features/admin/api/get-youtube-video-metadata';
 import { activateVideo } from '@/features/admin/api/activate-video';
 import { unlistVideo } from '@/features/admin/api/unlist-video';
+import { getVisitors } from '@/features/admin/api/get-visitors';
+import { setVisitorContacted } from '@/features/admin/api/set-visitor-contacted';
+import type { VisitorContactFilter } from '@/features/admin/model/visitor';
 import { getUsers } from '@/features/admin/api/get-users';
 import { createUser } from '@/features/admin/api/create-user';
 import { getUser } from '@/features/admin/api/get-user';
@@ -455,6 +458,33 @@ function useAllCourseModulesQueries(
 	});
 }
 
+function useVisitorsQuery(
+	page: number,
+	pageSize: number,
+	search: string,
+	filter: VisitorContactFilter,
+	options: { enabled: boolean },
+) {
+	return useQuery({
+		queryKey: queryKeys.admin.visitors(page, pageSize, search, filter),
+		queryFn: () => getVisitors(page, pageSize, search, filter),
+		enabled: options.enabled,
+		placeholderData: (previous) => previous,
+	});
+}
+
+function useSetVisitorContactedMutation() {
+	return useMutation({
+		mutationFn: ({
+			visitorId,
+			contacted,
+		}: {
+			visitorId: string;
+			contacted: boolean;
+		}) => setVisitorContacted(visitorId, contacted),
+	});
+}
+
 function useUsersQuery(
 	page: number,
 	pageSize: number,
@@ -598,6 +628,8 @@ export {
 	useUnlistVideoMutation,
 	useYouTubeVideoMetadataMutation,
 	useAllCourseModulesQueries,
+	useVisitorsQuery,
+	useSetVisitorContactedMutation,
 	useUsersQuery,
 	useCreateUserMutation,
 	useUserQuery,

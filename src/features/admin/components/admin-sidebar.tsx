@@ -10,7 +10,14 @@ import { appRoutes } from '@/lib/routes/app-routes';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 type AdminSidebarProps = {
-	active: 'areas' | 'courses' | 'users' | 'videos' | 'audit' | 'testimonials';
+	active:
+		| 'areas'
+		| 'courses'
+		| 'users'
+		| 'videos'
+		| 'audit'
+		| 'testimonials'
+		| 'visitors';
 	areasSummary?: { name: string; courseCount: number }[];
 };
 
@@ -24,6 +31,11 @@ const NAV_ITEMS = [
 		label: 'Depoimentos',
 		key: 'testimonials',
 		href: appRoutes.admin.testimonials,
+	},
+	{
+		label: 'Primeira vez',
+		key: 'visitors',
+		href: appRoutes.admin.visitors,
 	},
 ] as const;
 

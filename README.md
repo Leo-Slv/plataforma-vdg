@@ -241,6 +241,8 @@ public/
   checkout têm mensagem própria (e-mail não confirmado, já tem acesso,
   Stripe indisponível). Spec em `Docs/specs/payments/course-purchase.md`.
 
+- **Admin — Primeira vez** (`/admin/visitors`) — lista paginada e pesquisável (nome, e-mail ou telefone) de `GET /api/visitors`, com um checkbox por linha para a equipe marcar quem já foi contatado (`PUT /api/visitors/{id}/contacted`, mostra a data/hora do contato) e filtro Pendentes (padrão) / Já contatados / Todos (`?contacted=`). Exige a permissão `visitors.read` para abrir e `visitors.manage` para marcar (o Admin tem as duas; o backend é a autorização real). Item "Primeira vez" no menu lateral do admin. Spec em `Docs/specs/admin/visitors-list.md`.
+
 Demais funcionalidades são adicionadas seguindo o workflow descrito em
 `CLAUDE.md`.
 
