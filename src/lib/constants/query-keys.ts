@@ -13,6 +13,9 @@ const queryKeys = {
 		detail: (courseId: string) => ['catalog', 'detail', courseId] as const,
 		accessRequests: ['catalog', 'access-requests'] as const,
 	},
+	certificates: {
+		mine: ['certificates', 'mine'] as const,
+	},
 	payments: {
 		orders: ['payments', 'orders'] as const,
 	},

@@ -19,7 +19,7 @@ type AppNavProps = {
 	displayName: string;
 	initials: string;
 	avatarUrl: string | null;
-	active: 'catalog' | 'my-courses' | 'orders';
+	active: 'catalog' | 'my-courses' | 'orders' | 'certificates';
 };
 
 const ADMIN_PANEL_PERMISSIONS = [
@@ -97,7 +97,17 @@ function AppNav({ displayName, initials, avatarUrl, active }: AppNavProps) {
 					>
 						Meus cursos
 					</Link>
-					<span className="text-foreground/50">Certificados</span>
+					<Link
+						href={appRoutes.certificates.index}
+						className={cn(
+							'pb-0.5',
+							active === 'certificates'
+								? 'border-b border-foreground text-foreground'
+								: 'text-foreground/50',
+						)}
+					>
+						Certificados
+					</Link>
 					{canSeeAdminPanel ? (
 						<Link
 							href={appRoutes.admin.courses}
@@ -173,9 +183,13 @@ function AppNav({ displayName, initials, avatarUrl, active }: AppNavProps) {
 							>
 								Minhas compras
 							</Link>
-							<span className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-foreground/55">
+							<Link
+								href={appRoutes.certificates.index}
+								onClick={() => setMenuOpen(false)}
+								className="rounded-md px-2.5 py-2.75 font-sans text-[13.5px] text-foreground/55 hover:bg-foreground/5"
+							>
 								Certificados
-							</span>
+							</Link>
 						</div>
 						<div className="border-t border-foreground/8 p-2">
 							<button
@@ -260,9 +274,18 @@ function AppNav({ displayName, initials, avatarUrl, active }: AppNavProps) {
 							>
 								Minhas compras
 							</Link>
-							<span className="rounded-md px-2.5 py-2.75 text-foreground/55">
+							<Link
+								href={appRoutes.certificates.index}
+								onClick={() => setNavOpen(false)}
+								className={cn(
+									'rounded-md px-2.5 py-2.75',
+									active === 'certificates'
+										? 'bg-foreground/6 text-foreground'
+										: 'text-foreground/55 hover:bg-foreground/5',
+								)}
+							>
 								Certificados
-							</span>
+							</Link>
 							{canSeeAdminPanel ? (
 								<Link
 									href={appRoutes.admin.courses}
