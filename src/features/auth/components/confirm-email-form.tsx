@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
@@ -162,22 +161,14 @@ function ConfirmEmailForm({ onConfirmed }: ConfirmEmailFormProps) {
 				</div>
 			) : null}
 
-			<div className="flex gap-3">
-				<button
-					type="button"
-					onClick={handleResend}
-					disabled={resendMutation.isPending}
-					className="flex-1 rounded-full border border-foreground/20 py-4 text-center text-[14px] text-foreground disabled:opacity-50"
-				>
-					{resendMutation.isPending ? 'Reenviando...' : 'Reenviar código'}
-				</button>
-				<Link
-					href={appRoutes.auth.changeEmail}
-					className="flex-1 rounded-full border border-foreground/20 py-4 text-center text-[14px] text-foreground"
-				>
-					Trocar e-mail
-				</Link>
-			</div>
+			<button
+				type="button"
+				onClick={handleResend}
+				disabled={resendMutation.isPending}
+				className="rounded-full border border-foreground/20 py-4 text-center text-[14px] text-foreground disabled:opacity-50"
+			>
+				{resendMutation.isPending ? 'Reenviando...' : 'Reenviar código'}
+			</button>
 		</div>
 	);
 }

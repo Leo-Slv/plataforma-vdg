@@ -18,6 +18,8 @@ import {
 	type LoginFormValues,
 } from '@/features/auth/schemas/login-form.schema';
 import { useLoginMutation } from '@/features/auth/hooks/auth.queries';
+import { getCurrentUser } from '@/features/auth/api/get-current-user';
+import { postLoginDestination } from '@/features/auth/lib/post-login-destination';
 import { RATE_LIMIT_MESSAGE } from '@/features/auth/lib/auth-messages';
 import { FormField } from '@/features/auth/components/form-field';
 import { PasswordField } from '@/features/auth/components/password-field';
@@ -40,11 +42,19 @@ function LoginForm() {
 	function onSubmit(values: LoginFormValues) {
 		setFormError(null);
 		mutation.mutate(values, {
-			onSuccess: (data) => {
+			onSuccess: async (data) => {
 				setAccessToken(data.token.accessToken);
 				setUserEmail(data.email);
 				setUserName(data.name);
-				router.push(appRoutes.catalog.index);
+
+				let emailVerifiedAt: string | null | undefined;
+				try {
+					emailVerifiedAt = (await getCurrentUser()).emailVerifiedAt;
+				} catch {
+					// Couldn't read the account state: the catalog shows its own banner.
+				}
+
+				router.push(postLoginDestination(emailVerifiedAt));
 			},
 			onError: (error) => {
 				if (!isApiError(error)) {

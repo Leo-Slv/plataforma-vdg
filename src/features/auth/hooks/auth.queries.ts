@@ -10,6 +10,20 @@ import { updateProfile } from '@/features/auth/api/update-profile';
 import { requestAvatarUploadUrl } from '@/features/auth/api/request-avatar-upload-url';
 import { changePassword } from '@/features/auth/api/change-password';
 import { logoutUser } from '@/features/auth/api/logout';
+import { requestPasswordReset } from '@/features/auth/api/request-password-reset';
+import { resetPassword } from '@/features/auth/api/reset-password';
+
+function useRequestPasswordResetMutation() {
+	return useMutation({
+		mutationFn: requestPasswordReset,
+	});
+}
+
+function useResetPasswordMutation() {
+	return useMutation({
+		mutationFn: resetPassword,
+	});
+}
 
 function useRegisterMutation() {
 	return useMutation({
@@ -68,6 +82,8 @@ function useRequestAvatarUploadUrlMutation() {
 }
 
 export {
+	useRequestPasswordResetMutation,
+	useResetPasswordMutation,
 	useRegisterMutation,
 	useLoginMutation,
 	useConfirmEmailMutation,
