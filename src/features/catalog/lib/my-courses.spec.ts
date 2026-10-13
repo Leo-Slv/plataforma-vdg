@@ -111,7 +111,13 @@ test('computeCardState returns active with the first lesson at 0%', () => {
 
 test('computeCardState returns active with the current lesson mid-course', () => {
 	const progress = makeProgress(50, [
-		{ lessonId: 'l1', completed: true, lastWatchedAt: '2026-09-04T10:00:00Z' },
+		{
+			lessonId: 'l1',
+			completed: true,
+			watchedSeconds: 0,
+			lastPositionSeconds: 0,
+			lastWatchedAt: '2026-09-04T10:00:00Z',
+		},
 	]);
 	const state = computeCardState(makeDetails(), progress);
 	assert.equal(state.kind, 'active');
@@ -123,8 +129,20 @@ test('computeCardState returns active with the current lesson mid-course', () =>
 
 test('latestWatchedAt picks the max timestamp', () => {
 	const progress = makeProgress(50, [
-		{ lessonId: 'l1', completed: true, lastWatchedAt: '2026-09-01T10:00:00Z' },
-		{ lessonId: 'l2', completed: false, lastWatchedAt: '2026-09-03T10:00:00Z' },
+		{
+			lessonId: 'l1',
+			completed: true,
+			watchedSeconds: 0,
+			lastPositionSeconds: 0,
+			lastWatchedAt: '2026-09-01T10:00:00Z',
+		},
+		{
+			lessonId: 'l2',
+			completed: false,
+			watchedSeconds: 0,
+			lastPositionSeconds: 0,
+			lastWatchedAt: '2026-09-03T10:00:00Z',
+		},
 	]);
 	assert.equal(latestWatchedAt(progress), '2026-09-03T10:00:00Z');
 });
@@ -150,6 +168,8 @@ test('sortOwnedCourses orders two touched courses by recency', () => {
 			{
 				lessonId: 'l1',
 				completed: false,
+				watchedSeconds: 0,
+				lastPositionSeconds: 0,
 				lastWatchedAt: '2026-09-01T10:00:00Z',
 			},
 		]),
@@ -160,6 +180,8 @@ test('sortOwnedCourses orders two touched courses by recency', () => {
 			{
 				lessonId: 'l1',
 				completed: false,
+				watchedSeconds: 0,
+				lastPositionSeconds: 0,
 				lastWatchedAt: '2026-09-03T10:00:00Z',
 			},
 		]),
@@ -180,6 +202,8 @@ test('sortOwnedCourses puts a touched course before an untouched one regardless 
 			{
 				lessonId: 'l1',
 				completed: false,
+				watchedSeconds: 0,
+				lastPositionSeconds: 0,
 				lastWatchedAt: '2026-09-03T10:00:00Z',
 			},
 		]),
@@ -210,6 +234,8 @@ test('pickHeroEntry picks the most recently watched among strictly in-progress e
 			{
 				lessonId: 'l1',
 				completed: false,
+				watchedSeconds: 0,
+				lastPositionSeconds: 0,
 				lastWatchedAt: '2026-09-01T10:00:00Z',
 			},
 		]),
@@ -220,6 +246,8 @@ test('pickHeroEntry picks the most recently watched among strictly in-progress e
 			{
 				lessonId: 'l1',
 				completed: false,
+				watchedSeconds: 0,
+				lastPositionSeconds: 0,
 				lastWatchedAt: '2026-09-03T10:00:00Z',
 			},
 		]),

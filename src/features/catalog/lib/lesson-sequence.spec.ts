@@ -97,6 +97,8 @@ function progressWith(...completedLessonIds: string[]): CourseProgress {
 		lessons: completedLessonIds.map((lessonId) => ({
 			lessonId,
 			completed: true,
+			watchedSeconds: 0,
+			lastPositionSeconds: 0,
 			lastWatchedAt: '2026-09-04T10:00:00Z',
 		})),
 	};

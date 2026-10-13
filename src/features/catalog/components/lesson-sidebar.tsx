@@ -4,10 +4,16 @@ import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
 import type { CourseDetails } from '@/features/catalog/model/course-details';
 import type { CourseProgress } from '@/features/catalog/model/course-progress';
+import {
+	lessonFractionFor,
+	type LiveWatch,
+} from '@/features/catalog/lib/lesson-progress';
 
 type LessonSidebarProps = {
 	details: CourseDetails;
 	progress: CourseProgress | undefined;
+	/** Watched time of the lesson that is playing right now, ahead of the saved value. */
+	liveWatch?: LiveWatch;
 	currentLessonId: string;
 	slug: string;
 };
@@ -15,6 +21,7 @@ type LessonSidebarProps = {
 function LessonSidebar({
 	details,
 	progress,
+	liveWatch,
 	currentLessonId,
 	slug,
 }: LessonSidebarProps) {
@@ -37,6 +44,13 @@ function LessonSidebar({
 								progress?.lessons.some(
 									(entry) => entry.lessonId === lesson.id && entry.completed,
 								);
+							const fraction = lessonFractionFor(
+								details,
+								progress,
+								lesson.id,
+								liveWatch,
+							);
+							const showBar = !isCompleted && fraction > 0 && fraction < 1;
 
 							return (
 								<Link
@@ -76,6 +90,21 @@ function LessonSidebar({
 												{lesson.description}
 											</div>
 										) : null}
+										{showBar ? (
+											<div
+												role="progressbar"
+												aria-label={`Progresso de ${lesson.title}`}
+												aria-valuemin={0}
+												aria-valuemax={100}
+												aria-valuenow={Math.round(fraction * 100)}
+												className="mt-1.5 h-[2px] w-full overflow-hidden rounded-full bg-foreground/12"
+											>
+												<div
+													className="h-[2px] bg-[oklch(0.72_0.1_248)]"
+													style={{ width: `${Math.round(fraction * 100)}%` }}
+												/>
+											</div>
+										) : null}
 									</div>
 								</Link>
 							);
@@ -85,7 +114,8 @@ function LessonSidebar({
 			))}
 
 			<div className="mt-5.5 border-t border-foreground/9 pt-5 font-sans text-[11.5px] leading-[1.6] font-light text-foreground/35">
-				A aula é marcada como concluída quando você assiste 90% do vídeo.
+				A aula é concluída quando você assiste 90% do vídeo. Pular trechos não
+				conta.
 			</div>
 		</div>
 	);

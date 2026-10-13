@@ -59,7 +59,13 @@ const details: CourseDetails = {
 const progress: CourseProgress = {
 	progressPercent: 33.33,
 	lessons: [
-		{ lessonId: 'l1', completed: true, lastWatchedAt: '2026-09-04T10:00:00Z' },
+		{
+			lessonId: 'l1',
+			completed: true,
+			watchedSeconds: 0,
+			lastPositionSeconds: 0,
+			lastWatchedAt: '2026-09-04T10:00:00Z',
+		},
 	],
 };
 
@@ -173,4 +179,68 @@ test('renders gracefully with no progress data (falls back to no checkmarks)', (
 
 	assert.doesNotMatch(html, /✓/);
 	assert.match(html, /▶/);
+});
+
+const detailsWithDurations: CourseDetails = {
+	...details,
+	modules: details.modules.map((module) => ({
+		...module,
+		lessons: module.lessons.map((entry) => ({
+			...entry,
+			durationSeconds: 100,
+		})),
+	})),
+};
+
+test('shows a progress bar for a lesson that is partly watched', () => {
+	const html = renderToStaticMarkup(
+		createElement(LessonSidebar, {
+			details: detailsWithDurations,
+			progress: {
+				progressPercent: 0,
+				lessons: [
+					{
+						lessonId: 'l2',
+						completed: false,
+						watchedSeconds: 45,
+						lastPositionSeconds: 45,
+						lastWatchedAt: '2026-09-04T10:00:00Z',
+					},
+				],
+			},
+			currentLessonId: 'l3',
+			slug: 'escola-de-lideres',
+		}),
+	);
+
+	assert.match(html, /role="progressbar"/);
+	assert.match(html, /aria-valuenow="50"/);
+	assert.equal((html.match(/role="progressbar"/g) ?? []).length, 1);
+});
+
+test('the playing lesson bar follows the live watched time', () => {
+	const html = renderToStaticMarkup(
+		createElement(LessonSidebar, {
+			details: detailsWithDurations,
+			progress: undefined,
+			liveWatch: { lessonId: 'l1', watchedSeconds: 18 },
+			currentLessonId: 'l1',
+			slug: 'escola-de-lideres',
+		}),
+	);
+
+	assert.match(html, /aria-valuenow="20"/);
+});
+
+test('shows no bar for completed or untouched lessons', () => {
+	const html = renderToStaticMarkup(
+		createElement(LessonSidebar, {
+			details: detailsWithDurations,
+			progress,
+			currentLessonId: 'l2',
+			slug: 'escola-de-lideres',
+		}),
+	);
+
+	assert.doesNotMatch(html, /role="progressbar"/);
 });

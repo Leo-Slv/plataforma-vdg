@@ -41,9 +41,15 @@ import {
 } from '@/features/catalog/lib/user-display';
 import {
 	VideoPlayer,
+	isEmbeddableUrl,
 	type VideoPlayerStatus,
+	type WatchReport,
 } from '@/features/catalog/components/video-player';
 import { LessonSidebar } from '@/features/catalog/components/lesson-sidebar';
+import {
+	courseLivePercent,
+	type LiveWatch,
+} from '@/features/catalog/lib/lesson-progress';
 import {
 	LessonTabs,
 	type LessonTab,
@@ -58,11 +64,11 @@ type LessonPlayerPageProps = {
 };
 
 /**
- * S3-hosted videos report real playback progress via the native `<video>`
- * element's `timeupdate` — throttled so a mostly-static currentTime doesn't
- * spam the progress endpoint every animation frame. YouTube videos have no
- * such event (would need the separate IFrame Player API) and keep the
- * existing manual "Marcar aula como assistida" button untouched.
+ * Videos played by the native `<video>` report the time really watched (seeks
+ * do not count) and the player position, throttled to one request per
+ * interval unless the viewer pauses, finishes or leaves. YouTube iframes expose
+ * no playback events, so those lessons keep the manual "Marcar aula como
+ * assistida" button.
  */
 const PROGRESS_REPORT_INTERVAL_MS = 5000;
 
@@ -132,11 +138,12 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 	}
 
 	const enteredAtRef = useRef<number | null>(null);
-	const lastReportedSecondsRef = useRef(0);
+	const lastSentRef = useRef({ lessonId: '', watched: -1, position: -1 });
 	const lastReportedAtRef = useRef(0);
+	// Only counts for the lesson that is playing; other lessons use saved values.
+	const [liveWatch, setLiveWatch] = useState<LiveWatch | undefined>();
 	useEffect(() => {
 		enteredAtRef.current = Date.now();
-		lastReportedSecondsRef.current = 0;
 		lastReportedAtRef.current = 0;
 	}, [lessonId]);
 
@@ -164,16 +171,26 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 	const displayName = getDisplayName(getUserName());
 	const initials = getInitials(getUserName());
 
-	function reportWatchedSeconds(seconds: number) {
-		if (!course || seconds <= lastReportedSecondsRef.current) {
+	function sendProgress(watchedSeconds: number, positionSeconds: number) {
+		const last = lastSentRef.current;
+		if (
+			!course ||
+			(last.lessonId === lessonId &&
+				last.watched === watchedSeconds &&
+				last.position === positionSeconds)
+		) {
 			return;
 		}
 
-		lastReportedSecondsRef.current = seconds;
+		lastSentRef.current = {
+			lessonId,
+			watched: watchedSeconds,
+			position: positionSeconds,
+		};
 		lastReportedAtRef.current = Date.now();
 
 		registerProgressMutation.mutate(
-			{ lessonId, watchedSeconds: seconds },
+			{ lessonId, watchedSeconds, positionSeconds },
 			{
 				onSuccess: () => {
 					queryClient.invalidateQueries({
@@ -184,16 +201,23 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 		);
 	}
 
-	function handleVideoProgress(currentTime: number) {
-		if (Date.now() - lastReportedAtRef.current < PROGRESS_REPORT_INTERVAL_MS) {
+	function handleWatch(report: WatchReport) {
+		// Cheap: only re-renders when the whole-second count actually changes.
+		setLiveWatch((previous) =>
+			previous?.lessonId === lessonId &&
+			previous.watchedSeconds === report.watchedSeconds
+				? previous
+				: { lessonId, watchedSeconds: report.watchedSeconds },
+		);
+
+		if (
+			!report.flush &&
+			Date.now() - lastReportedAtRef.current < PROGRESS_REPORT_INTERVAL_MS
+		) {
 			return;
 		}
 
-		reportWatchedSeconds(Math.floor(currentTime));
-	}
-
-	function handleVideoEnded(duration: number) {
-		reportWatchedSeconds(Math.floor(duration));
+		sendProgress(report.watchedSeconds, report.positionSeconds);
 	}
 
 	function handleMarkAsWatched() {
@@ -338,12 +362,21 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 						? progressQuery.data
 						: undefined;
 					const percent = progressQuery.isSuccess
-						? Math.round(progressQuery.data.progressPercent)
+						? courseLivePercent(details, progressQuery.data, liveWatch)
 						: null;
+					const playbackUrl = playbackQuery.data?.playbackUrl;
+					const savedLesson = progress?.lessons.find(
+						(entry) => entry.lessonId === lessonId,
+					);
+					// Only iframe videos (YouTube) cannot be tracked automatically.
+					const needsManualMark =
+						course.hasAccess &&
+						Boolean(playbackUrl && isEmbeddableUrl(playbackUrl));
 
 					const videoStatus: VideoPlayerStatus = !location.lesson.videoId
 						? 'no-video'
-						: playbackQuery.isPending
+						: playbackQuery.isPending ||
+							  (course.hasAccess && progressQuery.isPending)
 							? 'loading'
 							: playbackQuery.isError
 								? 'error'
@@ -377,14 +410,13 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 								<div className="px-5 py-7 sm:px-10">
 									<VideoPlayer
 										status={videoStatus}
-										playbackUrl={playbackQuery.data?.playbackUrl}
-										onProgress={
-											course.hasAccess ? handleVideoProgress : undefined
-										}
-										onEnded={course.hasAccess ? handleVideoEnded : undefined}
+										playbackUrl={playbackUrl}
+										onWatch={course.hasAccess ? handleWatch : undefined}
+										initialWatchedSeconds={savedLesson?.watchedSeconds ?? 0}
+										resumeFromSeconds={savedLesson?.lastPositionSeconds ?? 0}
 									/>
 
-									{course.hasAccess ? (
+									{needsManualMark ? (
 										<button
 											type="button"
 											onClick={handleMarkAsWatched}
@@ -395,7 +427,7 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 												? 'Marcando...'
 												: 'Marcar aula como assistida'}
 										</button>
-									) : (
+									) : course.hasAccess ? null : (
 										<span className="mt-5 inline-block rounded-full bg-surface px-4 py-2 font-heading text-[11px] tracking-[0.14em] text-[oklch(0.75_0.1_248)] uppercase">
 											Aula grátis
 										</span>
@@ -447,6 +479,7 @@ function LessonPlayerPage({ slug, lessonId }: LessonPlayerPageProps) {
 								<LessonSidebar
 									details={details}
 									progress={progress}
+									liveWatch={liveWatch}
 									currentLessonId={lessonId}
 									slug={slug}
 								/>
