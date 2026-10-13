@@ -7,49 +7,35 @@ import { ListIcon, XIcon } from '@phosphor-icons/react';
 
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
+import { decodeAccessTokenClaims } from '@/lib/auth/jwt-claims';
+import {
+	getAdminNavItems,
+	type AdminNavKey,
+} from '@/features/admin/lib/admin-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 type AdminSidebarProps = {
-	active:
-		| 'areas'
-		| 'courses'
-		| 'users'
-		| 'videos'
-		| 'audit'
-		| 'testimonials'
-		| 'visitors';
+	active: AdminNavKey;
 	areasSummary?: { name: string; courseCount: number }[];
+	/** Defaults to the signed-in user's token; pass it to render a specific user. */
+	claims?: Record<string, unknown> | null;
 };
-
-const NAV_ITEMS = [
-	{ label: 'Cursos', key: 'courses', href: appRoutes.admin.courses },
-	{ label: 'Áreas', key: 'areas', href: appRoutes.admin.areas },
-	{ label: 'Usuários', key: 'users', href: appRoutes.admin.users },
-	{ label: 'Vídeos', key: 'videos', href: appRoutes.admin.videos },
-	{ label: 'Auditoria', key: 'audit', href: appRoutes.admin.audit },
-	{
-		label: 'Depoimentos',
-		key: 'testimonials',
-		href: appRoutes.admin.testimonials,
-	},
-	{
-		label: 'Primeira vez',
-		key: 'visitors',
-		href: appRoutes.admin.visitors,
-	},
-] as const;
 
 type SidebarContentProps = AdminSidebarProps & { onNavigate?: () => void };
 
 function SidebarContent({
 	active,
 	areasSummary,
+	claims,
 	onNavigate,
 }: SidebarContentProps) {
+	// UI gating only; the backend policies are the real authorization boundary.
+	const navItems = getAdminNavItems(claims ?? decodeAccessTokenClaims());
+
 	return (
 		<>
 			<nav className="mt-5.5 flex flex-col gap-0.75 font-sans text-[13px]">
-				{NAV_ITEMS.map((item) => (
+				{navItems.map((item) => (
 					<Link
 						key={item.key}
 						href={item.href}
@@ -93,7 +79,7 @@ function SidebarContent({
 	);
 }
 
-function AdminSidebar({ active, areasSummary }: AdminSidebarProps) {
+function AdminSidebar({ active, areasSummary, claims }: AdminSidebarProps) {
 	const [drawerOpen, setDrawerOpen] = useState(false);
 
 	useEffect(() => {
@@ -157,7 +143,11 @@ function AdminSidebar({ active, areasSummary }: AdminSidebarProps) {
 					<ThemeToggle />
 				</div>
 
-				<SidebarContent active={active} areasSummary={areasSummary} />
+				<SidebarContent
+					active={active}
+					areasSummary={areasSummary}
+					claims={claims}
+				/>
 			</div>
 
 			{drawerOpen ? (
@@ -198,6 +188,7 @@ function AdminSidebar({ active, areasSummary }: AdminSidebarProps) {
 						<SidebarContent
 							active={active}
 							areasSummary={areasSummary}
+							claims={claims}
 							onNavigate={() => setDrawerOpen(false)}
 						/>
 					</div>

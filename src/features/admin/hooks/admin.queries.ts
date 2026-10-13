@@ -2,6 +2,17 @@ import { useMutation, useQueries, useQuery } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/constants/query-keys';
 import { getRoles } from '@/features/admin/api/get-roles';
+import { getRoleDetails } from '@/features/admin/api/get-role-details';
+import { getPermissions } from '@/features/admin/api/get-permissions';
+import {
+	createRole,
+	type CreateRolePayload,
+} from '@/features/admin/api/create-role';
+import {
+	updateRole,
+	type UpdateRolePayload,
+} from '@/features/admin/api/update-role';
+import { setRolePermissions } from '@/features/admin/api/set-role-permissions';
 import { assignUserRole } from '@/features/admin/api/assign-user-role';
 import { removeUserRole } from '@/features/admin/api/remove-user-role';
 import { getAreas } from '@/features/admin/api/get-areas';
@@ -62,6 +73,52 @@ function useRolesQuery(options: { enabled: boolean }) {
 		queryKey: queryKeys.admin.roles,
 		queryFn: getRoles,
 		enabled: options.enabled,
+	});
+}
+
+function useRoleDetailsQuery(options: { enabled: boolean }) {
+	return useQuery({
+		queryKey: queryKeys.admin.roleDetails,
+		queryFn: getRoleDetails,
+		enabled: options.enabled,
+	});
+}
+
+function usePermissionsQuery(options: { enabled: boolean }) {
+	return useQuery({
+		queryKey: queryKeys.admin.permissions,
+		queryFn: getPermissions,
+		enabled: options.enabled,
+	});
+}
+
+function useCreateRoleMutation() {
+	return useMutation({
+		mutationFn: (payload: CreateRolePayload) => createRole(payload),
+	});
+}
+
+function useUpdateRoleMutation() {
+	return useMutation({
+		mutationFn: ({
+			roleId,
+			payload,
+		}: {
+			roleId: string;
+			payload: UpdateRolePayload;
+		}) => updateRole(roleId, payload),
+	});
+}
+
+function useSetRolePermissionsMutation() {
+	return useMutation({
+		mutationFn: ({
+			roleId,
+			permissionKeys,
+		}: {
+			roleId: string;
+			permissionKeys: string[];
+		}) => setRolePermissions(roleId, permissionKeys),
 	});
 }
 
@@ -586,6 +643,11 @@ function useUnpublishTestimonialMutation() {
 
 export {
 	useRolesQuery,
+	useRoleDetailsQuery,
+	usePermissionsQuery,
+	useCreateRoleMutation,
+	useUpdateRoleMutation,
+	useSetRolePermissionsMutation,
 	useAssignUserRoleMutation,
 	useRemoveUserRoleMutation,
 	useAreasQuery,

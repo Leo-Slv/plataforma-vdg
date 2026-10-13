@@ -1,7 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { decodeJwtPayload, hasPermission } from '@/lib/auth/jwt-claims';
+import {
+	decodeJwtPayload,
+	hasPermission,
+	isAdmin,
+} from '@/lib/auth/jwt-claims';
 
 function buildToken(payload: Record<string, unknown>) {
 	const base64Url = (value: string) =>
@@ -57,4 +61,25 @@ test('hasPermission matches within an array claim', () => {
 test('hasPermission returns false when there are no claims or no permission claim', () => {
 	assert.equal(hasPermission(null, 'areas.manage'), false);
 	assert.equal(hasPermission({}, 'areas.manage'), false);
+});
+
+test('isAdmin recognises the Admin role as a string or within an array', () => {
+	assert.equal(isAdmin({ role: 'Admin' }), true);
+	assert.equal(isAdmin({ role: ['Student', 'Admin'] }), true);
+	assert.equal(isAdmin({ role: 'Secretaria' }), false);
+	assert.equal(isAdmin(null), false);
+});
+
+test('hasPermission is always true for the Admin role, matching the backend bypass', () => {
+	assert.equal(hasPermission({ role: 'Admin' }, 'visitors.read'), true);
+	assert.equal(hasPermission({ role: 'Secretaria' }, 'visitors.read'), false);
+});
+
+test('isAdmin reads the role from the claim key the backend actually emits', () => {
+	const roleKey =
+		'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+
+	assert.equal(isAdmin({ [roleKey]: 'Admin' }), true);
+	assert.equal(isAdmin({ [roleKey]: ['Student', 'Admin'] }), true);
+	assert.equal(isAdmin({ [roleKey]: 'Secretaria' }), false);
 });

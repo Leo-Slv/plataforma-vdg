@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { appRoutes } from '@/lib/routes/app-routes';
 import { authPermissions } from '@/lib/auth/auth-permissions';
 import { useRequirePermission } from '@/lib/auth/use-require-permission';
+import { decodeAccessTokenClaims, isAdmin } from '@/lib/auth/jwt-claims';
 import { isApiError } from '@/lib/http/api-error';
 import { queryKeys } from '@/lib/constants/query-keys';
 import { LoadingScreen } from '@/components/loading-screen';
@@ -41,6 +42,8 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 	const ready = useRequirePermission(authPermissions.manageUsers);
 
 	const userQuery = useUserQuery(userId, { enabled: ready });
+	// UI gating only; the backend AdminOnly policy guards the role endpoints.
+	const canManageRoles = ready && isAdmin(decodeAccessTokenClaims());
 	const rolesQuery = useRolesQuery({ enabled: ready });
 	const courseAccessQuery = useUserCourseAccessQuery(userId, {
 		enabled: ready,
@@ -316,11 +319,24 @@ function UserAccessEditPage({ userId }: UserAccessEditPageProps) {
 								<div className="mb-2.25 font-heading text-[10px] tracking-[0.14em] text-foreground/40 uppercase">
 									Papel
 								</div>
-								<RoleAccessToggleList
-									roles={roles}
-									pendingRoleIds={pendingRoleIds ?? new Set()}
-									onToggle={toggleRole}
-								/>
+								{canManageRoles ? (
+									<RoleAccessToggleList
+										roles={roles}
+										pendingRoleIds={pendingRoleIds ?? new Set()}
+										onToggle={toggleRole}
+									/>
+								) : (
+									<div>
+										<p className="font-sans text-[13.5px] font-light text-foreground">
+											{userQuery.data?.roleNames.length
+												? userQuery.data.roleNames.join(', ')
+												: 'Sem papel de backoffice'}
+										</p>
+										<p className="mt-1.5 font-sans text-[11.5px] font-light text-foreground/40">
+											Só o administrador principal altera papéis.
+										</p>
+									</div>
+								)}
 							</div>
 						</div>
 

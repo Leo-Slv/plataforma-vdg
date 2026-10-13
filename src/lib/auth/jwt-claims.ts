@@ -36,18 +36,41 @@ function decodeAccessTokenClaims(): Record<string, unknown> | null {
 	return token ? decodeJwtPayload(token) : null;
 }
 
-function hasPermission(
-	claims: Record<string, unknown> | null,
-	permission: string,
-) {
-	const value = claims?.permission;
+const ADMIN_ROLE_NAME = 'Admin';
+
+// The backend writes roles under the .NET `ClaimTypes.Role` URI (the JWT is
+// built without the short-name outbound mapping), so that is the real key.
+// The short `role` is accepted too in case that mapping is ever enabled.
+const ROLE_CLAIM_KEYS = [
+	'http://schemas.microsoft.com/ws/2008/06/identity/claims/role',
+	'role',
+] as const;
+
+function claimIncludes(value: unknown, expected: string) {
 	if (typeof value === 'string') {
-		return value === permission;
+		return value === expected;
 	}
 	if (Array.isArray(value)) {
-		return value.includes(permission);
+		return value.includes(expected);
 	}
 	return false;
 }
 
-export { decodeAccessTokenClaims, decodeJwtPayload, hasPermission };
+/**
+ * True for the main administrator (the `Admin` role). The backend's policies
+ * let this role through every permission check, so the UI mirrors that.
+ */
+function isAdmin(claims: Record<string, unknown> | null) {
+	return ROLE_CLAIM_KEYS.some((key) =>
+		claimIncludes(claims?.[key], ADMIN_ROLE_NAME),
+	);
+}
+
+function hasPermission(
+	claims: Record<string, unknown> | null,
+	permission: string,
+) {
+	return isAdmin(claims) || claimIncludes(claims?.permission, permission);
+}
+
+export { decodeAccessTokenClaims, decodeJwtPayload, hasPermission, isAdmin };

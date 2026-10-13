@@ -63,6 +63,7 @@ const appRoutes = {
 			`/admin/videos/${videoId}?lessonId=${lessonId}`,
 		testimonials: '/admin/testimonials',
 		visitors: '/admin/visitors',
+		roles: '/admin/roles',
 	},
 } as const;
 

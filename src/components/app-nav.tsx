@@ -8,8 +8,8 @@ import { XIcon } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes/app-routes';
 import { getUserEmail } from '@/lib/auth/access-token';
-import { authPermissions } from '@/lib/auth/auth-permissions';
-import { decodeAccessTokenClaims, hasPermission } from '@/lib/auth/jwt-claims';
+import { decodeAccessTokenClaims } from '@/lib/auth/jwt-claims';
+import { getAdminHomeRoute } from '@/features/admin/lib/admin-nav';
 import { performLogout } from '@/lib/auth/logout';
 import { logoutUser } from '@/features/auth/api/logout';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -21,14 +21,6 @@ type AppNavProps = {
 	avatarUrl: string | null;
 	active: 'catalog' | 'my-courses' | 'orders' | 'certificates';
 };
-
-const ADMIN_PANEL_PERMISSIONS = [
-	authPermissions.manageCourses,
-	authPermissions.manageAreas,
-	authPermissions.manageUsers,
-	authPermissions.manageVideos,
-	authPermissions.readAudit,
-];
 
 function AppNav({ displayName, initials, avatarUrl, active }: AppNavProps) {
 	const [menuOpen, setMenuOpen] = useState(false);
@@ -47,9 +39,9 @@ function AppNav({ displayName, initials, avatarUrl, active }: AppNavProps) {
 
 	const email = getUserEmail();
 	const claims = decodeAccessTokenClaims();
-	const canSeeAdminPanel = ADMIN_PANEL_PERMISSIONS.some((permission) =>
-		hasPermission(claims, permission),
-	);
+	// First backoffice screen this person may open; null for regular students.
+	const adminHomeRoute = getAdminHomeRoute(claims);
+	const canSeeAdminPanel = adminHomeRoute !== null;
 
 	function handleLogout() {
 		performLogout(() => logoutUser());
@@ -110,7 +102,7 @@ function AppNav({ displayName, initials, avatarUrl, active }: AppNavProps) {
 					</Link>
 					{canSeeAdminPanel ? (
 						<Link
-							href={appRoutes.admin.courses}
+							href={adminHomeRoute ?? appRoutes.admin.courses}
 							className="pb-0.5 text-foreground/50"
 						>
 							Painel admin
@@ -288,7 +280,7 @@ function AppNav({ displayName, initials, avatarUrl, active }: AppNavProps) {
 							</Link>
 							{canSeeAdminPanel ? (
 								<Link
-									href={appRoutes.admin.courses}
+									href={adminHomeRoute ?? appRoutes.admin.courses}
 									onClick={() => setNavOpen(false)}
 									className="rounded-md px-2.5 py-2.75 text-foreground/55 hover:bg-foreground/5"
 								>

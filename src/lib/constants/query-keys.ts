@@ -38,6 +38,8 @@ const queryKeys = {
 	},
 	admin: {
 		roles: ['admin', 'roles'] as const,
+		roleDetails: ['admin', 'role-details'] as const,
+		permissions: ['admin', 'permissions'] as const,
 		areas: ['admin', 'areas'] as const,
 		area: (areaId: string) => ['admin', 'areas', areaId] as const,
 		courses: ['admin', 'courses'] as const,
