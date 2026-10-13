@@ -3,7 +3,12 @@ import { z } from 'zod';
 const courseFormSchema = z
 	.object({
 		title: z.string().trim().min(1, 'Informe o título do curso.'),
-		description: z.string().trim(),
+		// The API requires a description (1 to 2000 characters) when creating a course.
+		description: z
+			.string()
+			.trim()
+			.min(1, 'Informe a descrição do curso.')
+			.max(2000, 'A descrição pode ter no máximo 2000 caracteres.'),
 		thumbnailUrl: z.string().trim(),
 		pricingModel: z.enum(['Free', 'Paid', 'EnrollmentControlled']),
 		priceAmount: z.string().trim(),
