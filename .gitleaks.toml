@@ -1,0 +1,9 @@
+# Extends the default ruleset. The only exception is test fixtures (sample passwords and tokens).
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Sample values used by automated tests"
+paths = [
+  '''.*\.spec\.tsx?$''',
+]
