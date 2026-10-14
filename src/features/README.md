@@ -23,9 +23,7 @@ cross-feature UI (shadcn/ui primitives in `ui/`, shared composites elsewhere).
   a normal `useQuery` — same pattern as every gated feature, just with no
   `enabled` precondition since the page is public. Hero stats, the areas
   grid, the "Formação em destaque" panel, and testimonials are real; the
-  "Comece por aqui" cards stay editorial (enriched by real cover
-  image/link when a live course happens to match by slug) since the
-  public summary deliberately omits pricing/duration/area fields. Every
+  "Comece por aqui" cards are real public courses (section hidden when there are none). Every
   data-backed section hides on load/error/empty instead of showing
   placeholder content — a public marketing page degrades to its
   pre-revision static-only look rather than ever looking broken; see

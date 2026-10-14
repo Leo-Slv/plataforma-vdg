@@ -1,5 +1,4 @@
 import { appRoutes } from '@/lib/routes/app-routes';
-import type { FeaturedCourse } from '@/features/landing/model/featured-course';
 
 const heroContent = {
 	eyebrow: 'Escola de Discipulado · 2026',
@@ -12,39 +11,6 @@ const heroContent = {
 	primaryCtaLabel: 'Começar gratuitamente',
 	secondaryCtaLabel: 'Ver o catálogo',
 } as const;
-
-const featuredCourses: FeaturedCourse[] = [
-	{
-		slug: 'fundamentos-da-fe',
-		title: 'Fundamentos da Fé',
-		category: 'Discipulado',
-		moduleCount: 6,
-		lessonCount: 24,
-		durationLabel: '7h',
-		price: 'free',
-		statusLabel: 'Aberto para toda a igreja',
-	},
-	{
-		slug: 'curso-de-batismo',
-		title: 'Curso de Batismo',
-		category: 'Discipulado',
-		moduleCount: 3,
-		lessonCount: 9,
-		durationLabel: '2h 30min',
-		price: 'free',
-		statusLabel: 'Turmas novas todo mês',
-	},
-	{
-		slug: 'escola-de-lideres',
-		title: 'Escola de Líderes',
-		category: 'Liderança',
-		moduleCount: 8,
-		lessonCount: 41,
-		durationLabel: '12h',
-		price: { amountLabel: 'R$ 149' },
-		statusLabel: '2 aulas liberadas · certificado',
-	},
-];
 
 const howItWorksIntro =
 	'Cada curso pertence a uma área. Você cria a conta, confirma o e-mail e já entra nos cursos gratuitos da sua área. Formações e conferências são liberadas por inscrição.';
@@ -93,7 +59,6 @@ const closingCtaContent = {
 
 export {
 	heroContent,
-	featuredCourses,
 	howItWorksIntro,
 	howItWorksSteps,
 	footerContent,

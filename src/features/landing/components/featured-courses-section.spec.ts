@@ -4,77 +4,64 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 import { appRoutes } from '@/lib/routes/app-routes';
-import { featuredCourses } from '@/features/landing/lib/landing-content';
 import { FeaturedCoursesSection } from '@/features/landing/components/featured-courses-section';
+import type { PublicFeaturedCourse } from '@/features/landing/model/public-catalog-summary';
 
-test('renders all three featured courses', () => {
-	const html = renderToStaticMarkup(createElement(FeaturedCoursesSection));
+function liveCourse(overrides: Partial<PublicFeaturedCourse> = {}): PublicFeaturedCourse {
+	return {
+		id: 'course-1',
+		title: 'Fundamentos da Fé',
+		slug: 'fundamentos-da-fe',
+		description: '',
+		thumbnailUrl: null,
+		pricingModel: 'Free',
+		priceAmount: null,
+		moduleCount: 6,
+		lessonCount: 24,
+		durationSeconds: 25200,
+		areaName: 'Discipulado',
+		...overrides,
+	};
+}
 
-	for (const course of featuredCourses) {
-		const occurrences = html.split(course.title).length - 1;
-		assert.equal(
-			occurrences,
-			2,
-			`expected "${course.title}" once for desktop and once for mobile`,
-		);
-	}
+test('renders nothing while there is no live data', () => {
+	assert.equal(renderToStaticMarkup(createElement(FeaturedCoursesSection)), '');
 });
 
-test('does not link a card when no live course matches its slug', () => {
-	const html = renderToStaticMarkup(createElement(FeaturedCoursesSection));
-	for (const course of featuredCourses) {
-		assert.doesNotMatch(
-			html,
-			new RegExp(`href="${appRoutes.courses.detail(course.slug)}"`),
-		);
-	}
+test('renders nothing when there are no public courses', () => {
+	const html = renderToStaticMarkup(
+		createElement(FeaturedCoursesSection, { liveCourses: [] }),
+	);
+	assert.equal(html, '');
 });
 
-test('links a card to the course detail route when a live course matches its slug', () => {
-	const matchedSlug = featuredCourses[0].slug;
+test('renders one linked card per live course and no invented ones', () => {
 	const html = renderToStaticMarkup(
 		createElement(FeaturedCoursesSection, {
 			liveCourses: [
-				{
-					id: 'course-1',
-					title: featuredCourses[0].title,
-					slug: matchedSlug,
-					description: '',
-					thumbnailUrl: null,
-					pricingModel: 'Free',
-					priceAmount: null,
-					moduleCount: 6,
-					lessonCount: 24,
-					durationSeconds: 25200,
-					areaName: 'Discipulado',
-				},
+				liveCourse(),
+				liveCourse({ id: 'course-2', title: 'Casamento Blindado', slug: 'casamento-blindado' }),
 			],
 		}),
 	);
-	assert.match(
-		html,
-		new RegExp(`href="${appRoutes.courses.detail(matchedSlug)}"`),
-	);
+	assert.match(html, new RegExp(`href="${appRoutes.courses.detail('fundamentos-da-fe')}"`));
+	assert.match(html, new RegExp(`href="${appRoutes.courses.detail('casamento-blindado')}"`));
+	assert.equal(html.split('href="/courses/').length - 1, 2);
+	assert.doesNotMatch(html, /Curso de Batismo|Escola de Líderes/);
 });
 
-test('renders live stats/price/area instead of the editorial fallback when matched', () => {
-	const matchedSlug = featuredCourses[0].slug;
+test('renders live stats, price and area', () => {
 	const html = renderToStaticMarkup(
 		createElement(FeaturedCoursesSection, {
 			liveCourses: [
-				{
-					id: 'course-1',
-					title: featuredCourses[0].title,
-					slug: matchedSlug,
-					description: '',
-					thumbnailUrl: null,
+				liveCourse({
 					pricingModel: 'Paid',
 					priceAmount: 89,
 					moduleCount: 11,
 					lessonCount: 42,
 					durationSeconds: 3600,
 					areaName: 'Família',
-				},
+				}),
 			],
 		}),
 	);

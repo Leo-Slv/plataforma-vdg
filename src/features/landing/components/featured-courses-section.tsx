@@ -3,7 +3,6 @@ import { motion } from 'motion/react';
 
 import { appRoutes } from '@/lib/routes/app-routes';
 import { cardScrollRevealAnimation } from '@/lib/motion/card-reveal';
-import { featuredCourses } from '@/features/landing/lib/landing-content';
 import { FeaturedCourseCard } from '@/features/landing/components/featured-course-card';
 import type { PublicFeaturedCourse } from '@/features/landing/model/public-catalog-summary';
 
@@ -12,6 +11,10 @@ type FeaturedCoursesSectionProps = {
 };
 
 function FeaturedCoursesSection({ liveCourses }: FeaturedCoursesSectionProps) {
+	if (!liveCourses || liveCourses.length === 0) {
+		return null;
+	}
+
 	return (
 		<section className="px-5 pb-11 sm:px-11 sm:pb-22">
 			<div className="flex items-baseline justify-between border-b border-foreground/8 pb-3.5 font-heading text-[13px] tracking-[0.16em] text-foreground/40 uppercase sm:hidden">
@@ -28,16 +31,11 @@ function FeaturedCoursesSection({ liveCourses }: FeaturedCoursesSectionProps) {
 			</div>
 
 			<div className="mt-4.5 grid grid-cols-1 gap-3.5 sm:mt-7.5 sm:grid-cols-3 sm:gap-7">
-				{featuredCourses.map((course, index) => {
-					const match = liveCourses?.find(
-						(liveCourse) => liveCourse.slug === course.slug,
-					);
-					return (
-						<motion.div key={course.slug} {...cardScrollRevealAnimation(index)}>
-							<FeaturedCourseCard course={course} live={match} />
-						</motion.div>
-					);
-				})}
+				{liveCourses.map((course, index) => (
+					<motion.div key={course.id} {...cardScrollRevealAnimation(index)}>
+						<FeaturedCourseCard course={course} />
+					</motion.div>
+				))}
 			</div>
 		</section>
 	);

@@ -92,20 +92,12 @@ restrained cool blue reserved for actions and progress indicators.
 
 - Section header "Comece por aqui" with a "Todos os cursos →" link to the
   catalog.
-- Three course cards — **still a fixed editorial pick** (title,
-  description, category, module/lesson count, duration, price badge,
-  status line all hardcoded, same three as before: Fundamentos da Fé,
-  Curso de Batismo, Escola de Líderes). See "Open decisions" for why this
-  didn't become a live `FeaturedCourses` listing despite the backend now
-  having one.
-- **Enrichment, not replacement**: for each editorial card, if
-  `GET /api/courses/public-summary`'s `FeaturedCourses` contains a course
-  whose `Slug` matches the card's hardcoded slug, that card's cover image
-  (`ThumbnailUrl`) and, when present, links to the real course detail
-  page (`/courses/{slug}`) — confirming the editorial pick still exists
-  and is really published, instead of linking blind. A card with no
-  matching real course renders exactly as it did before (striped
-  placeholder cover, no link) — never a 404.
+- One card per course returned by `GET /api/courses/public-summary`
+  (`FeaturedCourses`, public and published only): cover, price badge,
+  lesson count and duration, area and module count, linking to
+  `/courses/{slug}`. There is no editorial or placeholder content: when
+  the request is loading, fails or returns no courses, the whole section
+  is hidden.
 
 ### "Como a escola funciona" (how it works)
 
@@ -197,8 +189,7 @@ Unchanged from the original spec — one page, two layouts (`1a` desktop /
   visibly broken.
 - **Empty**: areas grid and testimonials hide on an empty list; featured
   formation hides on a `null` highlighted course. The featured-courses
-  cards never go empty (they're editorial, always rendered) — only their
-  enrichment (cover image, link) is conditional on a slug match.
+  section also hides when there are no public courses.
 
 ## Open decisions
 
@@ -223,17 +214,11 @@ Derived without needing to ask (mechanical, consistent with the
 e.g. `courses-panel.md`'s audit-log fallback, `course-modules.md`'s
 video-status "sem vídeo" instead of a guess):
 
-- **"Comece por aqui" stays editorial instead of becoming a live
-  `FeaturedCourses` listing.** `FeaturedCourses` is "the first 3 *published*
-  courses" (`GetPublicCatalogSummaryUseCase`, no curation logic at all) —
-  not a curated "start here" set. Rendering it verbatim risks showing an
-  arbitrary or unpolished course as a visitor's very first impression,
-  and — since `PublicFeaturedCourseResponse` deliberately has no pricing/
-  duration/lesson-count/area fields (pendency 1's own resolution text) —
-  a fully-live card couldn't show the mockup's price badge or module/
-  duration meta at all regardless. Enrichment-by-slug-match (real cover
-  image + real link when the editorial pick happens to still exist) gets
-  the honest, low-risk half of "live data" without either problem.
+- **"Comece por aqui" shows only real public courses.** It used to be a
+  fixed editorial pick enriched by slug match; the fake cards (Curso de
+  Batismo, Escola de Líderes...) were removed because they showed courses
+  that did not exist. The section now renders `FeaturedCourses` (the first
+  3 published courses) verbatim and hides when there are none.
 - **Areas grid, featured formation, and testimonials hide instead of
   showing placeholder/skeleton content on load or error.** These three
   sections are 100% new to the shipped page — there is no prior state to
@@ -250,8 +235,7 @@ video-status "sem vídeo" instead of a guess):
 ## Acceptance criteria
 
 - `/` renders the header, hero (with live area/course counts once
-  loaded), featured-courses (editorial, enriched by real data when a
-  slug matches), how-it-works, areas grid (when areas exist), featured
+  loaded), featured-courses (only real public courses; hidden when none), how-it-works, areas grid (when areas exist), featured
   formation (when a course is marked featured), testimonials (when any
   are published), closing CTA, and footer.
 - Layout matches the `1a` desktop / `1b` mobile mockup states.
