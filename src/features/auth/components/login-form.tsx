@@ -34,7 +34,7 @@ function LoginForm() {
 
 	const form = useForm<LoginFormValues>({
 		resolver: zodResolver(loginFormSchema),
-		defaultValues: { email: '', password: '' },
+		defaultValues: { email: '', password: '', rememberMe: true },
 	});
 
 	const password = form.watch('password');
@@ -114,10 +114,18 @@ function LoginForm() {
 				{...form.register('password')}
 			/>
 
-			<div className="flex items-center gap-2.5 font-sans text-[13px] font-light text-foreground/55">
-				<span className="size-4 rounded-[3px] border border-foreground/25" />
+			<label
+				htmlFor="rememberMe"
+				className="flex cursor-pointer items-center gap-2.5 font-sans text-[13px] font-light text-foreground/55"
+			>
+				<input
+					id="rememberMe"
+					type="checkbox"
+					className="size-4 cursor-pointer accent-foreground"
+					{...form.register('rememberMe')}
+				/>
 				Continuar conectado neste aparelho
-			</div>
+			</label>
 
 			{formError ? (
 				<div

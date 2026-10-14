@@ -7,6 +7,7 @@ const loginFormSchema = z.object({
 		.min(1, 'Informe seu e-mail.')
 		.email('E-mail inválido.'),
 	password: z.string().min(1, 'Informe sua senha.'),
+	rememberMe: z.boolean(),
 });
 
 type LoginFormValues = z.infer<typeof loginFormSchema>;

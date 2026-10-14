@@ -5,6 +5,7 @@ import type { AuthResponse } from '@/features/auth/model/auth-response';
 type LoginPayload = {
 	email: string;
 	password: string;
+	rememberMe: boolean;
 };
 
 async function loginUser(payload: LoginPayload): Promise<AuthResponse> {
